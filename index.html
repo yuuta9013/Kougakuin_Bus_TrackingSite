@@ -5,25 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>バスの位置情報</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
     <h1>学校のバスの位置情報</h1>
     <div id="map"></div>
-    <script>
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: 35.6895, lng: 139.6917}, // 東京の中心座標
-                zoom: 12
-            });
-
-            var busLocation = {lat: 35.6895, lng: 139.6917}; // 仮のバス位置
-            var marker = new google.maps.Marker({
-                position: busLocation,
-                map: map,
-                title: 'バスの位置'
-            });
-        }
-    </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+    <script src="script.js"></script>
 </body>
 </html>
