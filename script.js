@@ -15,3 +15,7 @@ busLocations.forEach(function(location) {
     L.marker(location).addTo(map)
         .bindPopup('バスの位置');
 });
+
+// 地図の表示範囲をすべてのマーカーが表示されるように調整
+var bounds = new L.LatLngBounds(busLocations);
+map.fitBounds(bounds);
