@@ -23,7 +23,12 @@ map.fitBounds(bounds);
 // バス停の選択機能を追加
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
     var selectedLocation = busLocations[e.target.value];
-    map.setView(selectedLocation.coords, 16);
+    map.setView(selectedLocation.coords, 16, {
+        animate: true,
+        pan: {
+            duration: 1
+        }
+    });
     L.popup()
         .setLatLng(selectedLocation.coords)
         .setContent(selectedLocation.name)
