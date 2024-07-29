@@ -11,6 +11,15 @@
 <body>
     <h1>学校のバスの位置情報</h1>
     <button id="notificationOptions">通知オプション</button>
+    <div>
+        <label for="busStopSelect">バス停を選択:</label>
+        <select id="busStopSelect">
+            <option value="0">八王子駅行き</option>
+            <option value="1">みなみ野駅行き</option>
+            <option value="2">学校行き(みなみ野)</option>
+            <option value="3">学校行き(八王子)</option>
+        </select>
+    </div>
     <div id="map" style="width: 100%; height: 80vh;"></div>
     <script src="script.js"></script>
 </body>
