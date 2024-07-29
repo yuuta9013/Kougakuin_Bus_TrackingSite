@@ -13,6 +13,5 @@ var busLocations = [
 
 busLocations.forEach(function(location) {
     L.marker(location).addTo(map)
-        .bindPopup('バスの位置')
-        .openPopup();
+        .bindPopup('バスの位置');
 });
