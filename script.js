@@ -20,40 +20,7 @@ busLocations.forEach(function(location) {
 var bounds = L.latLngBounds(busLocations.map(function(location) { return location.coords; }));
 map.fitBounds(bounds);
 
-// バス停の選択機能を追加
-document.getElementById('busStopSelect').addEventListener('change', function(e) {
-    var selectedLocation = busLocations[e.target.value];
-    map.setView(selectedLocation.coords, 16, {
-        animate: true,
-        pan: {
-            duration: 1
-        }
-    });
-    L.popup()
-        .setLatLng(selectedLocation.coords)
-        .setContent(selectedLocation.name)
-        .openOn(map);
-});
-
-// 仮の遅延情報と到着予定時刻
-var delayInfo = {
-    '八王子駅行き': '遅延なし',
-    'みなみ野駅行き': '5分遅延',
-    '学校行き(みなみ野)': '10分遅延',
-    '学校行き(八王子)': '遅延なし'
-};
-
-// メール通知機能
-document.getElementById('register').addEventListener('click', function() {
-    var email = document.getElementById('email').value;
-    var selectedBusStop = document.getElementById('busStopSelect').value;
-    var busStopName = busLocations[selectedBusStop].name;
-    var message = `バス停: ${busStopName}\n遅延情報: ${delayInfo[busStopName]}\n到着予定時刻が近づいています。`;
-
-    if (email) {
-        alert(`メール通知を登録しました。\n\n${message}`);
-        // 実際のメール送信機能はサーバーサイドで実装する必要があります。
-    } else {
-        alert('メールアドレスを入力してください。');
-    }
+// 通知オプションページへの遷移
+document.getElementById('notificationOptions').addEventListener('click', function() {
+    window.location.href = 'notification.html';
 });
