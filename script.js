@@ -20,6 +20,21 @@ busLocations.forEach(function(location) {
 var bounds = L.latLngBounds(busLocations.map(function(location) { return location.coords; }));
 map.fitBounds(bounds);
 
+// バス停の選択機能を追加
+document.getElementById('busStopSelect').addEventListener('change', function(e) {
+    var selectedLocation = busLocations[e.target.value];
+    map.setView(selectedLocation.coords, 16, {
+        animate: true,
+        pan: {
+            duration: 1
+        }
+    });
+    L.popup()
+        .setLatLng(selectedLocation.coords)
+        .setContent(selectedLocation.name)
+        .openOn(map);
+});
+
 // 通知オプションページへの遷移
 document.getElementById('notificationOptions').addEventListener('click', function() {
     window.location.href = 'notification.html';
