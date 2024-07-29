@@ -19,3 +19,7 @@ h1 {
     height: 80%;
     border: 1px solid #ccc;
 }
+
+div {
+    margin-bottom: 10px;
+}
