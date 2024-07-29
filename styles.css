@@ -23,3 +23,12 @@ h1 {
 div {
     margin-bottom: 10px;
 }
+
+input[type="email"] {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+}
