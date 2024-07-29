@@ -17,5 +17,5 @@ busLocations.forEach(function(location) {
 });
 
 // 地図の表示範囲をすべてのマーカーが表示されるように調整
-var bounds = new L.LatLngBounds(busLocations);
+var bounds = L.latLngBounds(busLocations);
 map.fitBounds(bounds);
