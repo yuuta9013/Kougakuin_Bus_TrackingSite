@@ -22,7 +22,7 @@ document.getElementById('register').addEventListener('click', function() {
 
     if (email) {
         // EmailJSを使用してメールを送信
-        emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        emailjs.send("service_w0h9u2p", "template_cys7gws", {
             to_email: email,
             bus_stop: busStopName,
             delay_info: delayInfo[busStopName],
