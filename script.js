@@ -4,13 +4,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// バスの位置を示すためのカスタム円（サークル）の設定
-var busIconOptions = {
-    color: '#ff0000',        // 円の境界線の色
-    fillColor: '#ff4d4d',    // 塗りつぶしの色
-    fillOpacity: 0.8,        // 塗りつぶしの不透明度
-    radius: 10               // 円の半径
-};
+// バスという文字をアイコンとして使用
+var busIcon = L.divIcon({
+    className: 'custom-bus-icon', // カスタムクラスを設定
+    html: 'バス', // 表示する文字
+    iconSize: [30, 30], // アイコンのサイズ
+    iconAnchor: [15, 15] // アイコンの位置調整
+});
 
 var busLocations = [
     { coords: [35.62702341561639, 139.33898667028086], name: '八王子駅行き' },
@@ -19,9 +19,9 @@ var busLocations = [
     { coords: [35.654351868130796, 139.33909241912187], name: '学校行き(八王子)' }
 ];
 
-// バス停にカスタム円マーカーを追加
+// バス停にカスタムアイコンを追加
 busLocations.forEach(function(location) {
-    L.circleMarker(location.coords, busIconOptions).addTo(map)
+    L.marker(location.coords, { icon: busIcon }).addTo(map)
         .bindPopup(location.name);
 });
 
