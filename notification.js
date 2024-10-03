@@ -10,7 +10,12 @@ var delayInfo = {
 document.getElementById('register').addEventListener('click', function() {
     var email = document.getElementById('email').value;
     var selectedBusStop = document.getElementById('busStopSelect').value;
-    var busStopName = busLocations[selectedBusStop].name;
+    var busStopName = [
+        '八王子駅行き',
+        'みなみ野駅行き',
+        '学校行き(みなみ野)',
+        '学校行き(八王子)'
+    ][selectedBusStop];
     var message = `バス停: ${busStopName}\n遅延情報: ${delayInfo[busStopName]}\n到着予定時刻が近づいています。`;
 
     if (email) {
