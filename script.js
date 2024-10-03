@@ -6,10 +6,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // バスの位置を示すためのカスタム円（サークル）の設定
 var busIconOptions = {
-    color: '#ff0000', // 赤色
-    fillColor: '#ff4d4d', // 塗りつぶしの色
-    fillOpacity: 0.8, // 不透明度
-    radius: 10 // 円の半径
+    color: '#ff0000',        // 円の境界線の色
+    fillColor: '#ff4d4d',    // 塗りつぶしの色
+    fillOpacity: 0.8,        // 塗りつぶしの不透明度
+    radius: 10               // 円の半径
 };
 
 var busLocations = [
@@ -19,9 +19,9 @@ var busLocations = [
     { coords: [35.654351868130796, 139.33909241912187], name: '学校行き(八王子)' }
 ];
 
-// バス停にカスタム円を追加
+// バス停にカスタム円マーカーを追加
 busLocations.forEach(function(location) {
-    L.circle(location.coords, busIconOptions).addTo(map)
+    L.circleMarker(location.coords, busIconOptions).addTo(map)
         .bindPopup(location.name);
 });
 
