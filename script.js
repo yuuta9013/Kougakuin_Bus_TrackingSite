@@ -16,10 +16,12 @@ var busStops = [
 
 // 赤いピンアイコン（バス停用）
 var busStopIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // 赤いピンの画像URL
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // 赤いピンの画像URL
     iconSize: [25, 41], // サイズ
     iconAnchor: [12, 41], // アンカー位置（下部中央）
-    popupAnchor: [0, -41] // ポップアップの位置
+    popupAnchor: [0, -41], // ポップアップの位置
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    shadowSize: [41, 41]
 });
 
 // バス停のマーカーを追加
@@ -32,8 +34,8 @@ busStops.forEach(function(stop) {
 var busIcon = L.divIcon({
     className: 'custom-bus-icon',
     html: 'バス',
-    iconSize: [30, 30], // アイコンサイズ
-    iconAnchor: [15, 15] // 中心をアンカーにする
+    iconSize: [30, 30], // アイコンのサイズ
+    iconAnchor: [15, 15] // アイコンの中心をアンカーにする
 });
 
 // バスの初期位置
@@ -43,11 +45,13 @@ var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busI
 // バスの経路
 var busRoute1 = [
     [35.63149875364993, 139.32910313903676], // 学校行き(みなみ野)
-    [35.62519493525218, 139.34105785827416]  // みなみ野駅行き
+    [35.62702341561639, 139.33898667028086], // 八王子駅行き
+    [35.63149875364993, 139.32910313903676]  // 学校行き(みなみ野)に戻る
 ];
 var busRoute2 = [
     [35.654351868130796, 139.33909241912187], // 学校行き(八王子)
-    [35.62702341561639, 139.33898667028086]  // 八王子駅行き
+    [35.62702341561639, 139.33898667028086], // 八王子駅行き
+    [35.654351868130796, 139.33909241912187]  // 学校行き(八王子)に戻る
 ];
 
 // バスを動かす関数
