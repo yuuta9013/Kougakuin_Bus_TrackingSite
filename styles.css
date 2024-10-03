@@ -35,13 +35,13 @@ button {
 
 /* カスタムバスアイコンのスタイル */
 .custom-bus-icon {
-    background-color: yellow; /* 背景色を黄色に設定 */
-    border: 1px solid black;  /* 枠線を黒に設定 */
-    border-radius: 50%;       /* 丸いアイコンにする */
-    text-align: center;       /* テキストを中央揃えに */
-    line-height: 30px;        /* アイコンの高さに合わせてテキストを中央に */
+    background-color: yellow;
+    border: 1px solid black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
     width: 30px;
     height: 30px;
-    font-weight: bold;        /* 太字に設定 */
-    font-size: 14px;          /* フォントサイズを設定 */
+    font-weight: bold;
+    font-size: 14px;
 }
