@@ -43,7 +43,7 @@ button:hover {
 
 /* カスタムバスアイコンのスタイル */
 .custom-bus-icon {
-    background-color: yellow;
+    background-color: red;
     border: 1px solid black;
     border-radius: 50%;
     text-align: center;
