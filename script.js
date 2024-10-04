@@ -16,35 +16,45 @@ var busStops = [
 
 // 赤いピンアイコン（バス停用）
 var busStopIcon = L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', // 赤いピンの画像URL
-    iconSize: [25, 41], // サイズ
-    iconAnchor: [12, 41], // アンカー位置（下部中央）
-    popupAnchor: [0, -41], // ポップアップの位置
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [0, -41],
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
     shadowSize: [41, 41]
 });
 
 // バス停のマーカーを追加
+var busMarkers = [];
 busStops.forEach(function(stop) {
-    L.marker(stop.coords, { icon: busStopIcon }).addTo(map)
+    var marker = L.marker(stop.coords, { icon: busStopIcon }).addTo(map)
         .bindPopup(stop.name);
+    busMarkers.push(marker);
 });
 
-// バス用の「バス」という文字アイコン
-var busIcon = L.divIcon({
-    className: 'custom-bus-icon',
+// バス用の「バス」という文字アイコン（黄色）
+var busIconYellow = L.divIcon({
+    className: 'custom-bus-icon-yellow',
     html: 'バス',
-    iconSize: [30, 30], // アイコンのサイズ
-    iconAnchor: [15, 15] // アイコンの中心をアンカーにする
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+});
+
+// バス用の「バス」という文字アイコン（緑色）
+var busIconGreen = L.divIcon({
+    className: 'custom-bus-icon-green',
+    html: 'バス',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
 });
 
 // バスの初期位置
-var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIcon }).addTo(map); // 学校行き(みなみ野)
-var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIcon }).addTo(map); // 学校行き(八王子)
+var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIconYellow }).addTo(map); // 学校行き(みなみ野) - 黄色
+var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map); // 学校行き(八王子) - 緑色
 
 // バスの経路
 var busRoute1 = [
-    [35.63149875364993, 139.32910313903676], // 学校行き(みなみ野)
+    [35.63149875364993, 139.32910313903676],
     [35.63048626415159, 139.3281997561492],
     [35.628582181573506, 139.3273876480203],
     [35.62573866716105, 139.32751258773246],
@@ -65,11 +75,13 @@ var busRoute1 = [
     [35.63153176403544, 139.32879020405537],
     [35.63149875364993, 139.32910313903676]  // 学校行き(みなみ野)に戻る
 ];
+
 var busRoute2 = [
     [35.654351868130796, 139.33909241912187], // 学校行き(八王子)
     [35.653933576469534, 139.33815587125943],
     [35.6520834615058, 139.338027796126],
     [35.64943540986958, 139.33781433756303],
+    [35.64947010105695, 139.3377574152825],
     [35.648070877364276, 139.33690358105275],
     [35.64659591556357, 139.3369476289423],
     [35.64479188827654, 139.33755954346742],
@@ -93,6 +105,7 @@ var busRoute2 = [
     [35.64479188827654, 139.33755954346742],
     [35.64659591556357, 139.3369476289423],
     [35.648070877364276, 139.33690358105275],
+    [35.64947010105695, 139.3377574152825],
     [35.64943540986958, 139.33781433756303],
     [35.6520834615058, 139.338027796126],
     [35.653933576469534, 139.33815587125943],
@@ -104,12 +117,12 @@ function moveBus(marker, route, delay) {
     var index = 0;
     function animate() {
         marker.setLatLng(route[index]);
+        checkProximity(marker);
         index = (index + 1) % route.length;
         setTimeout(animate, delay);
     }
     animate();
 }
-
 
 // バスがバス停に近づいているかをチェック
 function checkProximity(busMarker) {
