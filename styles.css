@@ -53,3 +53,17 @@ button:hover {
     font-weight: bold;
     font-size: 14px;
 }
+
+/* ヒントメッセージのスタイル */
+#hint {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    border-radius: 5px;
+}
