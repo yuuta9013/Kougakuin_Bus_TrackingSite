@@ -131,7 +131,7 @@ function checkProximity(busMarker) {
         var stopLatLng = L.latLng(stop.coords[0], stop.coords[1]);
         var distance = busLatLng.distanceTo(stopLatLng);
 
-        if (distance <= 200) { // 100メートル以内
+        if (distance <= 400) { // 400メートル以内
             displayHint(`そろそろ${stop.name}にバスが近づいています！`);
         }
     });
