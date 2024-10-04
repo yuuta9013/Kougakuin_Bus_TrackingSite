@@ -110,6 +110,30 @@ function moveBus(marker, route, delay) {
     animate();
 }
 
+
+// バスがバス停に近づいているかをチェック
+function checkProximity(busMarker) {
+    busStops.forEach(function(stop) {
+        var busLatLng = busMarker.getLatLng();
+        var stopLatLng = L.latLng(stop.coords[0], stop.coords[1]);
+        var distance = busLatLng.distanceTo(stopLatLng);
+
+        if (distance <= 100) { // 100メートル以内
+            displayHint(`そろそろ${stop.name}にバスが近づいています！`);
+        }
+    });
+}
+
+// メッセージを表示する関数
+function displayHint(message) {
+    const hintDiv = document.getElementById('hint');
+    hintDiv.textContent = message;
+    hintDiv.style.display = 'block';
+    setTimeout(() => {
+        hintDiv.style.display = 'none'; // 5秒後にメッセージを非表示に
+    }, 5000);
+}
+
 // バスを3秒ごとに動かす
 moveBus(busMarker1, busRoute1, 3000);
 moveBus(busMarker2, busRoute2, 3000);
