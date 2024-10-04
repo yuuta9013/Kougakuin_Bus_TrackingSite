@@ -15,6 +15,7 @@ h1 {
     height: 80vh;
     border: 1px solid #ccc;
     margin-bottom: 20px;
+    position: relative;
 }
 
 div {
@@ -41,9 +42,9 @@ button:hover {
     background-color: #ddd;
 }
 
-/* カスタムバスアイコンのスタイル */
-.custom-bus-icon {
-    background-color: red;
+/* カスタムバスアイコンのスタイル（黄色） */
+.custom-bus-icon-yellow {
+    background-color: yellow;
     border: 1px solid black;
     border-radius: 50%;
     text-align: center;
@@ -54,16 +55,32 @@ button:hover {
     font-size: 14px;
 }
 
+/* カスタムバスアイコンのスタイル（緑色） */
+.custom-bus-icon-green {
+    background-color: green;
+    border: 1px solid black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    font-size: 14px;
+    color: white; /* テキスト色を白に */
+}
+
 /* ヒントメッセージのスタイル */
 #hint {
     display: none;
-    background-color: #fff;
+    background-color: rgba(255, 255, 0, 0.9); /* 半透明の黄色背景 */
     border: 1px solid #ccc;
-    padding: 10px;
+    padding: 10px 20px;
     position: absolute;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
     border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
