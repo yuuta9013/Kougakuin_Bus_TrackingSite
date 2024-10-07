@@ -10,16 +10,10 @@ h1 {
     margin-bottom: 20px;
 }
 
-#map {
-    width: 100%;
-    height: 80vh;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
-}
-
-div {
-    margin-bottom: 10px;
+/* バス停選択ドロップダウンのスタイルを上部に配置 */
+.bus-stop-select {
     text-align: center;
+    margin-bottom: 10px;
 }
 
 /* 三本線メニュー */
@@ -36,15 +30,22 @@ div {
     border: none;
     cursor: pointer;
     font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .menu-content {
     display: none;
     position: absolute;
     right: 0;
+    top: 50px; /* メニューボタンの下に表示 */
     background-color: white;
     box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
     z-index: 1;
+    min-width: 150px;
 }
 
 .menu-content a {
@@ -69,17 +70,43 @@ div {
     padding: 10px;
     background-color: #fff;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 20px auto;
     text-align: left;
+    border-radius: 5px;
 }
 
 .thread p {
     margin: 0;
 }
 
+/* 地図のスタイル */
+#map {
+    width: 100%;
+    height: 80vh;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* ヒントメッセージのスタイル */
+#hint {
+    display: none;
+    background-color: rgba(255, 255, 0, 0.9); /* 半透明の黄色背景 */
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    position: absolute;
+    top: 60px; /* メニューの下に表示 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
 /* カスタムバスアイコン */
-.custom-bus-icon {
-    background-color: red;
+.custom-bus-icon-yellow {
+    background-color: yellow;
     border: 1px solid black;
     border-radius: 50%;
     text-align: center;
@@ -90,10 +117,54 @@ div {
     font-size: 14px;
 }
 
-.custom-bus-icon-yellow {
-    background-color: yellow;
-}
-
 .custom-bus-icon-green {
     background-color: green;
+    border: 1px solid black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    font-size: 14px;
+    color: white; /* テキスト色を白に */
+}
+
+/* 将来のメニュー項目追加を見越したスタイル */
+/* 例えば、他のページでも同じメニューを再利用 */
+
+.menu-content a {
+    /* 横並びにするためのスタイル */
+    white-space: nowrap;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 600px) {
+    #map {
+        height: 60vh;
+    }
+
+    .bus-stop-select label,
+    .bus-stop-select select {
+        font-size: 14px;
+    }
+
+    .menu-button {
+        font-size: 18px;
+        width: 35px;
+        height: 35px;
+    }
+
+    .custom-bus-icon-yellow,
+    .custom-bus-icon-green {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 12px;
+    }
+
+    /* ヒントメッセージのフォントサイズ調整 */
+    #hint {
+        font-size: 14px;
+    }
 }
