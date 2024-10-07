@@ -75,7 +75,6 @@ var busRoute1 = [
     [35.63153176403544, 139.32879020405537],
     [35.63149875364993, 139.32910313903676]  // 学校行き(みなみ野)に戻る
 ];
-
 var busRoute2 = [
     [35.654351868130796, 139.33909241912187], // 学校行き(八王子)
     [35.653933576469534, 139.33815587125943],
@@ -131,7 +130,7 @@ function checkProximity(busMarker) {
         var stopLatLng = L.latLng(stop.coords[0], stop.coords[1]);
         var distance = busLatLng.distanceTo(stopLatLng);
 
-        if (distance <= 100) { // 400メートル以内
+        if (distance <= 100) { // 100メートル以内
             displayHint(`そろそろ${stop.name}にバスが近づいています！`);
         }
     });
@@ -148,5 +147,26 @@ function displayHint(message) {
 }
 
 // バスを3秒ごとに動かす
-moveBus(busMarker1, busRoute1, 1000);
-moveBus(busMarker2, busRoute2, 1000);
+moveBus(busMarker1, busRoute1, 3000);
+moveBus(busMarker2, busRoute2, 3000);
+
+// バス停選択時の地図移動機能
+document.getElementById('busStopSelect').addEventListener('change', function(e) {
+    var selectedIndex = e.target.value;
+    if (selectedIndex === "") return; // 選択がない場合は何もしない
+
+    var selectedStop = busStops[selectedIndex];
+    if (selectedStop) {
+        map.setView(selectedStop.coords, 16, {
+            animate: true,
+            pan: {
+                duration: 1
+            }
+        });
+        // ポップアップを表示
+        L.popup()
+            .setLatLng(selectedStop.coords)
+            .setContent(selectedStop.name)
+            .openOn(map);
+    }
+});
