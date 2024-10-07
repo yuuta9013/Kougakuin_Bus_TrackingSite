@@ -11,12 +11,13 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
-    <div id="hint"></div>
+    <div id="hint"></div> <!-- ヒントメッセージの表示用 -->
     <h1>学校のバスの位置情報</h1>
-    <button id="notificationOptions">通知オプション</button>
+    <!-- 「通知オプション」ボタンを削除 -->
     <div>
         <label for="busStopSelect">バス停を選択:</label>
         <select id="busStopSelect">
+            <option value="">-- バス停を選択 --</option>
             <option value="0">八王子駅行き</option>
             <option value="1">みなみ野駅行き</option>
             <option value="2">学校行き(みなみ野)</option>
