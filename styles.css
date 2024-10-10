@@ -188,6 +188,19 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+/* モバイル表示向けのメディアクエリ */
+@media (max-width: 768px) {
+    .menu-list {
+        top: 60px; /* モバイルの画面でメニューリストの位置を調整 */
+        right: 10px;
+    }
+
+    #busStopSelect {
+        margin-top: 120px; /* モバイルで「バス停を選択」ボタンとメニューが重ならないように調整 */
+        position: relative;
+        z-index: 999; /* メニューリストより後ろに表示されるよう調整 */
+    }
+
 /* アニメーション */
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
