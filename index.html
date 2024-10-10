@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バス追跡システム</title>
+    <title>バス位置情報</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
-    <h1>バス追跡システム</h1>
 
-    <!-- 右上の三本線メニュー -->
-    <div class="menu">
-        <button class="menu-button">≡</button>
-        <div class="menu-content">
-            <a href="index.html">位置情報</a>
-            <a href="notifications.html">お知らせ</a>
-            <!-- 将来追加する項目はここに追加 -->
-        </div>
+    <!-- メニューボタン -->
+    <div class="menu-button" onclick="toggleMenu()">≡</div>
+
+    <!-- メニュー -->
+    <div class="menu" id="menu">
+        <a href="index.html">位置情報</a>
+        <a href="notification.html">お知らせ</a>
+        <!-- 将来追加する項目はここに追加 -->
     </div>
 
-    <!-- バス停選択ドロップダウンを地図の上部に配置 -->
+    <h1>バスの位置情報</h1>
+
+    <!-- バス停選択ボタンを地図の上部に配置 -->
     <div class="bus-stop-select">
         <label for="busStopSelect">バス停を選択:</label>
         <select id="busStopSelect">
@@ -33,10 +36,12 @@
         </select>
     </div>
 
+    <!-- 地図 -->
     <div id="map"></div>
+
+    <!-- ヒントメッセージ -->
     <div id="hint"></div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
