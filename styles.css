@@ -1,20 +1,30 @@
 /* 基本スタイル */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+    color: #333;
+}
+
+header {
+    background-color: #4a90e2;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h1 {
-    text-align: center;
-    margin: 20px 0;
+    margin: 0;
+    font-size: 2em;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* バス停選択ドロップダウンのスタイルを上部に配置 */
 .bus-stop-select {
     text-align: center;
-    margin-bottom: 10px;
+    margin: 15px 0;
     position: relative;
     z-index: 1001; /* メニューよりも下に設定 */
 }
@@ -22,69 +32,93 @@ h1 {
 .bus-stop-select label {
     margin-right: 10px;
     font-size: 16px;
+    font-weight: 600;
 }
 
 .bus-stop-select select {
-    padding: 5px;
+    padding: 8px 12px;
     font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.bus-stop-select select:focus {
+    border-color: #4a90e2;
+    outline: none;
 }
 
 /* 地図のスタイル */
 #map {
-    width: 100%;
-    height: 80vh;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
+    width: 90%;
+    height: 70vh;
+    border: 2px solid #4a90e2;
+    margin: 0 auto 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     position: relative;
     z-index: 1; /* メニューよりも下に設定 */
 }
 
 /* メニューボタン */
 .menu-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
     z-index: 1002; /* メニューよりも上に表示 */
     cursor: pointer;
-    background-color: #333;
+    background-color: #4a90e2;
     color: white;
     padding: 10px;
     font-size: 24px;
     border: none;
-    border-radius: 5px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.menu-button:hover {
+    background-color: #357ABD;
+    transform: rotate(90deg);
 }
 
 /* メニューのスタイル */
 .menu {
     display: none; /* デフォルトでは非表示 */
-    position: absolute;
-    top: 60px; /* メニューボタンの下に表示 */
-    right: 10px;
+    position: fixed;
+    top: 80px; /* メニューボタンの下に表示 */
+    right: 20px;
     background-color: white;
     border: 1px solid #ccc;
     z-index: 1001; /* メニューボタンよりも下 */
     padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    border-radius: 5px;
-    min-width: 150px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    width: 200px;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .menu a {
-    display: inline-block; /* 横並びにするため inline-block */
-    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
     text-decoration: none;
-    color: black;
+    color: #333;
     font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.menu a i {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #4a90e2;
 }
 
 .menu a:hover {
-    background-color: #f0f0f0;
-    border-radius: 3px;
+    background-color: #f0f4f8;
 }
 
 /* スレッド */
@@ -95,34 +129,40 @@ h1 {
     max-width: 600px;
     margin: 20px auto;
     text-align: left;
-    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: 'Open Sans', sans-serif;
 }
 
 .thread p {
     margin: 0;
-    font-size: 16px;
+    font-size: 18px;
+    color: #555;
 }
 
 /* ヒントメッセージのスタイル */
 #hint {
     display: none;
     background-color: rgba(255, 255, 0, 0.9); /* 半透明の黄色背景 */
-    border: 1px solid #ccc;
-    padding: 10px 20px;
-    position: absolute;
-    top: 60px; /* メニューボタンの下に表示 */
+    border: 2px solid #ffeb3b;
+    padding: 15px 25px;
+    position: fixed;
+    top: 100px; /* メニューボタンの下に表示 */
     left: 50%;
     transform: translateX(-50%);
     z-index: 1001;
-    border-radius: 5px;
-    font-size: 16px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: slideDown 0.5s ease-in-out;
 }
 
 /* カスタムバスアイコン */
 .custom-bus-icon-yellow {
     background-color: yellow;
-    border: 1px solid black;
+    border: 2px solid #fdd835;
     border-radius: 50%;
     text-align: center;
     line-height: 30px;
@@ -130,12 +170,13 @@ h1 {
     height: 30px;
     font-weight: bold;
     font-size: 14px;
-    color: black;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .custom-bus-icon-green {
     background-color: green;
-    border: 1px solid black;
+    border: 2px solid #43a047;
     border-radius: 50%;
     text-align: center;
     line-height: 30px;
@@ -144,10 +185,22 @@ h1 {
     font-weight: bold;
     font-size: 14px;
     color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     #map {
         height: 60vh;
     }
@@ -159,8 +212,8 @@ h1 {
 
     .menu-button {
         font-size: 20px;
-        width: 35px;
-        height: 35px;
+        width: 45px;
+        height: 45px;
     }
 
     .custom-bus-icon-yellow,
@@ -173,6 +226,23 @@ h1 {
 
     /* ヒントメッセージのフォントサイズ調整 */
     #hint {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    .menu {
+        width: 180px;
+    }
+
+    .menu a {
         font-size: 14px;
+    }
+
+    .thread {
+        padding: 15px;
+    }
+
+    .thread p {
+        font-size: 16px;
     }
 }
