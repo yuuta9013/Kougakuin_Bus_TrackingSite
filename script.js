@@ -35,9 +35,13 @@ var busStopIcon = L.icon({
 });
 
 // バス停のマーカーを追加
-busStops.forEach(function(stop) {
+busStops.forEach(function(stop, index) {
     L.marker(stop.coords, { icon: busStopIcon }).addTo(map)
-        .bindPopup(stop.name);
+        .bindPopup(stop.name)
+        .on('click', function() {
+            // バス停選択ドロップダウンで選択を同期
+            document.getElementById('busStopSelect').value = index;
+        });
 });
 
 // バス用の「バス」という文字アイコン（黄色）
@@ -57,8 +61,8 @@ var busIconGreen = L.divIcon({
 });
 
 // バスの初期位置
-var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIconYellow }).addTo(map); // 学校行き(みなみ野) - 黄色
-var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map); // 学校行き(八王子) - 緑色
+var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIconYellow }).addTo(map);
+var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map);
 
 // バスの経路
 var busRoute1 = [
