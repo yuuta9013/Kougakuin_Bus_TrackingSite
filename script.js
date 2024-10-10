@@ -1,3 +1,13 @@
+// メニューボタンの表示/非表示を切り替える関数
+function toggleMenu() {
+    var menu = document.getElementById("menu");
+    if (menu.style.display === "block") {
+        menu.style.display = "none";
+    } else {
+        menu.style.display = "block";
+    }
+}
+
 // 地図の初期化
 var map = L.map('map').setView([35.62702341561639, 139.33898667028086], 14);
 
@@ -30,7 +40,7 @@ busStops.forEach(function(stop) {
         .bindPopup(stop.name);
 });
 
-// カスタムバスアイコン（黄色）
+// バス用の「バス」という文字アイコン（黄色）
 var busIconYellow = L.divIcon({
     className: 'custom-bus-icon-yellow',
     html: 'バス',
@@ -38,7 +48,7 @@ var busIconYellow = L.divIcon({
     iconAnchor: [15, 15]
 });
 
-// カスタムバスアイコン（緑色）
+// バス用の「バス」という文字アイコン（緑色）
 var busIconGreen = L.divIcon({
     className: 'custom-bus-icon-green',
     html: 'バス',
@@ -73,6 +83,7 @@ var busRoute1 = [
     [35.63153176403544, 139.32879020405537],
     [35.63149875364993, 139.32910313903676]  // 学校行き(みなみ野)に戻る
 ];
+
 var busRoute2 = [
     [35.654351868130796, 139.33909241912187], // 学校行き(八王子)
     [35.653933576469534, 139.33815587125943],
