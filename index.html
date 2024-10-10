@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>バス位置情報</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
@@ -17,12 +20,14 @@
 
     <!-- メニュー -->
     <div class="menu" id="menu">
-        <a href="index.html">位置情報</a>
-        <a href="notification.html">お知らせ</a>
+        <a href="index.html"><i class="fas fa-map-marker-alt"></i> 位置情報</a>
+        <a href="notification.html"><i class="fas fa-bell"></i> お知らせ</a>
         <!-- 将来追加する項目はここに追加 -->
     </div>
 
-    <h1>バスの位置情報</h1>
+    <header>
+        <h1>バスの位置情報</h1>
+    </header>
 
     <!-- バス停選択ボタンを地図の上部に配置 -->
     <div class="bus-stop-select">
@@ -42,6 +47,9 @@
     <!-- ヒントメッセージ -->
     <div id="hint"></div>
 
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
 </html>
