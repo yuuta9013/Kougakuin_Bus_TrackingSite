@@ -245,27 +245,30 @@ h1 {
     .thread p {
         font-size: 16px;
     }
-    .hamburger {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #fff;
-    border: 2px solid #333;
+    
+/* 三本線メニューボタンのスタイル */
+.hamburger {
+    width: 50px;                /* 円の大きさ */
+    height: 50px;               /* 円の大きさ */
+    border-radius: 50%;         /* 円形にする */
+    background-color: #fff;     /* 背景色 */
+    border: 2px solid #333;     /* ボーダー */
     display: flex;
-    justify-content: center;
-    align-items: center; /* 中央揃え */
+    justify-content: center;    /* 水平方向の中央揃え */
+    align-items: center;        /* 垂直方向の中央揃え */
     cursor: pointer;
+    position: relative;
+    z-index: 1000;              /* メニューが前面に表示されるようにする */
+}
+
+/* 三本線アイコンのスタイル */
+.hamburger .line {
+    width: 30px;                /* 線の幅 */
+    height: 3px;                /* 線の高さ */
+    background-color: #333;     /* 線の色 */
+    margin: 4px 0;              /* 線の間隔 */
     position: relative;
 }
 
-.hamburger .line {
-    width: 20px;
-    height: 2px;
-    background-color: #333;
-    margin: 4px 0;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%); /* 水平方向の中央揃え */
-}
-
+    
 }
