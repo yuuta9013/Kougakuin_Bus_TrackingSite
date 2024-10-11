@@ -159,6 +159,43 @@ function displayHint(message) {
     }, 5000);
 }
 
+//tuika
+// バスの位置情報を更新する関数
+function updateBusLocation(busId, newLat, newLng, delay) {
+    const busMarker = busMarkers[busId];
+    busMarker.setLatLng([newLat, newLng]);
+
+    // 遅延情報を表示する要素を更新
+    const delayInfo = document.getElementById(`delay-info-${busId}`);
+    if (delayInfo) {
+        delayInfo.textContent = delay ? `${delay}分遅延` : '遅延なし';
+    }
+}
+
+// ここに実際に使用する時刻表を記入
+/* 
+const busTimetable = {
+    bus1: {
+        schedule: ["08:00", "09:00", "10:00"],
+        delay: 0 // 遅延の分をここに設定
+    },
+    // 他のバスの時刻表も追加可能
+};
+*/
+
+// 初期化処理（バスのアイコンの隣に遅延情報を表示）
+function initBusMarkers() {
+    for (const busId in busMarkers) {
+        const busMarker = busMarkers[busId];
+        const popupContent = `<div>バス ${busId} <span id="delay-info-${busId}">遅延なし</span></div>`;
+        busMarker.bindPopup(popupContent);
+    }
+}
+
+// 初期化関数を呼び出し
+initBusMarkers();
+//kokomade
+
 // バスを3秒ごとに動かす
 moveBus(busMarker1, busRoute1, 3000);
 moveBus(busMarker2, busRoute2, 3000);
