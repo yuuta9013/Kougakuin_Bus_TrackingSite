@@ -60,6 +60,23 @@ var busIconGreen = L.divIcon({
     iconAnchor: [15, 15]
 });
 
+// バスアイコンの隣に到着時間を表示する要素を作成
+const arrivalTimeElement = document.createElement('div');
+arrivalTimeElement.id = 'arrival-time';
+arrivalTimeElement.textContent = '遅延なし'; // 初期表示
+document.body.appendChild(arrivalTimeElement);
+
+// バスの速度や距離を計算するための関数
+function calculateArrivalTime() {
+    /* 
+    // ここにバスの速度や距離を計算するコードを書く
+    // 例えば、速度 (km/h) と目的地までの距離 (km) を使って
+    // 到着時間を計算することができる
+    // 到着時間 = 距離 / 速度 で得られる時間を適切にフォーマットして
+    // arrivalTimeElement.textContent に設定する
+    */
+}
+
 // バスの初期位置
 var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIconYellow }).addTo(map);
 var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map);
@@ -134,6 +151,14 @@ function moveBus(marker, route, delay) {
         setTimeout(animate, delay);
     }
     animate();
+}
+
+// バスの移動がある場合は到着時間を計算する
+function updateBusPosition() {
+    // バスの位置を更新する処理...
+    
+    // 到着時間の計算
+    calculateArrivalTime();
 }
 
 // バスがバス停に近づいているかをチェック
