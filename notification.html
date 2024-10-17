@@ -4,33 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お知らせ</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- メニューボタン -->
-    <div class="menu-button" onclick="toggleMenu()">≡</div>
-
-    <!-- メニュー -->
-    <div class="menu" id="menu">
-        <a href="index.html"><i class="fas fa-map-marker-alt"></i> 位置情報</a>
-        <a href="notification.html"><i class="fas fa-bell"></i> お知らせ</a>
-        <!-- 将来追加する項目はここに追加 -->
-    </div>
-
     <header>
-        <h1>お知らせ</h1>
+        <button class="menu-btn" onclick="toggleMenu()">≡ メニュー</button>
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">位置情報</a></li>
+                <li><a href="notification.html">お知らせ</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <div class="thread">
-        <p>特にありません。</p>
-    </div>
+    <main>
+        <h1>お知らせ</h1>
+        <div id="notifications">
+            <p>特にありません。</p>
+        </div>
+    </main>
 
-    <!-- Custom JS -->
-    <script src="script.js"></script>
+    <script src="notification.js"></script>
 </body>
 </html>
