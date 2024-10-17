@@ -3,53 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バス位置情報</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <!-- Custom CSS -->
+    <title>バス追跡システム</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
 </head>
 <body>
-
-    <!-- メニューボタン -->
-    <div class="menu-button" onclick="toggleMenu()">≡</div>
-
-    <!-- メニュー -->
-    <div class="menu" id="menu">
-        <a href="index.html"><i class="fas fa-map-marker-alt"></i> 位置情報</a>
-        <a href="notification.html"><i class="fas fa-bell"></i> お知らせ</a>
-        <!-- 将来追加する項目はここに追加 -->
-    </div>
-
     <header>
-        <h1>バスの位置情報</h1>
+        <button class="menu-btn" onclick="toggleMenu()">≡ メニュー</button>
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">位置情報</a></li>
+                <li><a href="notification.html">お知らせ</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- バス停選択ボタンを地図の上部に配置 -->
-    <div class="bus-stop-select">
-        <label for="busStopSelect">バス停を選択:</label>
-        <select id="busStopSelect">
-            <option value="">-- バス停を選択 --</option>
-            <option value="0">八王子駅行き</option>
-            <option value="1">みなみ野駅行き</option>
-            <option value="2">学校行き(みなみ野)</option>
-            <option value="3">学校行き(八王子)</option>
-        </select>
-    </div>
+    <main>
+        <div id="map" style="height: 500px;"></div>
+        <div>
+            <label for="busStopSelect">バス停を選択：</label>
+            <select id="busStopSelect">
+                <option value="">--選択してください--</option>
+                <option value="0">八王子駅行き</option>
+                <option value="1">みなみ野駅行き</option>
+                <option value="2">学校行き(みなみ野)</option>
+                <option value="3">学校行き(八王子)</option>
+            </select>
+        </div>
+        <div id="hint" style="display:none;"></div>
+    </main>
 
-    <!-- 地図 -->
-    <div id="map"></div>
-
-    <!-- ヒントメッセージ -->
-    <div id="hint"></div>
-
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
 </html>
