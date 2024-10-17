@@ -157,8 +157,8 @@ function displayHint(message) {
 }
 
 // バスを動かす
-moveBus(busMarker1, busRoute1, 3000);
-moveBus(busMarker2, busRoute2, 3000);
+moveBus(busMarker1, busRoute1, 1000);
+moveBus(busMarker2, busRoute2, 1000);
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
