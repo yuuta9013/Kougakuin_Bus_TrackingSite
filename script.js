@@ -39,69 +39,88 @@ busStops.forEach(function(stop, index) {
     L.marker(stop.coords, { icon: busStopIcon }).addTo(map)
         .bindPopup(stop.name)
         .on('click', function() {
-            // バス停選択ドロップダウンで選択を同期
             document.getElementById('busStopSelect').value = index;
         });
 });
 
-// バス用の「バス」という文字アイコン（黄色、緑色）
-var busIconYellow = L.divIcon({ className: 'custom-bus-icon-yellow', html: 'バス', iconSize: [30, 30], iconAnchor: [15, 15] });
-var busIconGreen = L.divIcon({ className: 'custom-bus-icon-green', html: 'バス', iconSize: [30, 30], iconAnchor: [15, 15] });
+// バス用の「バス」という文字アイコン（黄色）
+var busIconYellow = L.divIcon({
+    className: 'custom-bus-icon-yellow',
+    html: 'バス',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+});
+
+// バス用の「バス」という文字アイコン（緑色）
+var busIconGreen = L.divIcon({
+    className: 'custom-bus-icon-green',
+    html: 'バス',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+});
 
 // バスの初期位置
 var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIconYellow }).addTo(map);
 var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map);
 
 // バスの経路
-var busRoute1 = [ /* 経路座標省略 */ ];
-var busRoute2 = [ /* 経路座標省略 */ ];
+var busRoute1 = [
+    [35.63149875364993, 139.32910313903676],
+    [35.628582181573506, 139.3273876480203],
+    [35.62573866716105, 139.32751258773246],
+    [35.624189924807034, 139.33919445081705],
+    [35.62519493525218, 139.34105785827416]  // みなみ野駅行き
+];
+
+var busRoute2 = [
+    [35.654351868130796, 139.33909241912187],
+    [35.6520834615058, 139.338027796126],
+    [35.64031633699452, 139.33938105649864],
+    [35.62702341561639, 139.33898667028086]  // 八王子駅行き
+];
 
 // バスを動かす関数
 function moveBus(marker, route, delay) {
     var index = 0;
-    function animate() {
+    setInterval(function() {
         marker.setLatLng(route[index]);
         checkProximity(marker);
         index = (index + 1) % route.length;
-        setTimeout(animate, delay);
-    }
-    animate();
+    }, delay);
 }
 
-// バスがバス停に近づいているかをチェック
+// バス停に近づいているかチェック
 function checkProximity(busMarker) {
     busStops.forEach(function(stop) {
         var busLatLng = busMarker.getLatLng();
         var stopLatLng = L.latLng(stop.coords[0], stop.coords[1]);
         var distance = busLatLng.distanceTo(stopLatLng);
 
-        if (distance <= 100) { // 100メートル以内
+        if (distance <= 100) {
             displayHint(`そろそろ${stop.name}にバスが近づいています！`);
         }
     });
 }
 
-// メッセージを表示する関数
+// メッセージ表示
 function displayHint(message) {
     const hintDiv = document.getElementById('hint');
     hintDiv.textContent = message;
     hintDiv.style.display = 'block';
     setTimeout(() => {
-        hintDiv.style.display = 'none'; // 5秒後にメッセージを非表示に
+        hintDiv.style.display = 'none';
     }, 5000);
 }
 
-// バスを3秒ごとに動かす
+// バスを動かす
 moveBus(busMarker1, busRoute1, 3000);
 moveBus(busMarker2, busRoute2, 3000);
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
     var selectedIndex = e.target.value;
-    if (selectedIndex === "") return; // 選択がない場合は何もしない
-
-    var selectedStop = busStops[selectedIndex];
-    if (selectedStop) {
+    if (selectedIndex !== "") {
+        var selectedStop = busStops[selectedIndex];
         map.setView(selectedStop.coords, 16, {
             animate: true,
             pan: { duration: 1 }
