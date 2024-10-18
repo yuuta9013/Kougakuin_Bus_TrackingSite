@@ -39,19 +39,18 @@ busStops.forEach(function(stop, index) {
     L.marker(stop.coords, { icon: busStopIcon }).addTo(map)
         .bindPopup(stop.name)
         .on('click', function() {
+            // バス停選択ドロップダウンで選択を同期
             document.getElementById('busStopSelect').value = index;
         });
 });
 
-// バス用の「バス」という文字アイコン（黄色）
+// バス用の「バス」という文字アイコン（黄色・緑色）
 var busIconYellow = L.divIcon({
     className: 'custom-bus-icon-yellow',
     html: 'バス',
     iconSize: [30, 30],
     iconAnchor: [15, 15]
 });
-
-// バス用の「バス」という文字アイコン（緑色）
 var busIconGreen = L.divIcon({
     className: 'custom-bus-icon-green',
     html: 'バス',
@@ -121,18 +120,19 @@ var busRoute2 = [
     [35.653933576469534, 139.33815587125943],
     [35.654351868130796, 139.33909241912187]  // 学校行き(八王子)に戻る
 ];
-
 // バスを動かす関数
 function moveBus(marker, route, delay) {
     var index = 0;
-    setInterval(function() {
+    function animate() {
         marker.setLatLng(route[index]);
         checkProximity(marker);
         index = (index + 1) % route.length;
-    }, delay);
+        setTimeout(animate, delay);
+    }
+    animate();
 }
 
-// バス停に近づいているかチェック
+// バスがバス停に近づいているかをチェック
 function checkProximity(busMarker) {
     busStops.forEach(function(stop) {
         var busLatLng = busMarker.getLatLng();
@@ -145,7 +145,7 @@ function checkProximity(busMarker) {
     });
 }
 
-// メッセージ表示
+// メッセージを表示する関数
 function displayHint(message) {
     const hintDiv = document.getElementById('hint');
     hintDiv.textContent = message;
@@ -155,15 +155,17 @@ function displayHint(message) {
     }, 5000);
 }
 
-// バスを動かす
-moveBus(busMarker1, busRoute1, 3000);
-moveBus(busMarker2, busRoute2, 3000);
+// バスを3秒ごとに動かす
+moveBus(busMarker1, busRoute1, 1000);
+moveBus(busMarker2, busRoute2, 1000);
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
     var selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-        var selectedStop = busStops[selectedIndex];
+    if (selectedIndex === "") return;
+
+    var selectedStop = busStops[selectedIndex];
+    if (selectedStop) {
         map.setView(selectedStop.coords, 16, {
             animate: true,
             pan: { duration: 1 }
