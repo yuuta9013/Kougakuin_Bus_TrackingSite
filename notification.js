@@ -1,4 +1,4 @@
-// お知らせページのメニュー表示/非表示切り替え
+// メニューの表示/非表示を切り替える関数
 function toggleMenu() {
     var menu = document.getElementById("menu");
     if (menu.style.display === "block") {
