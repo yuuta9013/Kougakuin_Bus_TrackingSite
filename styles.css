@@ -1,113 +1,98 @@
-/* 全体のレイアウト */
+/* 基本レイアウト */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-header {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    text-align: left;
-}
-
-.menu-btn {
-    background-color: #333;
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-#menu {
-    display: none;
-    background-color: #444;
-    padding: 10px;
-}
-
-#menu ul {
-    list-style: none;
-    padding: 0;
-}
-
-#menu ul li {
-    margin-bottom: 10px;
-}
-
-#menu ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-}
-
-#menu ul li a:hover {
-    text-decoration: underline;
-}
-
-/* マップ全体のスタイル */
-#map {
-    height: 100vh;
-    width: 100%;
-    position: relative;
-}
-
-/* バスアイコンのスタイル */
-.custom-bus-icon-yellow {
-    background-color: yellow;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 30px;
-    font-weight: bold;
-    color: black;
-}
-
-.custom-bus-icon-green {
-    background-color: green;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 30px;
-    font-weight: bold;
-    color: white;
-}
-
-/* バス停選択ドロップダウンのスタイル */
-#busStopSelect {
+#menu-button {
     position: absolute;
     top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+#busStopSelect {
+    position: absolute;
+    top: 50px;
     left: 10px;
-    z-index: 1000; /* マップの上に表示 */
+    z-index: 1000;
     padding: 5px;
     font-size: 16px;
 }
-/* ヒントメッセージ（通知）のスタイル */
+
 #hint {
     position: absolute;
-    top: 50px; /* マップ上の上部に表示 */
+    top: 90px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000; /* マップの上に表示 */
+    z-index: 1000;
     background-color: rgba(255, 255, 255, 0.8);
     padding: 10px;
     border-radius: 5px;
-    font-size: 16px;
     display: none;
+    font-size: 16px;
 }
 
-/* お知らせページ */
-main {
-    padding: 20px;
+#map {
+    position: absolute;
+    top: 130px;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-h1 {
-    color: #333;
-}
-
-#notifications p {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+/* メニューのスタイル */
+#menu {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ccc;
+    display: none;
     padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#menu ul li {
+    margin: 5px 0;
+}
+
+/* バスのアイコンのスタイル */
+.custom-bus-icon-yellow {
+    color: yellow;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.custom-bus-icon-green {
+    color: green;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    line-height: 30px;
+}
+
+/* レスポンシブ対応 */
+@media screen and (max-width: 600px) {
+    #busStopSelect {
+        width: 100%;
+        left: 0;
+        padding: 10px;
+    }
+
+    #hint {
+        width: 100%;
+        left: 0;
+        transform: none;
+    }
 }
