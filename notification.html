@@ -8,25 +8,21 @@
 </head>
 <body>
     <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
+        <button class="menu-btn" onclick="toggleMenu()">メニュー</button>
+        <div id="menu">
             <ul>
                 <li><a href="index.html">位置情報</a></li>
                 <li><a href="notification.html">お知らせ</a></li>
             </ul>
-        </nav>
-    </header>
-
-    <section>
-        <h2>お知らせ</h2>
-        <div id="notifications">
-            ~運転~
-            特にありません。
-            ~その他~
-            卒業制作作成中
-            
         </div>
-    </section>
+    </header>
+    
+    <main>
+        <h1>お知らせ</h1>
+        <div id="notifications">
+            特にありません。
+        </div>
+    </main>
 
     <script src="notification.js"></script>
 </body>
