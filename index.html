@@ -6,36 +6,31 @@
     <title>バス追跡システム</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
-    <!-- メニューボタン -->
-    <button class="menu-button" onclick="toggleMenu()">≡</button>
-    <div id="menu" class="menu">
-        <ul>
-            <li><a href="index.html">位置情報</a></li>
-            <li><a href="notification.html">お知らせ</a></li>
-        </ul>
-    </div>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li>
+                <li><a href="notification.html">お知らせ</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- バス停選択 -->
-    <div class="bus-stop-select">
-        <label for="busStopSelect">バス停を選択:</label>
-        <select id="busStopSelect">
-            <option value="">-- バス停を選択 --</option>
-            <option value="0">八王子駅行き</option>
-            <option value="1">みなみ野駅行き</option>
-            <option value="2">学校行き(みなみ野)</option>
-            <option value="3">学校行き(八王子)</option>
-        </select>
-    </div>
+    <div id="map" style="width: 100%; height: 500px;"></div>
 
-    <!-- ヒントメッセージ -->
-    <div id="hint" class="hint-message" style="display: none;"></div>
+    <div id="hint" class="hint-box" style="display: none;"></div>
 
-    <!-- 地図 -->
-    <div id="map" class="map"></div>
+    <select id="busStopSelect">
+        <option value="">バス停を選択</option>
+        <option value="0">八王子駅行き</option>
+        <option value="1">みなみ野駅行き</option>
+        <option value="2">学校行き(みなみ野)</option>
+        <option value="3">学校行き(八王子)</option>
+    </select>
 
+    <script src="script.js"></script>
 </body>
 </html>
