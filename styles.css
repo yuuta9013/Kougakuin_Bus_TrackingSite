@@ -2,6 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f5f5dc; /* 薄いクリーム色 */
 }
 
 header {
@@ -51,12 +52,22 @@ nav ul li a {
     font-size: 16px;
 }
 
+.delay-box {
+    text-align: center;
+    background-color: white; /* 白い枠 */
+    padding: 5px;
+    border: 1px solid #ccc; /* 薄いグレーのボーダー */
+    width: 150px; /* 幅を調整 */
+    margin: 10px auto;
+    border-radius: 5px; /* 角を丸く */
+}
+
 .hint-box {
     position: fixed;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(210, 180, 140, 0.8); /* 薄い茶色 */
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
