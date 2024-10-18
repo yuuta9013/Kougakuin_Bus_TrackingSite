@@ -9,7 +9,38 @@
 </head>
 <body>
     <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰ メニュー</button>
+        <button class="menu-btn" onclick="toggleMenu()"><!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バス追跡サイト</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div id="menu" class="menu">
+        <button onclick="toggleMenu()">メニュー</button>
+        <div class="menu-content">
+            <a href="index.html">位置情報</a>
+            <a href="notification.html">お知らせ</a>
+        </div>
+    </div>
+    <select id="busStopSelect">
+        <option value="">バス停を選択</option>
+        <option value="0">八王子駅行き</option>
+        <option value="1">みなみ野駅行き</option>
+        <option value="2">学校行き(みなみ野)</option>
+        <option value="3">学校行き(八王子)</option>
+    </select>
+    <div id="delay" class="delay">遅延: <span id="delayTime">遅延なし</span></div>
+    <div id="hint" class="hint"></div>
+    <div id="map" style="height: 500px;"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+ メニュー</button>
         <div id="menu">
             <ul>
                 <li><a href="index.html">位置情報</a></li>
