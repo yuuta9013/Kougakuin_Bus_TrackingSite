@@ -60,14 +60,21 @@ select {
     margin-top: 10px;
 }
 
+/* カスタムバスアイコン */
 .custom-bus-icon-yellow {
-    color: yellow;
-    font-weight: bold;
+    background-color: yellow;
+    color: black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
 }
 
 .custom-bus-icon-green {
-    color: green;
-    font-weight: bold;
+    background-color: green;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
 }
 
 #hint {
