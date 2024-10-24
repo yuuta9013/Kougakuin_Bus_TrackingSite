@@ -163,18 +163,18 @@ moveBus(busMarker2, busRoute2, 3000);
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
-    var selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-        var selectedStop = busStops[selectedIndex];
-        // 選択されたバス停の座標に地図を移動し、バス停名を表示
-        map.setView(selectedStop.coords, 16, {  // ズームレベル16で表示
-            animate: true,                     // アニメーションを有効に
-            pan: { duration: 1 }               // パン（移動）の速度を設定
+    var selectedIndex = parseInt(e.target.value, 10);  // 値を整数に変換
+    if (!isNaN(selectedIndex)) {  // 値が選択されている場合に実行
+        var selectedStop = busStops[selectedIndex];  // 選択されたバス停の座標を取得
+        map.setView(selectedStop.coords, 16, {       // ズームレベル16で中央に移動
+            animate: true,
+            pan: { duration: 1 }
         });
         L.popup()
-            .setLatLng(selectedStop.coords)    // ポップアップをバス停の座標に配置
-            .setContent(selectedStop.name)     // バス停名を表示
-            .openOn(map);                      // マップ上にポップアップを表示
+            .setLatLng(selectedStop.coords)        // ポップアップをバス停の位置に表示
+            .setContent(selectedStop.name)         // バス停名をポップアップに表示
+            .openOn(map);
     }
 });
+
 
