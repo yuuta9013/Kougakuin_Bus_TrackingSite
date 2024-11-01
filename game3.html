@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色合わせゲーム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Game Section -->
+    <section class="game">
+        <h1>色合わせゲーム</h1>
+        <p>指定された色に合うボタンをクリックしよう！</p>
+        <p>残りの試行回数: <span id="attemptsLeft">5</span></p>
+        <p>正しい色: <span id="targetColor"></span></p>
+        <div id="colorButtons"></div>
+        <button onclick="startGame()">ゲーム開始</button>
+        <p id="resultMessage"></p>
+    </section>
+
+    <script>
+        const colors = ["赤", "青", "緑", "黄", "ピンク", "紫"];
+        const colorHex = {
+            "赤": "#FF0000",
+            "青": "#0000FF",
+            "緑": "#008000",
+            "黄": "#FFFF00",
+            "ピンク": "#FFC0CB",
+            "紫": "#800080"
+        };
+        let targetColor = "";
+        let attemptsLeft = 5;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            attemptsLeft = 5;
+            targetColor = colors[Math.floor(Math.random() * colors.length)];
+            document.getElementById("targetColor").textContent = targetColor;
+            document.getElementById("attemptsLeft").textContent = attemptsLeft;
+            document.getElementById("resultMessage").textContent = "";
+            generateColorButtons();
+        }
+
+        function generateColorButtons() {
+            const colorButtonsDiv = document.getElementById("colorButtons");
+            colorButtonsDiv.innerHTML = "";  // Clear previous buttons
+
+            colors.forEach(color => {
+                const button = document.createElement("button");
+                button.textContent = color;
+                button.style.backgroundColor = colorHex[color];
+                button.onclick = () => checkColor(color);
+                colorButtonsDiv.appendChild(button);
+            });
+        }
+
+        function checkColor(selectedColor) {
+            if (selectedColor === targetColor) {
+                document.getElementById("resultMessage").textContent = "正解！";
+                disableButtons();
+            } else {
+                attemptsLeft--;
+                document.getElementById("attemptsLeft").textContent = attemptsLeft;
+                if (attemptsLeft <= 0) {
+                    document.getElementById("resultMessage").textContent = "ゲームオーバー！";
+                    disableButtons();
+                }
+            }
+        }
+
+        function disableButtons() {
+            const buttons = document.querySelectorAll("#colorButtons button");
+            buttons.forEach(button => button.disabled = true);
+        }
+    </script>
+</body>
+</html>
