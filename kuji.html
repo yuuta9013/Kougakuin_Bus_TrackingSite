@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>おみくじ</title>
-        <link rel="stylesheet" href="styles.css">
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おみくじ</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -15,203 +13,127 @@
             <ul>
                 <li><a href="index.html">位置情報</a></li><br>
                 <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ミニゲーム</a></li><br> <!-- 新しいミニゲームリンク -->
+                <li><a href="home.html">ミニゲーム</a></li><br>
                 <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
             </ul>
         </nav>
     </header>
-        <h1>今日の運勢</h1>
+
+    <div id="omikujiContainer">
         <button onclick="drawOmikuji()">おみくじを引く</button>
-        <h2 id = "omikujiresult"></h2>
-        <h2 id = "kenkouresult"></h2>
-        <h2 id = "sigotoresult"></h2>
-        <h2 id = "kinresult"></h2>
-        <h2 id = "gakugyouresult"></h2>
-        <h2 id = "ryokouresult"></h2>
-        <h2 id = "kateiresult"></h2>
-        <h2 id = "matiresult"></h2>
-        
-        <script src="script.js">          
-            function drawOmikuji() {
+    </div>
+
+    <div id="resultDisplay">
+        <h2 id="omikujiresult"></h2>
+        <h2 id="kenkouresult"></h2>
+        <h2 id="sigotoresult"></h2>
+        <h2 id="kinresult"></h2>
+        <h2 id="gakugyouresult"></h2>
+        <h2 id="ryokouresult"></h2>
+        <h2 id="kateiresult"></h2>
+        <h2 id="matiresult"></h2>
+    </div>
+
+    <script>
+        function drawOmikuji() {
             const omikujiResults = ["大吉", "中吉", "吉", "末吉", "凶", "大凶"];
             const randomIndex = Math.floor(Math.random() * omikujiResults.length);
-            console.log(randomIndex);
-
+            
             const omikujiresult = omikujiResults[randomIndex];
-            const resultElement = document.getElementById("omikujiresult");
+            document.getElementById("omikujiresult").innerText = "結果: " + omikujiresult;
 
-            const kenkouresult = getKenkouResult(randomIndex);
-            const resultElement2 = document.getElementById("kenkouresult");
-
-            const sigotoresult = getSigotoResult(randomIndex);
-            const resultElement3 = document.getElementById("sigotoresult");
-
-            const kinresult = getKinResult(randomIndex);
-            const resultElement4 = document.getElementById("kinresult");
-
-            const gakugyouresult = getGakugyouResult(randomIndex);
-            const resultElement5 = document.getElementById("gakugyouresult");
-
-            const ryokouresult = getRyokouResult(randomIndex);
-            const resultElement6 = document.getElementById("ryokouresult");
-
-            const kateiresult = getKateiResult(randomIndex);
-            const resultElement7 = document.getElementById("kateiresult");
-
-            const matiresult = getMatiResult(randomIndex);
-            const resultElement8 = document.getElementById("matiresult");
-
-            //resultElement.className = "";
-            resultElement.innerText = "結果:" + omikujiresult;
-            resultElement2.innerText = "健康運:" + kenkouresult;
-            resultElement3.innerText = "仕事運:" + sigotoresult;
-            resultElement4.innerText = "金運:" + kinresult;
-            resultElement5.innerText = "学業運:" + gakugyouresult;
-            resultElement6.innerText = "旅行運:" + ryokouresult;
-            resultElement7.innerText = "家庭運:" + kateiresult;
-            resultElement8.innerText = "待ち人運:" + matiresult;
+            document.getElementById("kenkouresult").innerText = "健康運: " + getKenkouResult(randomIndex);
+            document.getElementById("sigotoresult").innerText = "仕事運: " + getSigotoResult(randomIndex);
+            document.getElementById("kinresult").innerText = "金運: " + getKinResult(randomIndex);
+            document.getElementById("gakugyouresult").innerText = "学業運: " + getGakugyouResult(randomIndex);
+            document.getElementById("ryokouresult").innerText = "旅行運: " + getRyokouResult(randomIndex);
+            document.getElementById("kateiresult").innerText = "家庭運: " + getKateiResult(randomIndex);
+            document.getElementById("matiresult").innerText = "待ち人運: " + getMatiResult(randomIndex);
         }
 
         function getKenkouResult(index) {
             const kenkouMessages = [
-                /*大吉*/["心身ともに絶好調！毎日が活力に満ちています", "疲れ知らずで、どんなことも乗り越えられます", "健康を維持する力が強く、日々が楽しく充実します"],
-                /*中吉*/["体調が安定していますが、無理は禁物です", "軽い運動を続ければ、さらに健康が向上します", "適度な休息で体調がさらに整います"],
-                /*吉*/  ["小さな体調不良に注意しつつ、まずまずの健康です", "規則正しい生活で、より良い健康が得られます", "ストレス解消を心がけると、体調が安定します"],
-                /*末吉*/["少し疲れが出やすい時期です。無理せず休息を", "食生活に注意すれば体調も良くなります", "軽い運動を心がけると健康が安定します"],
-                /*凶*/  ["体調を崩しやすいので、十分な睡眠が必要です", "無理をすると悪化するので、慎重に行動しましょう", "ストレスが溜まりやすい時期なので、リラックスを大切に"],
-                /*大凶*/["健康に大きな注意が必要です。早めに休養を取りましょう", "体調管理を怠ると大きな問題に繋がるかもしれません", "休息を第一に考えて、自分をいたわりましょう"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return kenkouMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return kenkouMessages[index][randomIndex];
-            }
+                "絶好調な健康運です。日々活力に溢れています。",
+                "健康に気を配ると安定します。無理は禁物です。",
+                "少し疲れやすい時期です。休息を取りましょう。",
+                "不調になりがちですが、生活習慣の見直しで回復の兆し。",
+                "気をつけて行動しないと体調を崩す可能性があります。",
+                "健康面で注意が必要な時期です。早めの休養を。"
+            ];
+            return kenkouMessages[index];
         }
 
-        function getSigotoResult(index){
+        function getSigotoResult(index) {
             const sigotoMessages = [
-                /*大吉*/["今月は思いがけないチャンスが訪れ、大きな成果を上げるでしょう", "あなたの努力が実を結び、評価も高まる時です。積極的に挑戦してみてください", "周囲のサポートもあり、順調に物事が進みます。新しいプロジェクトも成功するでしょう"],
-                /*中吉*/["徐々に成果が現れ始める時期です。着実に進めば大きな成長が見込めます", "小さな成功が積み重なり、モチベーションが上がるでしょう。続けることがカギです", "周囲の人と協力すると、スムーズに仕事が進みます。助け合いを大切にしましょう"],
-                /*吉*/  ["目の前の仕事に集中することで、良い結果が期待できます", "焦らずに取り組めば、少しずつ運が開けてきます", "周囲のサポートに感謝しながら、着実に進んでいきましょう"],
-                /*末吉*/["大きな成果は難しいかもしれませんが、無理せず地道に進むことが大切です", "小さなつまづきがあるかもしれませんが、慎重に対処すれば問題はありません", "一歩一歩前進することを心がければ、少しずつ運が上がります"],
-                /*凶*/  ["予期せぬトラブルが起こりやすい時期です。慎重な行動が求められます", "計画通りにいかないことも多いので、焦らず柔軟に対応しましょう", "周囲とのコミュニケーション不足に注意が必要です。連携を意識してください"],
-                /*大凶*/["大きな失敗のリスクがある時期です。無理な決断は控えましょう", "トラブルが続くかもしれませんが、無理をせず冷静に対処を心がけてください", "困難な時期ですが、焦らず慎重に状況を見極めることが大切です"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return sigotoMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return sigotoMessages[index][randomIndex];
-            }
+                "大きな成果が出やすい時期です。チャンスを逃さないで。",
+                "少しずつ成長が見込めます。着実に進めましょう。",
+                "順調ですが、目の前の仕事に集中すると良い結果が。",
+                "大きな成果は難しいが、無理せず地道に進みましょう。",
+                "トラブルに見舞われやすいので慎重な行動を。",
+                "無理な決断は避けましょう。慎重さが必要な時期です。"
+            ];
+            return sigotoMessages[index];
         }
 
-        function getKinResult(index){
+        function getKinResult(index) {
             const kinMessages = [
-                /*大吉*/["思いがけない収入が舞い込み、懐が潤うでしょう", "投資や買い物で良い結果が出やすい時です。慎重に進めればさらに利益が増えるでしょう", "金運が絶好調で、無駄遣いも少なく、貯蓄も順調に増える時です"],
-                /*中吉*/["少額ながら収入が増えたり、貯金が増えたりと安定した金運です", "ちょっとした買い物で良い品が手に入り、満足できるでしょう", "無理をせず計画的にお金を使うことで、安定した金運が得られます"],
-                /*吉*/  ["予算内で計画的にお金を使うことで、良い流れが生まれるでしょう", "思い切った使い方を避ければ、安定した収支を保てます", "少額の収入があるかもしれません。小さな喜びを感じる時期です"],
-                /*末吉*/["収入や出費に大きな変動はありませんが、節約を意識すると良いでしょう", "無理な投資や大きな買い物は避け、慎重に行動すると安心です", "小さな無駄遣いに注意が必要です。控えることで良い流れが生まれます"],
-                /*凶*/  ["無駄遣いが増えやすい時期です。節約を心がけて対処しましょう", "思わぬ出費に悩まされるかもしれませんが、冷静に対応してください", "金銭管理のミスに注意が必要です。慎重に見直すと良いでしょう"],
-                /*大凶*/["金銭トラブルの可能性があります。慎重な管理が求められます", "不意の大きな出費が発生しやすい時期です。無理をせず対処しましょう", "投資や買い物で損をしやすい運気です。しばらくは控えるのが賢明です"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return kinMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return kinMessages[index][randomIndex];
-            }
+                "思いがけない収入がありそうです。幸運が続きます。",
+                "小さな収入が増える兆し。計画的にお金を使いましょう。",
+                "予算内でうまく収支を保てる時期です。",
+                "無理な出費は避け、節約を心がけると吉。",
+                "無駄遣いが増えやすいので、節約を意識してください。",
+                "金銭トラブルに注意が必要な時期です。"
+            ];
+            return kinMessages[index];
         }
 
-        function getGakugyouResult(index){
+        function getGakugyouResult(index) {
             const gakugyouMessages = [
-                /*大吉*/["集中力が高まり、学んだことがスムーズに身につくでしょう。目標達成が近づいています", "新しい知識が次々と吸収でき、学業で大きな成果が期待できます", "努力が実り、テストや課題で満足のいく結果が得られるでしょう"],
-                /*中吉*/["積み重ねが評価され、少しずつ結果が出始める時期です。コツコツと進めましょう", "理解力が高まり、少し難しい内容にもスムーズに取り組めるでしょう", "努力が実を結ぶ兆しがあります。続けることでさらに成長が期待できます"],
-                /*吉*/  ["穏やかな学習ペースで進めば、安定した成果が得られるでしょう", "焦らず取り組むことで、少しずつ学力が向上します", "少しの工夫が成果に繋がる時期です。無理せずに進めましょう"],
-                /*末吉*/["予想以上の成果は難しいですが、地道な努力が大切です", "勉強に集中しにくいかもしれませんが、小さな目標を立ててみましょう", "少しつまずくことがあるかもしれませんが、忍耐強く進めることが重要です"],
-                /*凶*/  ["集中力が欠けやすい時期です。計画的に学習することで対処しましょう", "思うように進まないことがあるかもしれませんが、諦めずに継続してください", "学習意欲が低下しがちなので、短期目標でモチベーションを保ちましょう"],
-                /*大凶*/["学業に苦戦しやすい時期です。無理をせず、まずは基礎から固めましょう", "不注意がミスを招きやすいので、慎重に学習を進める必要があります", "なかなか成果が出ないかもしれませんが、焦らずに再挑戦することが大切です"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return gakugyouMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return gakugyouMessages[index][randomIndex];
-            }
+                "集中力が高まり、学びが身につきやすい時期です。",
+                "少しずつ成果が出始めます。継続が大切です。",
+                "安定した学習ペースを保てば結果が出るでしょう。",
+                "地道な努力が求められる時期です。諦めないで。",
+                "集中しづらい時期ですが、計画的に学習を進めましょう。",
+                "学習に苦戦しやすい時期です。焦らず取り組んで。"
+            ];
+            return gakugyouMessages[index];
         }
 
-        function getRyokouResult(index){
+        function getRyokouResult(index) {
             const ryokouMessages = [
-                /*大吉*/["旅行中に素敵な出会いや発見があり、充実した時間を過ごせるでしょう", "計画通りに進み、リラックスした楽しい旅になる予感です", "行く先々で良い出来事があり、最高の思い出が作れそうです"],
-                /*中吉*/["安定した旅を楽しめるでしょう。新しい経験が心に残ります", "天候にも恵まれ、気持ちよく旅行を楽しめそうです", "思いがけない素敵な景色やスポットに出会えるかもしれません"],
-                /*吉*/  ["特に大きなトラブルもなく、落ち着いて旅行を満喫できるでしょう", "小さなハプニングがあっても、楽しい思い出として残るでしょう", "無理をせず、ゆったりとした旅を心がけると満足できるでしょう"],
-                /*末吉*/["予定通りに行かないこともありますが、柔軟に楽しむ心がけが大切です", "思ったより疲れやすいので、休憩を取りつつ旅を楽しみましょう", "予定の変更に備え、余裕をもってスケジュールを立てると良いでしょう"],
-                /*凶*/  ["交通の遅延や混雑に遭うかもしれません。余裕を持った行動が必要です", "体調管理に注意が必要です。無理せず休む時間を取りましょう", "忘れ物や小さなトラブルが起こりやすいので、準備を念入りにしましょう"],
-                /*大凶*/["旅行先でのトラブルに注意が必要です。慎重な計画を立てましょう", "体調不良や予想外の出来事で予定が崩れる可能性があります。慎重に対策を", "旅先でのトラブルが起こりやすいので、安全第一で行動することが重要です"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return ryokouMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return ryokouMessages[index][randomIndex];
-            }
+                "旅行中に素敵な発見があり、充実した時間を過ごせます。",
+                "新しい経験が心に残る安定した旅ができるでしょう。",
+                "落ち着いて旅行を満喫できる時期です。",
+                "柔軟に対応すれば楽しい旅行ができます。",
+                "トラブルが起きやすいので余裕を持って行動を。",
+                "旅行先でのトラブルに要注意。安全第一で。"
+            ];
+            return ryokouMessages[index];
         }
 
-        function getKateiResult(index){
+        function getKateiResult(index) {
             const kateiMessages = [
-                /*大吉*/["家族間の絆が深まり、穏やかで温かい時間を過ごせるでしょう", "家庭内で楽しい出来事が多く、家族みんなが笑顔になる時です", "家族のサポートを感じ、心が安らぐ幸せなひとときを味わえます"],
-                /*中吉*/["家族とのコミュニケーションが円滑で、和やかな日々が続きます", "小さな喜びや感謝を感じられる家庭環境で心が満たされるでしょう", "家族の協力で、スムーズに家事や家庭の問題を解決できそうです"],
-                /*吉*/  ["大きな問題はなく、穏やかな家庭生活を楽しめるでしょう", "普段通りの会話ややり取りが、家族の安心感を育みます", "家庭での小さな幸せを感じる時期です。感謝の気持ちを大切にしましょう"],
-                /*末吉*/["家族間で小さな誤解が生じるかもしれませんが、話し合いで解決できます", "疲れやすい時期ですが、家族と過ごす時間でリフレッシュできるでしょう", "少しの工夫で家庭の雰囲気が良くなる時。気遣いを忘れずに"],
-                /*凶*/  ["家庭内で意見が食い違いやすい時期です。冷静に対話を心がけましょう", "小さなトラブルが起こりやすいので、早めに対処すると良いでしょう", "気疲れが増えるかもしれませんが、無理せず休息を取りましょう"],
-                /*大凶*/["家庭内でのトラブルが起こりやすい時期です。慎重に対応してください", "感情的になりやすいので、落ち着いて状況を見つめることが大切です", "誤解や行き違いが生じやすいので、丁寧に話し合う時間を持ちましょう"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return kateiMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return kateiMessages[index][randomIndex];
-            }
+                "家族との絆が深まる温かい時間が過ごせるでしょう。",
+                "和やかな日々が続きます。感謝を忘れずに。",
+                "穏やかな家庭生活を楽しむことができる時期です。",
+                "少しの工夫で家庭がさらに居心地良くなります。",
+                "家庭内で小さなトラブルが起きやすいので注意。",
+                "家庭内でのトラブルが起こりやすい時期です。"
+            ];
+            return kateiMessages[index];
         }
 
-        function getMatiResult(index){
+        function getMatiResult(index) {
             const matiMessages = [
-                /*大吉*/["待ち人からの連絡があり、嬉しい再会を果たせるでしょう", "長く待っていた相手とのご縁が深まり、親しい関係へ進展しそうです", "期待通りのタイミングで会うことができ、充実した時間を過ごせるでしょう"],
-                /*中吉*/["待ち人から良い知らせが届き、前向きな展開が期待できそうです", "少し遅れるかもしれませんが、待ち人は必ず訪れるでしょう", "自然な形で再会し、心温まる時間を過ごせる予感です"],
-                /*吉*/  ["タイミングが合えば会うことができ、和やかなひとときを楽しめるでしょう", "焦らず待てば、少し遅れても必ず再会の機会があります", "待ち人からの連絡があるかもしれません。気長に待つと吉です"],
-                /*末吉*/["待ち人が現れるまで少し時間がかかるかもしれませんが、忍耐が大切です", "思ったよりも遅れるかもしれませんが、縁があれば再会できます", "タイミングが合わないこともありますが、無理せず流れに任せましょう"],
-                /*凶*/  ["待ち人との連絡が途絶えやすい時期です。期待しすぎず気持ちを整えましょう", "相手の都合で予定が変わるかもしれません。無理せずリラックスを心がけましょう", "思った通りにいかないことが多いので、焦らず時を待ちましょう"],
-                /*大凶*/["待ち人が訪れにくい時期です。新しい展開を期待するより、今に集中すると良いでしょう", "連絡が遅れやすい時期で、不安が募るかもしれませんが、無理せず過ごしてください", "再会の機会が遠ざかりがちです。時が来るまで自然の流れに任せましょう"]];
-            if(index == 0 || index == 5){
-                const randomIndex = Math.floor(Math.random() * 3);
-                console.log(index);
-                return matiMessages[index][randomIndex];
-            }else{
-                const randomIndex = Math.floor(Math.random() * 3);
-                index = Math.floor(Math.random() * 6);
-                console.log(index);
-                return matiMessages[index][randomIndex];
-            }
+                "待ち人と再会でき、喜びを感じる時期です。",
+                "遅れても待ち人はやってきます。前向きに待ちましょう。",
+                "和やかな再会ができ、心が温まる時間を過ごせます。",
+                "少し時間がかかりますが、待てば再会のチャンスあり。",
+                "連絡が途絶えやすいので期待しすぎないように。",
+                "再会の機会が遠ざかりがちです。焦らず待ちましょう。"
+            ];
+            return matiMessages[index];
         }
-
-        </script>
-    </body>
-</html> 
+    </script>
+</body>
+</html>
