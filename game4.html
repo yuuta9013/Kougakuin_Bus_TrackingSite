@@ -64,7 +64,7 @@
 プレイヤー（　；·▷.）/  　｜　｜   ＼(·▷.；　) 敵
         </pre>
 
-        <p id="signal">準備中...</p>
+        <p id="signal">（　；·▷.）...</p>
         <button id="reactionButton" onclick="startGame()" disabled>準備完了</button>
         <button id="slashButton" onclick="handleSlash()" disabled>斬る！</button>
         <p id="resultDisplay">結果: -</p>
@@ -142,7 +142,7 @@
             // 「！」を表示するまでの遅延（3秒 + 0〜5秒のランダム時間）
             const delay = 3000 + Math.random() * difficulties[difficulty].delayRange;
             colorChangeTimeout = setTimeout(() => {
-                signal.textContent = "！";
+                signal.textContent = "（　；·▷.）！";
                 startTime = performance.now();
                 isSlashEnabled = true;
                 slashButton.disabled = false;
