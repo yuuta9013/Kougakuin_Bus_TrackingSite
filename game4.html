@@ -52,6 +52,7 @@
             <button onclick="setDifficulty('easy')">初級</button>
             <button onclick="setDifficulty('medium')">中級</button>
             <button onclick="setDifficulty('hard')">上級</button>
+            <button onclick="setDifficulty('extreme')">反射極級</button>
         </div>
 
         <!-- カウントダウン表示 -->
@@ -59,7 +60,7 @@
 
         <!-- アスキーアート表示 -->
         <pre id="samuraiDisplay" style="visibility: hidden;">
-プレイヤー（　・＿・）/  　｜ ｜   ＼(・＿・　) 敵
+プレイヤー（　；·▷.）/  　｜　｜   ＼(·▷.；　) 敵
         </pre>
 
         <p id="signal">準備中...</p>
@@ -88,7 +89,8 @@
         const difficulties = {
             easy: { delayRange: 5000, limit: 1000 },
             medium: { delayRange: 5000, limit: 800 },
-            hard: { delayRange: 5000, limit: 450 }
+            hard: { delayRange: 5000, limit: 450 },
+            extreme: { delayRange: 5000, limit: 250 } // 反射極級の設定
         };
 
         function toggleMenu() {
@@ -98,7 +100,11 @@
 
         function setDifficulty(level) {
             difficulty = level;
-            resultDisplay.textContent = `難易度: ${level === 'easy' ? '初級' : level === 'medium' ? '中級' : '上級'}`;
+            resultDisplay.textContent = `難易度: ${
+                level === 'easy' ? '初級' :
+                level === 'medium' ? '中級' :
+                level === 'hard' ? '上級' : '反射極級'
+            }`;
             reactionButton.disabled = false;
         }
 
@@ -152,18 +158,18 @@
             if (!isSlashEnabled || !gameStarted) return;
 
             const reactionTime = performance.now() - startTime;
-            resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(2) + " ミリ秒";
+            resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(4) + " 秒"; // 0.0000秒形式に変更
 
             // 斬撃成功の判定
             if (reactionTime < difficulties[difficulty].limit) {
                 samuraiDisplay.innerHTML = `
-プレイヤー（　・＿・）/ 　　　｜　｜　   ＼＿(＿ ＿) 敵(斬られた)
+プレイヤー（　·▷.）/ 　　　｜　｜　   ＼＿(×▷×) 敵(斬られたぁ)
                 `;
                 signal.textContent = "斬った！";
                 resultDisplay.textContent += " 成功!";
             } else {
                 samuraiDisplay.innerHTML = `
-プレイヤー（×＿×）  　　　　｜　｜　  ＼(・＿・ ) 敵
+プレイヤー（×▷×）痛ェ！　　｜　｜　  ＼(^▷^　 ) 敵(ｗｗｗｗｗｗｗ)
                 `;
                 signal.textContent = "失敗！";
                 resultDisplay.textContent += " 失敗...";
@@ -181,7 +187,7 @@
             resultDisplay.textContent = "結果: 時間切れ - 失敗";
             signal.textContent = "時間切れ！";
             samuraiDisplay.innerHTML = `
-プレイヤー（×＿×）  　　　　｜　｜　  ＼(・＿・ ) 敵
+プレイヤー（×▷×）痛ェ！　　｜　｜　  ＼(^▷^　 ) 敵(ｗｗｗｗｗｗｗ)
             `;
             slashButton.disabled = true;
             restartButton.style.display = "inline-block";
@@ -195,7 +201,7 @@
             reactionButton.disabled = true;
             restartButton.style.display = "none";
             samuraiDisplay.innerHTML = `
-プレイヤー（　・＿・）/  　｜　｜   ＼(・＿・　) 敵
+プレイヤー（　；·▷.）/  　｜　｜   ＼(·▷.；　) 敵
             `;
             clearTimeout(colorChangeTimeout);  // ゲームタイマーのクリア
             clearTimeout(gameTimeout);  // 制限時間タイマーのクリア
