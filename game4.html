@@ -80,14 +80,15 @@
 
         let startTime;
         let colorChangeTimeout;
+        let gameTimeout;  // 制限時間用のタイマー
         let gameStarted = false;
         let difficulty = '';
         let isSlashEnabled = false;
 
         const difficulties = {
-            easy: { min: 2000, max: 4000 },
-            medium: { min: 1000, max: 3000 },
-            hard: { min: 500, max: 2000 }
+            easy: { min: 2000, max: 4000, limit: 4500 },
+            medium: { min: 1000, max: 3000, limit: 3500 },
+            hard: { min: 500, max: 2000, limit: 2500 }
         };
 
         function toggleMenu() {
@@ -139,6 +140,11 @@
                 isSlashEnabled = true;
                 slashButton.disabled = false;
                 gameStarted = true;
+
+                // 制限時間タイマー開始
+                gameTimeout = setTimeout(() => {
+                    if (gameStarted) handleTimeout();
+                }, difficulties[difficulty].limit);
             }, delay);
         }
 
@@ -150,14 +156,12 @@
 
             // 斬撃成功の判定
             if (reactionTime < difficulties[difficulty].max) {
-                // 成功 - 敵が真っ二つ
                 samuraiDisplay.innerHTML = `
 プレイヤー（　・＿・）/ 　　　｜　｜　   ＼＿(＿ ＿) 敵(斬られた)
                 `;
                 signal.textContent = "斬った！";
                 resultDisplay.textContent += " 成功!";
             } else {
-                // 失敗 - プレイヤーが真っ二つ
                 samuraiDisplay.innerHTML = `
 プレイヤー（×＿×）  　　　　｜　｜　  ＼(・＿・ ) 敵
                 `;
@@ -165,8 +169,20 @@
                 resultDisplay.textContent += " 失敗...";
             }
 
-            // ゲーム終了と再開ボタンの表示
             gameStarted = false;
+            clearTimeout(gameTimeout);  // 制限時間タイマーのクリア
+            slashButton.disabled = true;
+            restartButton.style.display = "inline-block";
+        }
+
+        function handleTimeout() {
+            gameStarted = false;
+            isSlashEnabled = false;
+            resultDisplay.textContent = "結果: 時間切れ - 失敗";
+            signal.textContent = "時間切れ！";
+            samuraiDisplay.innerHTML = `
+プレイヤー（×＿×）  　　　　｜　｜　  ＼(・＿・ ) 敵
+            `;
             slashButton.disabled = true;
             restartButton.style.display = "inline-block";
         }
@@ -181,6 +197,8 @@
             samuraiDisplay.innerHTML = `
 プレイヤー（　・＿・）/  　｜　｜   ＼(・＿・　) 敵
             `;
+            clearTimeout(colorChangeTimeout);  // ゲームタイマーのクリア
+            clearTimeout(gameTimeout);  // 制限時間タイマーのクリア
         }
     </script>
 </body>
