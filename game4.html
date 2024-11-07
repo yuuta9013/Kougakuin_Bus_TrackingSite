@@ -45,7 +45,7 @@
 
     <section class="game">
         <h1>刹那の見切りゲーム</h1>
-        <p>画面に「！」が表示された瞬間にボタンを押して、武士を切れ！</p>
+        <p>画面に「！」が表示された瞬間にボタンを押して、敵を斬れ！</p>
 
         <!-- 難易度選択ボタン -->
         <div class="difficulty">
@@ -54,10 +54,13 @@
             <button onclick="setDifficulty('hard')">上級</button>
         </div>
 
+        <!-- カウントダウン表示 -->
+        <p id="countdownDisplay"></p>
+
         <!-- アスキーアート表示 -->
-        <pre id="samuraiDisplay">　　　(相手の武士)
-　　　　＿人＿ 
-　　　（　・＿・）<br>＼刀／（　　　）</pre>
+        <pre id="samuraiDisplay" style="visibility: hidden;">
+プレイヤー（　　·▷.）/  　｜！｜   ＼(·▷． 　) 敵
+        </pre>
 
         <p id="signal">準備中...</p>
         <button id="reactionButton" onclick="handleReaction()">準備完了</button>
@@ -65,6 +68,11 @@
     </section>
 
     <script>
+        const samuraiDisplay = document.getElementById("samuraiDisplay");
+        const reactionButton = document.getElementById("reactionButton");
+        const resultDisplay = document.getElementById("resultDisplay");
+        const countdownDisplay = document.getElementById("countdownDisplay");
+        const signal = document.getElementById("signal");
         let startTime;
         let colorChangeTimeout;
         let gameStarted = false;
@@ -83,22 +91,40 @@
 
         function setDifficulty(level) {
             difficulty = level;
-            document.getElementById("resultDisplay").textContent = `難易度: ${level === 'easy' ? '初級' : level === 'medium' ? '中級' : '上級'}`;
+            resultDisplay.textContent = `難易度: ${level === 'easy' ? '初級' : level === 'medium' ? '中級' : '上級'}`;
         }
 
         function startGame() {
             // ゲームの初期化
             gameStarted = false;
-            document.getElementById("signal").textContent = "準備中...";
-            document.getElementById("resultDisplay").textContent = "結果: -";
-            document.getElementById("samuraiDisplay").innerHTML = `　　　(相手の武士)\n　　　　＿人＿\n　　　（　・＿・）\n＼刀／（　　　）`;
-            document.getElementById("reactionButton").textContent = "準備完了";
-            document.getElementById("reactionButton").style.backgroundColor = "grey";
+            samuraiDisplay.style.visibility = "hidden";
+            countdownDisplay.textContent = "";
+            resultDisplay.textContent = "結果: -";
+            signal.textContent = "準備中...";
+            reactionButton.textContent = "準備完了";
+            reactionButton.style.backgroundColor = "grey";
 
-            // 難易度に応じたランダムな待機時間
+            // カウントダウン
+            let countdown = 3;
+            countdownDisplay.textContent = countdown;
+            const countdownInterval = setInterval(() => {
+                countdown -= 1;
+                if (countdown > 0) {
+                    countdownDisplay.textContent = countdown;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.textContent = "";
+                    samuraiDisplay.style.visibility = "visible";
+                    triggerReactionTime();
+                }
+            }, 1000);
+        }
+
+        function triggerReactionTime() {
+            // ランダムな遅延時間で「！」を表示
             const delay = Math.random() * (difficulties[difficulty].max - difficulties[difficulty].min) + difficulties[difficulty].min;
             colorChangeTimeout = setTimeout(() => {
-                document.getElementById("signal").textContent = "！";
+                signal.textContent = "！";
                 startTime = performance.now();
                 gameStarted = true;
             }, delay);
@@ -106,25 +132,36 @@
 
         function handleReaction() {
             if (!gameStarted) {
+                // 早押し防止
                 clearTimeout(colorChangeTimeout);
                 startGame();
             } else {
                 const reactionTime = performance.now() - startTime;
-                document.getElementById("resultDisplay").textContent = "反応時間: " + reactionTime.toFixed(2) + " ミリ秒";
+                resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(2) + " ミリ秒";
 
-                // 武士が切るアニメーション
-                document.getElementById("samuraiDisplay").innerHTML = `＼刀／　\n　　（￣_￣)><br>　　　＿人＿\n（　・＿・）`;
+                // 斬撃結果の表示
+                if (reactionTime < difficulties[difficulty].max) {
+                    // 斬撃成功 - 敵が真っ二つ
+                    samuraiDisplay.innerHTML = `
+プレイヤー（　·▷.）/ 　　　｜　｜　   ＼＿(＿ ＿) 敵(斬られた)
+                    `;
+                    signal.textContent = "斬った！";
+                } else {
+                    // 斬撃失敗 - プレイヤーが真っ二つ
+                    samuraiDisplay.innerHTML = `
+プレイヤー（×＿×）  　　　　｜　｜　  ＼(·▷． ) 敵
+                    `;
+                    signal.textContent = "失敗！";
+                }
 
-                // 結果表示とボタンの状態リセット
-                document.getElementById("reactionButton").textContent = "もう一度プレイ";
-                document.getElementById("signal").textContent = "斬った！";
-                document.getElementById("reactionButton").style.backgroundColor = "blue";
+                reactionButton.textContent = "もう一度プレイ";
+                reactionButton.style.backgroundColor = "blue";
                 gameStarted = false;
             }
         }
 
-        // 初期設定でボタンの動作
-        document.getElementById("reactionButton").addEventListener("click", startGame);
+        // 初回読み込み時にボタンのクリックイベントを設定
+        reactionButton.addEventListener("click", startGame);
     </script>
 </body>
 </html>
