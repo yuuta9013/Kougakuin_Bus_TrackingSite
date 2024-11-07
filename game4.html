@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反応速度テスト</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        #reactionButton {
+            width: 200px;
+            height: 100px;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #resultDisplay {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>反応速度テスト</h1>
+        <p>画面の色が変わったらすぐにボタンを押して、あなたの反応速度を計測しましょう！</p>
+        <button id="reactionButton" onclick="handleReaction()">準備完了</button>
+        <p id="resultDisplay">反応速度: -</p>
+    </section>
+
+    <script>
+        let startTime;
+        let colorChangeTimeout;
+        let gameStarted = false;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            // Reset state
+            gameStarted = false;
+            document.getElementById("resultDisplay").textContent = "反応速度: -";
+            document.getElementById("reactionButton").style.backgroundColor = "red";
+            document.getElementById("reactionButton").textContent = "色が変わるのを待ってください...";
+
+            // Random delay before color change (1-3 seconds)
+            const delay = Math.random() * 2000 + 1000;
+            colorChangeTimeout = setTimeout(() => {
+                document.getElementById("reactionButton").style.backgroundColor = "green";
+                document.getElementById("reactionButton").textContent = "今だ！押して！";
+                startTime = performance.now();
+                gameStarted = true;
+            }, delay);
+        }
+
+        function handleReaction() {
+            if (!gameStarted) {
+                // Game hasn't started; reset to avoid early clicks
+                clearTimeout(colorChangeTimeout);
+                startGame();
+            } else {
+                // Calculate reaction time
+                const reactionTime = performance.now() - startTime;
+                document.getElementById("resultDisplay").textContent = "反応速度: " + reactionTime.toFixed(2) + " ミリ秒";
+                document.getElementById("reactionButton").textContent = "もう一度プレイ";
+                document.getElementById("reactionButton").style.backgroundColor = "blue";
+                gameStarted = false;
+            }
+        }
+
+        // Initialize game on load
+        document.getElementById("reactionButton").addEventListener("click", startGame);
+    </script>
+</body>
+</html>
