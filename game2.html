@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ボタンクリックゲーム</title>
+    <title>ミニゲーム</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,7 +34,6 @@
         </nav>
     </header>
 
-    <!-- Game Section -->
     <section class="game">
         <h1>ボタンクリックゲーム</h1>
         <p>30秒以内にできるだけ多くボタンをクリックしよう！</p>
