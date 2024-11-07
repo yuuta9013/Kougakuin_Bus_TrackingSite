@@ -15,11 +15,11 @@
             text-align: center;
             font-family: monospace;
         }
-        #reactionButton {
+        #reactionButton, #slashButton, #restartButton {
             width: 200px;
             height: 50px;
             font-size: 20px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         #resultDisplay {
             margin-top: 20px;
@@ -45,7 +45,7 @@
 
     <section class="game">
         <h1>刹那の見切りゲーム</h1>
-        <p>画面に「！」が表示された瞬間にボタンを押して、敵を斬れ！</p>
+        <p>画面に「！」が表示された瞬間に「斬る！」ボタンを押して、敵を斬れ！</p>
 
         <!-- 難易度選択ボタン -->
         <div class="difficulty">
@@ -59,24 +59,30 @@
 
         <!-- アスキーアート表示 -->
         <pre id="samuraiDisplay" style="visibility: hidden;">
-プレイヤー（　　·▷.）/  　｜！｜   ＼(·▷． 　) 敵
+プレイヤー（　・＿・）/  　｜！｜   ＼(・＿・　) 敵
         </pre>
 
         <p id="signal">準備中...</p>
-        <button id="reactionButton" onclick="handleReaction()">準備完了</button>
+        <button id="reactionButton" onclick="startGame()" disabled>準備完了</button>
+        <button id="slashButton" onclick="handleSlash()" disabled>斬る！</button>
+        <button id="restartButton" onclick="resetGame()" style="display: none;">リスタート</button>
         <p id="resultDisplay">結果: -</p>
     </section>
 
     <script>
         const samuraiDisplay = document.getElementById("samuraiDisplay");
         const reactionButton = document.getElementById("reactionButton");
+        const slashButton = document.getElementById("slashButton");
+        const restartButton = document.getElementById("restartButton");
         const resultDisplay = document.getElementById("resultDisplay");
         const countdownDisplay = document.getElementById("countdownDisplay");
         const signal = document.getElementById("signal");
+
         let startTime;
         let colorChangeTimeout;
         let gameStarted = false;
-        let difficulty = 'medium';
+        let difficulty = '';
+        let isSlashEnabled = false;
 
         const difficulties = {
             easy: { min: 2000, max: 4000 },
@@ -92,17 +98,21 @@
         function setDifficulty(level) {
             difficulty = level;
             resultDisplay.textContent = `難易度: ${level === 'easy' ? '初級' : level === 'medium' ? '中級' : '上級'}`;
+            reactionButton.disabled = false;
         }
 
         function startGame() {
-            // ゲームの初期化
+            if (!difficulty) return;
+
             gameStarted = false;
+            isSlashEnabled = false;
             samuraiDisplay.style.visibility = "hidden";
             countdownDisplay.textContent = "";
             resultDisplay.textContent = "結果: -";
             signal.textContent = "準備中...";
-            reactionButton.textContent = "準備完了";
-            reactionButton.style.backgroundColor = "grey";
+            slashButton.disabled = true;
+            restartButton.style.display = "none";
+            reactionButton.disabled = true;
 
             // カウントダウン
             let countdown = 3;
@@ -126,42 +136,52 @@
             colorChangeTimeout = setTimeout(() => {
                 signal.textContent = "！";
                 startTime = performance.now();
+                isSlashEnabled = true;
+                slashButton.disabled = false;
                 gameStarted = true;
             }, delay);
         }
 
-        function handleReaction() {
-            if (!gameStarted) {
-                // 早押し防止
-                clearTimeout(colorChangeTimeout);
-                startGame();
+        function handleSlash() {
+            if (!isSlashEnabled || !gameStarted) return;
+
+            const reactionTime = performance.now() - startTime;
+            resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(2) + " ミリ秒";
+
+            // 斬撃成功の判定
+            if (reactionTime < difficulties[difficulty].max) {
+                // 成功 - 敵が真っ二つ
+                samuraiDisplay.innerHTML = `
+プレイヤー（　・＿・）/ 　　　｜　｜　   ＼＿(＿ ＿) 敵(斬られた)
+                `;
+                signal.textContent = "斬った！";
+                resultDisplay.textContent += " 成功!";
             } else {
-                const reactionTime = performance.now() - startTime;
-                resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(2) + " ミリ秒";
-
-                // 斬撃結果の表示
-                if (reactionTime < difficulties[difficulty].max) {
-                    // 斬撃成功 - 敵が真っ二つ
-                    samuraiDisplay.innerHTML = `
-プレイヤー（　·▷.）/ 　　　｜　｜　   ＼＿(＿ ＿) 敵(斬られた)
-                    `;
-                    signal.textContent = "斬った！";
-                } else {
-                    // 斬撃失敗 - プレイヤーが真っ二つ
-                    samuraiDisplay.innerHTML = `
-プレイヤー（×＿×）  　　　　｜　｜　  ＼(·▷． ) 敵
-                    `;
-                    signal.textContent = "失敗！";
-                }
-
-                reactionButton.textContent = "もう一度プレイ";
-                reactionButton.style.backgroundColor = "blue";
-                gameStarted = false;
+                // 失敗 - プレイヤーが真っ二つ
+                samuraiDisplay.innerHTML = `
+プレイヤー（×＿×）  　　　　｜　｜　  ＼(・＿・ ) 敵
+                `;
+                signal.textContent = "失敗！";
+                resultDisplay.textContent += " 失敗...";
             }
+
+            // ゲーム終了と再開ボタンの表示
+            gameStarted = false;
+            slashButton.disabled = true;
+            restartButton.style.display = "inline-block";
         }
 
-        // 初回読み込み時にボタンのクリックイベントを設定
-        reactionButton.addEventListener("click", startGame);
+        function resetGame() {
+            difficulty = '';
+            resultDisplay.textContent = "結果: -";
+            signal.textContent = "難易度を選んでください";
+            slashButton.disabled = true;
+            reactionButton.disabled = true;
+            restartButton.style.display = "none";
+            samuraiDisplay.innerHTML = `
+プレイヤー（　・＿・）/  　｜　｜   ＼(・＿・　) 敵
+            `;
+        }
     </script>
 </body>
 </html>
