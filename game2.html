@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ミニゲーム</title>
+    <title>ボタンクリックゲーム</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         .game {
@@ -40,7 +40,7 @@
         <button id="gameButton" onclick="clickButton()" disabled>クリック！</button>
         <p id="scoreDisplay">スコア: 0</p>
         <p id="timeDisplay">残り時間: 30秒</p>
-        <button onclick="startGame()">ゲーム開始</button>
+        <button id="startButton" onclick="startGame()">ゲーム開始</button>
     </section>
 
     <script>
@@ -54,12 +54,15 @@
         }
 
         function startGame() {
+            // Reset game state
             score = 0;
             timeLeft = 30;
             document.getElementById("scoreDisplay").textContent = "スコア: " + score;
             document.getElementById("timeDisplay").textContent = "残り時間: " + timeLeft + "秒";
             document.getElementById("gameButton").disabled = false;
+            document.getElementById("startButton").disabled = true;
 
+            // Start the timer
             timer = setInterval(() => {
                 timeLeft--;
                 document.getElementById("timeDisplay").textContent = "残り時間: " + timeLeft + "秒";
@@ -77,6 +80,7 @@
         function endGame() {
             clearInterval(timer);
             document.getElementById("gameButton").disabled = true;
+            document.getElementById("startButton").disabled = false;
             alert("ゲーム終了！ あなたのスコアは " + score + " です。");
         }
     </script>
