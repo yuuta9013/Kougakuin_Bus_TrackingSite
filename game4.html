@@ -159,7 +159,7 @@
             if (!isSlashEnabled || !gameStarted) return;
 
             const reactionTime = performance.now() - startTime;
-            resultDisplay.textContent = "反応時間: " + reactionTime.toFixed(4) * 100 + " 秒"; // 0.0000秒形式に変更
+            resultDisplay.textContent = "反応時間: " * 0.001 + reactionTime.toFixed(4) + " 秒"; // 0.0000秒形式に変更
 
             // 斬撃成功の判定
             if (reactionTime < difficulties[difficulty].limit) {
