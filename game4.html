@@ -47,6 +47,8 @@
     </section>
 
     <script>
+        const reactionButton = document.getElementById("reactionButton");
+        const resultDisplay = document.getElementById("resultDisplay");
         let startTime;
         let colorChangeTimeout;
         let gameStarted = false;
@@ -57,17 +59,17 @@
         }
 
         function startGame() {
-            // Reset state
+            // 初期化
             gameStarted = false;
-            document.getElementById("resultDisplay").textContent = "反応速度: -";
-            document.getElementById("reactionButton").style.backgroundColor = "red";
-            document.getElementById("reactionButton").textContent = "色が変わるのを待ってください...";
+            resultDisplay.textContent = "反応速度: -";
+            reactionButton.style.backgroundColor = "red";
+            reactionButton.textContent = "色が変わるのを待ってください...";
 
-            // Random delay before color change (1-3 seconds)
+            // ランダムな遅延時間（1～3秒）
             const delay = Math.random() * 2000 + 1000;
             colorChangeTimeout = setTimeout(() => {
-                document.getElementById("reactionButton").style.backgroundColor = "green";
-                document.getElementById("reactionButton").textContent = "今だ！押して！";
+                reactionButton.style.backgroundColor = "green";
+                reactionButton.textContent = "今だ！押して！";
                 startTime = performance.now();
                 gameStarted = true;
             }, delay);
@@ -75,21 +77,21 @@
 
         function handleReaction() {
             if (!gameStarted) {
-                // Game hasn't started; reset to avoid early clicks
+                // 早押し対策: ゲームを開始
                 clearTimeout(colorChangeTimeout);
                 startGame();
             } else {
-                // Calculate reaction time
+                // 反応時間の計算
                 const reactionTime = performance.now() - startTime;
-                document.getElementById("resultDisplay").textContent = "反応速度: " + reactionTime.toFixed(2) + " ミリ秒";
-                document.getElementById("reactionButton").textContent = "もう一度プレイ";
-                document.getElementById("reactionButton").style.backgroundColor = "blue";
+                resultDisplay.textContent = "反応速度: " + reactionTime.toFixed(2) + " ミリ秒";
+                reactionButton.textContent = "もう一度プレイ";
+                reactionButton.style.backgroundColor = "blue";
                 gameStarted = false;
             }
         }
 
-        // Initialize game on load
-        document.getElementById("reactionButton").addEventListener("click", startGame);
+        // 初回読み込み時にゲームを設定
+        reactionButton.addEventListener("click", startGame);
     </script>
 </body>
 </html>
