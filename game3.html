@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>色合わせゲーム</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,12 +34,12 @@
         </nav>
     </header>
 
-    <!-- Game Section -->
     <section class="game">
         <h1>色合わせゲーム</h1>
         <p>指定された色に合うボタンをクリックしよう！</p>
         <p>残りの試行回数: <span id="attemptsLeft">5</span></p>
         <p>正しい色: <span id="targetColor"></span></p>
+        <p>タイマー: <span id="timerDisplay">0 秒</span></p>
         <div id="colorButtons"></div>
         <button onclick="startGame()">ゲーム開始</button>
         <p id="resultMessage"></p>
@@ -42,6 +57,8 @@
         };
         let targetColor = "";
         let attemptsLeft = 5;
+        let timer;
+        let elapsedTime = 0;
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
@@ -54,7 +71,10 @@
             document.getElementById("targetColor").textContent = targetColor;
             document.getElementById("attemptsLeft").textContent = attemptsLeft;
             document.getElementById("resultMessage").textContent = "";
+            elapsedTime = 0;
+            document.getElementById("timerDisplay").textContent = elapsedTime + " 秒";
             generateColorButtons();
+            startTimer();
         }
 
         function generateColorButtons() {
@@ -70,15 +90,28 @@
             });
         }
 
+        function startTimer() {
+            timer = setInterval(() => {
+                elapsedTime++;
+                document.getElementById("timerDisplay").textContent = elapsedTime + " 秒";
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+        }
+
         function checkColor(selectedColor) {
             if (selectedColor === targetColor) {
                 document.getElementById("resultMessage").textContent = "正解！";
+                stopTimer();
                 disableButtons();
             } else {
                 attemptsLeft--;
                 document.getElementById("attemptsLeft").textContent = attemptsLeft;
                 if (attemptsLeft <= 0) {
                     document.getElementById("resultMessage").textContent = "ゲームオーバー！";
+                    stopTimer();
                     disableButtons();
                 }
             }
