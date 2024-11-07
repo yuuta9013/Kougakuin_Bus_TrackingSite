@@ -164,13 +164,13 @@
             // 斬撃成功の判定
             if (reactionTime < difficulties[difficulty].limit) {
                 samuraiDisplay.innerHTML = `
-プレイヤー（　·▷.）/ 　　　　   ＼＿(×▷×) 敵(斬られたぁ)
+プレイヤー（　·▷.）/ 　　　＼＿(×▷×) 敵(斬られたぁ)
                 `;
                 signal.textContent = "斬った！";
                 resultDisplay.textContent += " 成功!";
             } else {
                 samuraiDisplay.innerHTML = `
-プレイヤー（×▷×）痛ェ！　　　  ＼(^▷^　 ) 敵(ｗｗｗｗｗｗｗ)
+プレイヤー（×▷×）痛ェ！　　　＼(^▷^　 ) 敵(ｗｗｗ)
                 `;
                 signal.textContent = "失敗！";
                 resultDisplay.textContent += " 失敗...";
@@ -188,7 +188,7 @@
             resultDisplay.textContent = "結果: 斬られてしまった - 失敗";
             signal.textContent = "ぐはっ！！";
             samuraiDisplay.innerHTML = `
-プレイヤー（×▷×）痛ェ！　　　  ＼(^▷^　 ) 敵(ｗｗｗｗｗｗｗ)
+プレイヤー（×▷×）痛ェ！　　　＼(^▷^　 ) 敵(ｗｗｗ)
             `;
             slashButton.disabled = true;
             restartButton.style.display = "inline-block";
