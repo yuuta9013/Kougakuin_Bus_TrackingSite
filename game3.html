@@ -39,7 +39,7 @@
         <p>指定された色に合うボタンをクリックしよう！</p>
         <p>残りの試行回数: <span id="attemptsLeft">5</span></p>
         <p>正しい色: <span id="targetColor"></span></p>
-        <p>タイマー: <span id="timerDisplay">0 秒</span></p>
+        <p>タイマー: <span id="timerDisplay">0.00000 秒</span></p>
         <div id="colorButtons"></div>
         <button onclick="startGame()">ゲーム開始</button>
         <p id="resultMessage"></p>
@@ -57,8 +57,8 @@
         };
         let targetColor = "";
         let attemptsLeft = 5;
-        let timer;
-        let elapsedTime = 0;
+        let startTime = 0;
+        let timerInterval;
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
@@ -66,13 +66,14 @@
         }
 
         function startGame() {
+            // Reset game state
             attemptsLeft = 5;
             targetColor = colors[Math.floor(Math.random() * colors.length)];
             document.getElementById("targetColor").textContent = targetColor;
             document.getElementById("attemptsLeft").textContent = attemptsLeft;
             document.getElementById("resultMessage").textContent = "";
-            elapsedTime = 0;
-            document.getElementById("timerDisplay").textContent = elapsedTime + " 秒";
+            document.getElementById("timerDisplay").textContent = "0.00000 秒";
+            
             generateColorButtons();
             startTimer();
         }
@@ -91,14 +92,15 @@
         }
 
         function startTimer() {
-            timer = setInterval(() => {
-                elapsedTime++;
-                document.getElementById("timerDisplay").textContent = elapsedTime + " 秒";
-            }, 1000);
+            startTime = performance.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (performance.now() - startTime) / 1000;
+                document.getElementById("timerDisplay").textContent = elapsed.toFixed(5) + " 秒";
+            }, 10);  // Update every 10 milliseconds for precision
         }
 
         function stopTimer() {
-            clearInterval(timer);
+            clearInterval(timerInterval);
         }
 
         function checkColor(selectedColor) {
