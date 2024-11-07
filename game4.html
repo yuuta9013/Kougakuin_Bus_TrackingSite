@@ -46,7 +46,7 @@
 
     <section class="game">
         <h1>刹那の見切りゲーム</h1>
-        <p>画面に「！」が表示された瞬間に「斬る！」ボタンを押して、敵を斬れ！<br>※リセットボタンを押さずにゲームを続行すると表示がバグるのでご注意ください。</p>
+        <p>画面に「！！！！！」が表示された瞬間に「斬る！」ボタンを押して、敵を斬れ！<br>※リセットボタンを押さずにゲームを続行すると表示がバグるのでご注意ください。</p>
 
         <!-- 難易度選択ボタン -->
         <div class="difficulty">
@@ -64,7 +64,7 @@
 プレイヤー（　；·▷.）/  　｜　｜   ＼(·▷.；　) 敵
         </pre>
 
-        <p id="signal">（　；·▷.）...</p>
+        <p id="signal"></p>
         <button id="reactionButton" onclick="startGame()" disabled>準備完了</button>
         <button id="slashButton" onclick="handleSlash()" disabled>斬る！</button>
         <p id="resultDisplay">結果: -</p>
@@ -142,7 +142,7 @@
             // 「！」を表示するまでの遅延（3秒 + 0〜5秒のランダム時間）
             const delay = 3000 + Math.random() * difficulties[difficulty].delayRange;
             colorChangeTimeout = setTimeout(() => {
-                signal.textContent = "（　；·▷.）！";
+                signal.textContent = "（Σ；·▷.）！！！！！";
                 startTime = performance.now();
                 isSlashEnabled = true;
                 slashButton.disabled = false;
