@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モグラ叩きゲーム</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        #gameArea {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+
+        .hole {
+            width: 100px;
+            height: 100px;
+            background-color: #d2b48c; /* 土の色 */
+            position: relative;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .mole {
+            width: 60px;
+            height: 60px;
+            background-color: brown;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: none;
+        }
+
+        #scoreDisplay {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #startButton, #restartButton {
+            width: 200px;
+            height: 50px;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>モグラ叩きゲーム</h1>
+        <p>モグラが穴から出たらクリックして叩いてください！</p>
+
+        <button id="startButton" onclick="startGame()">スタート</button>
+        <p id="scoreDisplay">スコア: 0</p>
+
+        <div id="gameArea">
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole"></div>
+            </div>
+        </div>
+
+        <button id="restartButton" onclick="resetGame()" style="display: none;">リスタート</button>
+    </section>
+
+    <script>
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const holes = document.querySelectorAll('.hole');
+
+        let score = 0;
+        let activeMole = null;
+        let gameInterval;
+        let gameRunning = false;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            score = 0;
+            scoreDisplay.textContent = 'スコア: ' + score;
+            startButton.style.display = 'none';
+            restartButton.style.display = 'none';
+            gameRunning = true;
+
+            gameInterval = setInterval(() => {
+                if (activeMole) {
+                    activeMole.style.display = 'none';
+                }
+
+                const randomHole = holes[Math.floor(Math.random() * holes.length)];
+                const mole = randomHole.querySelector('.mole');
+                mole.style.display = 'block';
+                activeMole = mole;
+            }, 1000);
+        }
+
+        function hitMole(hole) {
+            if (!gameRunning) return;
+
+            const mole = hole.querySelector('.mole');
+            if (mole && mole.style.display === 'block') {
+                mole.style.display = 'none';
+                score += 1;
+                scoreDisplay.textContent = 'スコア: ' + score;
+            }
+        }
+
+        function resetGame() {
+            clearInterval(gameInterval);
+            if (activeMole) {
+                activeMole.style.display = 'none';
+            }
+
+            startButton.style.display = 'inline-block';
+            restartButton.style.display = 'none';
+            score = 0;
+            scoreDisplay.textContent = 'スコア: 0';
+            gameRunning = false;
+        }
+
+        // ゲーム終了後の処理
+        function endGame() {
+            clearInterval(gameInterval);
+            gameRunning = false;
+            activeMole.style.display = 'none';
+            resultDisplay.textContent = "ゲーム終了! スコア: " + score;
+            restartButton.style.display = 'inline-block';
+        }
+
+        // 一定時間でゲーム終了
+        setTimeout(() => {
+            if (gameRunning) endGame();
+        }, 30000); // 30秒で終了
+    </script>
+</body>
+</html>
