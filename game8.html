@@ -3,612 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>トレーディングカードゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>シンプルモンスターバトルゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-        }
-
-        .game {
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 80vh;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e9ecef;
         }
 
-        #cardContainer, #shopContainer {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        .battle-container {
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            background-color: #fff;
         }
 
         .card {
-            border: 2px solid #444;
-            border-radius: 10px;
-            width: 150px;
-            margin: 10px;
+            margin: 10px 0;
             padding: 10px;
-            text-align: center;
-            background-color: #f8f8f8;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .card img {
-            width: 100%;
-            height: auto;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #f9f9f9;
         }
 
         .card h3 {
-            margin: 10px 0;
-            font-size: 18px;
+            margin: 0;
+            font-size: 20px;
         }
 
         .card p {
             margin: 5px 0;
-            font-size: 14px;
         }
 
-        #startButton, #shopButton {
-            width: 200px;
-            height: 50px;
-            font-size: 20px;
-            margin-top: 10px;
-        }
-
-        #currencyDisplay {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-
-        #battleField {
-            margin-top: 20px;
-            border: 2px solid #444;
-            padding: 20px;
-            width: 80%;
-            background-color: #f0f0f0;
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
-            <ul>
-                <li><a href="index.html">位置情報</a></li><br>
-                <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ミニゲーム</a></li><br>
-                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="game">
-        <h1>トレーディングカードゲーム</h1>
-        <p>カードを集めてデッキを作り、戦おう！</p>
-        <div id="currencyDisplay">ゲーム内通貨: 0G</div>
-        <button id="startButton" onclick="startGame()">ゲーム開始</button>
-        <button id="shopButton" onclick="openShop()">ショップ</button>
-        <div id="cardContainer"></div>
-        <div id="battleField" style="display:none;"></div>
-        <div id="shopContainer" style="display:none;"></div>
-    </section>
+    <div class="battle-container">
+        <h1>モンスターバトル</h1>
+        <div id="playerCard" class="card">
+            <h3 id="playerName">プレイヤーカード</h3>
+            <p id="playerStats"></p>
+        </div>
+        <div id="enemyCard" class="card">
+            <h3 id="enemyName">敵のカード</h3>
+            <p id="enemyStats"></p>
+        </div>
+        <button id="battleButton" onclick="startBattle()">バトル開始</button>
+    </div>
 
     <script>
-        const cardContainer = document.getElementById('cardContainer');
-        const shopContainer = document.getElementById('shopContainer');
-        const battleField = document.getElementById('battleField');
-        const currencyDisplay = document.getElementById('currencyDisplay');
-
-        let currency = 0;
-        let playerDeck = [];
-        let enemyDeck = [];
-        let battleDecks = {
-            player: [],
-            enemy: []
-        };
-        let currentPlayerCard = null;
-        let currentEnemyCard = null;
-
-        const elements = {
-            fire: '火',
-            water: '水',
-            grass: '草'
+        // シンプルなカードデータ
+        const playerCard = {
+            name: "ファイアドラゴン",
+            attack: 80,
+            defense: 60,
+            hp: 100,
+            element: "火"
         };
 
-        const cards = [
-            {
-                name: "ファイアドラゴン",
-                image: "https://via.placeholder.com/150",
-                description: "炎を操る古代のドラゴン。",
-                attack: 90,
-                defense: 60,
-                hp: 120,
-                element: "火"
-            },
-            {
-                name: "ウォーターナイト",
-                image: "https://via.placeholder.com/150",
-                description: "水の力を使う騎士。",
-                attack: 70,
-                defense: 80,
-                hp: 110,
-                element: "水"
-            },
-            {
-                name: "グラスビースト",
-                image: "https://via.placeholder.com/150",
-                description: "草の力を宿した獣。",
-                attack: 80,
-                defense: 70,
-                hp: 100,
-                element: "草"
-            },
-            {
-                name: "サンダータイタン",
-                image: "https://via.placeholder.com/150",
-                description: "雷を操る巨人。",
-                attack: 100,
-                defense: 50,
-                hp: 130,
-                element: "火"
-            },
-            {
-                name: "アクアメイジ",
-                image: "https://via.placeholder.com/150",
-                description: "水の魔法を操る賢者。",
-                attack: 60,
-                defense: 90,
-                hp: 100,
-                element: "水"
-            },
-            {
-                name: "フォレストガード",
-                image: "https://via.placeholder.com/150",
-                description: "森を守る勇敢な戦士。",
-                attack: 75,
-                defense: 85,
-                hp: 105,
-                element: "草"
-            },
-            {
-                name: "フレイムウォリアー",
-                image: "https://via.placeholder.com/150",
-                description: "炎を纏った戦士。",
-                attack: 85,
-                defense: 65,
-                hp: 95,
-                element: "火"
-            },
-            {
-                name: "シーモンスター",
-                image: "https://via.placeholder.com/150",
-                description: "海に潜む巨大なモンスター。",
-                attack: 80,
-                defense: 70,
-                hp: 120,
-                element: "水"
-            },
-            {
-                name: "バンブーパンダ",
-                image: "https://via.placeholder.com/150",
-                description: "竹林を駆ける草属性のパンダ。",
-                attack: 70,
-                defense: 80,
-                hp: 110,
-                element: "草"
-            },
-            {
-                name: "ヴォルケーノゴーレム",
-                image: "https://via.placeholder.com/150",
-                description: "火山の力を持つゴーレム。",
-                attack: 95,
-                defense: 60,
-                hp: 120,
-                element: "火"
-            },
-            {
-                name: "スプラッシュフィッシュ",
-                image: "https://via.placeholder.com/150",
-                description: "水中で最速の魚。",
-                attack: 65,
-                defense: 85,
-                hp: 100,
-                element: "水"
-            },
-            {
-                name: "トロピカルバード",
-                image: "https://via.placeholder.com/150",
-                description: "草原に生息する鮮やかな鳥。",
-                attack: 60,
-                defense: 70,
-                hp: 90,
-                element: "草"
-            },
-            {
-                name: "ドラゴンファイア",
-                image: "https://via.placeholder.com/150",
-                description: "灼熱のブレスを吐くドラゴン。",
-                attack: 100,
-                defense: 50,
-                hp: 140,
-                element: "火"
-            },
-            {
-                name: "フローズンウォリアー",
-                image: "https://via.placeholder.com/150",
-                description: "氷の剣で戦う戦士。",
-                attack: 75,
-                defense: 85,
-                hp: 110,
-                element: "水"
-            },
-            {
-                name: "リーフエルフ",
-                image: "https://via.placeholder.com/150",
-                description: "森に隠れる俊敏なエルフ。",
-                attack: 70,
-                defense: 60,
-                hp: 95,
-                element: "草"
-            },
-            {
-                name: "ラヴァフィーンド",
-                image: "https://via.placeholder.com/150",
-                description: "溶岩の体を持つ悪魔。",
-                attack: 90,
-                defense: 55,
-                hp: 125,
-                element: "火"
-            },
-            {
-                name: "アクアリーダー",
-                image: "https://via.placeholder.com/150",
-                description: "水属性の部隊を率いるリーダー。",
-                attack: 70,
-                defense: 90,
-                hp: 120,
-                element: "水"
-            },
-            {
-                name: "ツリートロール",
-                image: "https://via.placeholder.com/150",
-                description: "巨大な樹木のような姿のトロール。",
-                attack: 80,
-                defense: 75,
-                hp: 115,
-                element: "草"
-            },
-            {
-                name: "ファイアフェニックス",
-                image: "https://via.placeholder.com/150",
-                description: "炎から再生する不死鳥。",
-                attack: 95,
-                defense: 65,
-                hp: 130,
-                element: "火"
-            },
-            {
-                name: "ディープシーキング",
-                image: "https://via.placeholder.com/150",
-                description: "海の王として君臨する巨大モンスター。",
-                attack: 85,
-                defense: 80,
-                hp: 130,
-                element: "水"
-            },
-            {
-                name: "グリーンライオン",
-                image: "https://via.placeholder.com/150",
-                description: "草の力を纏った獅子。",
-                attack: 75,
-                defense: 85,
-                hp: 115,
-                element: "草"
-            },
-            {
-                name: "ブレイズゴーレム",
-                image: "https://via.placeholder.com/150",
-                description: "炎の核を持つゴーレム。",
-                attack: 100,
-                defense: 60,
-                hp: 120,
-                element: "火"
-            },
-            {
-                name: "アクアゴーレム",
-                image: "https://via.placeholder.com/150",
-                description: "水晶の体を持つゴーレム。",
-                attack: 75,
-                defense: 95,
-                hp: 110,
-                element: "水"
-            },
-            {
-                name: "バンブーウォリアー",
-                image: "https://via.placeholder.com/150",
-                description: "竹の槍を持つ草属性の戦士。",
-                attack: 70,
-                defense: 75,
-                hp: 105,
-                element: "草"
-            },
-            {
-                name: "インフェルノドラゴン",
-                image: "https://via.placeholder.com/150",
-                description: "地獄の炎を操るドラゴン。",
-                attack: 110,
-                defense: 50,
-                hp: 140,
-                element: "火"
-            },
-            {
-                name: "オーシャンセイバー",
-                image: "https://via.placeholder.com/150",
-                description: "海底を守る剣士。",
-                attack: 80,
-                defense: 90,
-                hp: 115,
-                element: "水"
-            },
-            {
-                name: "フォレストスピリット",
-                image: "https://via.placeholder.com/150",
-                description: "森の精霊。",
-                attack: 65,
-                defense: 75,
-                hp: 100,
-                element: "草"
-            },
-            {
-                name: "サラマンダー",
-                image: "https://via.placeholder.com/150",
-                description: "炎の魔法を操る小さな魔物。",
-                attack: 85,
-                defense: 60,
-                hp: 95,
-                element: "火"
-            },
-            {
-                name: "タイダルビースト",
-                image: "https://via.placeholder.com/150",
-                description: "大波を操る海の獣。",
-                attack: 90,
-                defense: 70,
-                hp: 120,
-                element: "水"
-            },
-            {
-                name: "リーフドラゴン",
-                image: "https://via.placeholder.com/150",
-                description: "草原に住む小型のドラゴン。",
-                attack: 75,
-                defense: 80,
-                hp: 110,
-                element: "草"
-            }
-];
+        const enemyCard = {
+            name: "ウォーターナイト",
+            attack: 70,
+            defense: 70,
+            hp: 110,
+            element: "水"
+        };
 
-            // 新しいカードを追加
-            /*
-            {
-                name: "カード名",
-                image: "カードの画像URL",
-                description: "カードの説明文",
-                attack: 攻撃力（数値）,
-                defense: 防御力（数値）,
-                hp: HP（数値）,
-                element: 属性（火、水、草など）
-            },
-            */
-        ];
-
-        const shopCards = [
-            {
-                name: "グラスビースト",
-                image: "https://via.placeholder.com/150",
-                description: "草の力を宿した獣。",
-                attack: 60,
-                defense: 60,
-                hp: 100,
-                element: elements.grass,
-                price: 100
-            },
-            // 新しいカードを追加
-            /*
-            {
-                name: "カード名",
-                image: "カードの画像URL",
-                description: "カードの説明文",
-                attack: 攻撃力（数値）,
-                defense: 防御力（数値）,
-                hp: HP（数値）,
-                element: 属性（火、水、草など）,
-                price: 価格（数値）
-            },
-            */
-        ];
-
-        const enemyDecks = [
-            [
-                {
-                    name: "エネミーファイア",
-                    image: "https://via.placeholder.com/150",
-                    description: "炎のモンスター。",
-                    attack: 70,
-                    defense: 60,
-                    hp: 100,
-                    element: elements.fire
-                }
-            ],
-            // 管理者が追加可能
-            /*
-            [
-                {
-                    name: "カード名",
-                    image: "カードの画像URL",
-                    description: "カードの説明文",
-                    attack: 攻撃力（数値）,
-                    defense: 防御力（数値）,
-                    hp: HP（数値）,
-                    element: 属性（火、水、草など）
-                }
-            ],
-            */
-        ];
-
-        function toggleMenu() {
-            const menu = document.getElementById("menu");
-            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        // カードを表示する
+        function displayCards() {
+            document.getElementById('playerName').textContent = playerCard.name;
+            document.getElementById('playerStats').textContent = `HP: ${playerCard.hp} | 攻撃力: ${playerCard.attack} | 防御力: ${playerCard.defense}`;
+            document.getElementById('enemyName').textContent = enemyCard.name;
+            document.getElementById('enemyStats').textContent = `HP: ${enemyCard.hp} | 攻撃力: ${enemyCard.attack} | 防御力: ${enemyCard.defense}`;
         }
 
-        function startGame() {
-            cardContainer.innerHTML = ''; 
-            battleField.style.display = 'block';
-            prepareBattle();
-        }
+        // バトルロジック
+        function startBattle() {
+            const battleButton = document.getElementById('battleButton');
+            battleButton.disabled = true; // ボタンを無効化
 
-        function openShop() {
-            shopContainer.innerHTML = '';
-            shopContainer.style.display = 'block';
-            displayShop(shopCards);
-        }
+            let turn = "player";
 
-        function displayShop(shopCards) {
-            shopCards.forEach(card => {
-                const cardElement = document.createElement('div');
-                cardElement.classList.add('card');
-                cardElement.innerHTML = `
-                    <img src="${card.image}" alt="${card.name}">
-                    <h3>${card.name}</h3>
-                    <p>${card.description}</p>
-                    <p><strong>攻撃力:</strong> ${card.attack}</p>
-                    <p><strong>防御力:</strong> ${card.defense}</p>
-                    <p><strong>HP:</strong> ${card.hp}</p>
-                    <p><strong>属性:</strong> ${card.element}</p>
-                    <p><strong>価格:</strong> ${card.price}G</p>
-                    <button onclick="buyCard(${JSON.stringify(card)})">購入</button>
-                `;
-                shopContainer.appendChild(cardElement);
-            });
-        }
-
-        function buyCard(card) {
-            if (currency >= card.price) {
-                currency -= card.price;
-                playerDeck.push(card);
-                updateCurrencyDisplay();
-                alert(`${card.name} を購入しました！`);
-            } else {
-                alert("通貨が不足しています！");
-            }
-        }
-
-        function updateCurrencyDisplay() {
-            currencyDisplay.textContent = `ゲーム内通貨: ${currency}G`;
-        }
-
-        function prepareBattle() {
-            alert("バトルを準備中...");
-            // 現在は簡単なデモ、バトルロジックをここに追加可能
-            <script>
-    const elementAdvantages = {
-        fire: { grass: 1.5, water: 0.5, fire: 1.0 },
-        water: { fire: 1.5, grass: 0.5, water: 1.0 },
-        grass: { water: 1.5, fire: 0.5, grass: 1.0 }
-    };
-
-    function prepareBattle() {
-        battleDecks.player = [...playerDeck].slice(0, 4); // バトルデッキ：1枚バトル場、3枚控え
-        battleDecks.enemy = enemyDecks[0].slice(0, 4); // サンプルデッキから選択
-        currentPlayerCard = battleDecks.player.shift();
-        currentEnemyCard = battleDecks.enemy.shift();
-        displayBattleField();
-        startBattle();
-    }
-
-    function displayBattleField() {
-        battleField.innerHTML = `
-            <div>
-                <h3>プレイヤーのカード</h3>
-                <div>${renderCard(currentPlayerCard)}</div>
-            </div>
-            <div>
-                <h3>敵のカード</h3>
-                <div>${renderCard(currentEnemyCard)}</div>
-            </div>
-        `;
-    }
-
-    function renderCard(card) {
-        return `
-            <div class="card">
-                <img src="${card.image}" alt="${card.name}">
-                <h3>${card.name}</h3>
-                <p>${card.description}</p>
-                <p><strong>攻撃力:</strong> ${card.attack}</p>
-                <p><strong>防御力:</strong> ${card.defense}</p>
-                <p><strong>HP:</strong> ${card.hp}</p>
-                <p><strong>属性:</strong> ${card.element}</p>
-            </div>
-        `;
-    }
-
-    function startBattle() {
-        let turn = "player";
-        const battleInterval = setInterval(() => {
-            if (turn === "player") {
-                attack(currentPlayerCard, currentEnemyCard);
-                turn = "enemy";
-            } else {
-                attack(currentEnemyCard, currentPlayerCard);
-                turn = "player";
-            }
-
-            displayBattleField();
-
-            if (currentPlayerCard.hp <= 0) {
-                if (battleDecks.player.length > 0) {
-                    currentPlayerCard = battleDecks.player.shift();
+            const battleInterval = setInterval(() => {
+                if (turn === "player") {
+                    attack(playerCard, enemyCard);
+                    turn = "enemy";
                 } else {
-                    alert("敵の勝利！");
-                    clearInterval(battleInterval);
-                    return;
+                    attack(enemyCard, playerCard);
+                    turn = "player";
                 }
-            }
 
-            if (currentEnemyCard.hp <= 0) {
-                if (battleDecks.enemy.length > 0) {
-                    currentEnemyCard = battleDecks.enemy.shift();
-                } else {
-                    alert("プレイヤーの勝利！ 通貨を獲得しました！");
-                    currency += 100; // 勝利報酬
-                    updateCurrencyDisplay();
+                displayCards();
+
+                if (playerCard.hp <= 0 || enemyCard.hp <= 0) {
                     clearInterval(battleInterval);
-                    return;
+                    battleButton.disabled = false; // ボタンを有効化
+                    announceWinner();
                 }
-            }
-        }, 2000);
-    }
-
-    function attack(attacker, defender) {
-        const advantage = elementAdvantages[attacker.element][defender.element];
-        const damage = Math.max(0, attacker.attack * advantage - defender.defense);
-        defender.hp -= damage;
-
-        alert(`${attacker.name} が ${defender.name} に ${damage.toFixed(1)} のダメージを与えた！`);
-    }
-</script>
-
+            }, 1000);
         }
 
-        // 初期化
-        updateCurrencyDisplay();
-        displayShop(shopCards);
+        // 攻撃処理
+        function attack(attacker, defender) {
+            const damage = Math.max(0, attacker.attack - defender.defense / 2);
+            defender.hp = Math.max(0, defender.hp - damage);
+            alert(`${attacker.name} が ${defender.name} に ${damage.toFixed(1)} のダメージを与えた！`);
+        }
+
+        // 勝者をアナウンスする
+        function announceWinner() {
+            if (playerCard.hp > 0) {
+                alert("プレイヤーの勝利！");
+            } else {
+                alert("敵の勝利！");
+            }
+        }
+
+        // 初期表示
+        displayCards();
     </script>
 </body>
 </html>
