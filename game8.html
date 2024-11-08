@@ -14,28 +14,29 @@
             padding: 0;
         }
 
-        canvas {
-            margin-top: 20px;
-            background-color: #333;
-        }
-
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        canvas {
+            background-color: #333;
+            margin-top: 20px;
         }
 
         .controls {
             margin-top: 20px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
+            gap: 10px;
         }
 
         .control-btn {
             width: 70px;
             height: 70px;
-            margin: 5px;
             font-size: 20px;
             background-color: #444;
             color: #fff;
@@ -75,12 +76,51 @@
         .reset-btn {
             display: none;
         }
+
+        header {
+            position: relative;
+            background: #222;
+            padding: 10px;
+            color: white;
+        }
+
+        .menu-btn {
+            background: none;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        nav {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            background: #333;
+            display: none;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            padding: 10px 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
+        <nav id="menu">
             <ul>
                 <li><a href="index.html">位置情報</a></li><br>
                 <li><a href="notification.html">お知らせ</a></li><br>
