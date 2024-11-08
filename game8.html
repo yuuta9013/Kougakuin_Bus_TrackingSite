@@ -4,137 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>シンプルモンスターバトルゲーム</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #e9ecef;
         }
 
-        .battle-container {
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            background-color: #fff;
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
         }
 
         .card {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #333;
+            border-radius: 8px;
+            width: 120px;
+            margin: 10px;
+            padding: 5px;
+            background-color: #f5f5f5;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 100%;
             border-radius: 5px;
-            background-color: #f9f9f9;
         }
 
         .card h3 {
-            margin: 0;
-            font-size: 20px;
+            margin: 5px 0;
+            font-size: 16px;
         }
 
         .card p {
-            margin: 5px 0;
+            margin: 3px 0;
+            font-size: 12px;
         }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
+        #startButton {
+            width: 150px;
+            height: 40px;
             font-size: 16px;
+            margin: 10px;
+        }
+
+        #battleField {
+            margin-top: 20px;
+            border: 1px solid #444;
+            padding: 10px;
+            width: 90%;
+            background-color: #e0e0e0;
+        }
+
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #eee;
+        }
+
+        .menu-btn {
+            font-size: 20px;
+        }
+
+        nav {
+            display: none;
+            flex-direction: column;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <div class="battle-container">
-        <h1>モンスターバトル</h1>
-        <div id="playerCard" class="card">
-            <h3 id="playerName">プレイヤーカード</h3>
-            <p id="playerStats"></p>
-        </div>
-        <div id="enemyCard" class="card">
-            <h3 id="enemyName">敵のカード</h3>
-            <p id="enemyStats"></p>
-        </div>
-        <button id="battleButton" onclick="startBattle()">バトル開始</button>
-    </div>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">位置情報</a></li>
+                <li><a href="notification.html">お知らせ</a></li>
+                <li><a href="home.html">ミニゲーム</a></li>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>シンプルモンスターバトルゲーム</h1>
+        <button id="startButton" onclick="startBattle()">バトル開始</button>
+        <div id="battleField"></div>
+    </section>
 
     <script>
-        // シンプルなカードデータ
-        const playerCard = {
-            name: "ファイアドラゴン",
-            attack: 80,
-            defense: 60,
+        let playerMonster = {
+            name: "プレイヤーモンスター",
             hp: 100,
-            element: "火"
+            attack: 30
         };
 
-        const enemyCard = {
-            name: "ウォーターナイト",
-            attack: 70,
-            defense: 70,
-            hp: 110,
-            element: "水"
+        let enemyMonster = {
+            name: "エネミーモンスター",
+            hp: 80,
+            attack: 20
         };
 
-        // カードを表示する
-        function displayCards() {
-            document.getElementById('playerName').textContent = playerCard.name;
-            document.getElementById('playerStats').textContent = `HP: ${playerCard.hp} | 攻撃力: ${playerCard.attack} | 防御力: ${playerCard.defense}`;
-            document.getElementById('enemyName').textContent = enemyCard.name;
-            document.getElementById('enemyStats').textContent = `HP: ${enemyCard.hp} | 攻撃力: ${enemyCard.attack} | 防御力: ${enemyCard.defense}`;
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
-        // バトルロジック
         function startBattle() {
-            const battleButton = document.getElementById('battleButton');
-            battleButton.disabled = true; // ボタンを無効化
-
-            let turn = "player";
+            let battleField = document.getElementById("battleField");
+            battleField.innerHTML = `
+                <div class="card">
+                    <h3>${playerMonster.name}</h3>
+                    <p>HP: <span id="playerHp">${playerMonster.hp}</span></p>
+                    <p>攻撃力: ${playerMonster.attack}</p>
+                </div>
+                <div class="card">
+                    <h3>${enemyMonster.name}</h3>
+                    <p>HP: <span id="enemyHp">${enemyMonster.hp}</span></p>
+                    <p>攻撃力: ${enemyMonster.attack}</p>
+                </div>
+            `;
 
             const battleInterval = setInterval(() => {
-                if (turn === "player") {
-                    attack(playerCard, enemyCard);
-                    turn = "enemy";
-                } else {
-                    attack(enemyCard, playerCard);
-                    turn = "player";
-                }
+                enemyMonster.hp -= playerMonster.attack;
+                playerMonster.hp -= enemyMonster.attack;
 
-                displayCards();
+                document.getElementById("playerHp").textContent = playerMonster.hp;
+                document.getElementById("enemyHp").textContent = enemyMonster.hp;
 
-                if (playerCard.hp <= 0 || enemyCard.hp <= 0) {
+                if (playerMonster.hp <= 0 || enemyMonster.hp <= 0) {
                     clearInterval(battleInterval);
-                    battleButton.disabled = false; // ボタンを有効化
-                    announceWinner();
+                    const result = playerMonster.hp > 0 ? "プレイヤーの勝利！" : "敵の勝利！";
+                    alert(result);
+                    resetGame();
                 }
             }, 1000);
         }
 
-        // 攻撃処理
-        function attack(attacker, defender) {
-            const damage = Math.max(0, attacker.attack - defender.defense / 2);
-            defender.hp = Math.max(0, defender.hp - damage);
-            alert(`${attacker.name} が ${defender.name} に ${damage.toFixed(1)} のダメージを与えた！`);
+        function resetGame() {
+            playerMonster.hp = 100;
+            enemyMonster.hp = 80;
+            document.getElementById("battleField").innerHTML = '';
         }
-
-        // 勝者をアナウンスする
-        function announceWinner() {
-            if (playerCard.hp > 0) {
-                alert("プレイヤーの勝利！");
-            } else {
-                alert("敵の勝利！");
-            }
-        }
-
-        // 初期表示
-        displayCards();
     </script>
 </body>
 </html>
