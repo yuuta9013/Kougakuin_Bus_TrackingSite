@@ -261,6 +261,95 @@
         function prepareBattle() {
             alert("バトルを準備中...");
             // 現在は簡単なデモ、バトルロジックをここに追加可能
+            <script>
+    const elementAdvantages = {
+        fire: { grass: 1.5, water: 0.5, fire: 1.0 },
+        water: { fire: 1.5, grass: 0.5, water: 1.0 },
+        grass: { water: 1.5, fire: 0.5, grass: 1.0 }
+    };
+
+    function prepareBattle() {
+        battleDecks.player = [...playerDeck].slice(0, 4); // バトルデッキ：1枚バトル場、3枚控え
+        battleDecks.enemy = enemyDecks[0].slice(0, 4); // サンプルデッキから選択
+        currentPlayerCard = battleDecks.player.shift();
+        currentEnemyCard = battleDecks.enemy.shift();
+        displayBattleField();
+        startBattle();
+    }
+
+    function displayBattleField() {
+        battleField.innerHTML = `
+            <div>
+                <h3>プレイヤーのカード</h3>
+                <div>${renderCard(currentPlayerCard)}</div>
+            </div>
+            <div>
+                <h3>敵のカード</h3>
+                <div>${renderCard(currentEnemyCard)}</div>
+            </div>
+        `;
+    }
+
+    function renderCard(card) {
+        return `
+            <div class="card">
+                <img src="${card.image}" alt="${card.name}">
+                <h3>${card.name}</h3>
+                <p>${card.description}</p>
+                <p><strong>攻撃力:</strong> ${card.attack}</p>
+                <p><strong>防御力:</strong> ${card.defense}</p>
+                <p><strong>HP:</strong> ${card.hp}</p>
+                <p><strong>属性:</strong> ${card.element}</p>
+            </div>
+        `;
+    }
+
+    function startBattle() {
+        let turn = "player";
+        const battleInterval = setInterval(() => {
+            if (turn === "player") {
+                attack(currentPlayerCard, currentEnemyCard);
+                turn = "enemy";
+            } else {
+                attack(currentEnemyCard, currentPlayerCard);
+                turn = "player";
+            }
+
+            displayBattleField();
+
+            if (currentPlayerCard.hp <= 0) {
+                if (battleDecks.player.length > 0) {
+                    currentPlayerCard = battleDecks.player.shift();
+                } else {
+                    alert("敵の勝利！");
+                    clearInterval(battleInterval);
+                    return;
+                }
+            }
+
+            if (currentEnemyCard.hp <= 0) {
+                if (battleDecks.enemy.length > 0) {
+                    currentEnemyCard = battleDecks.enemy.shift();
+                } else {
+                    alert("プレイヤーの勝利！ 通貨を獲得しました！");
+                    currency += 100; // 勝利報酬
+                    updateCurrencyDisplay();
+                    clearInterval(battleInterval);
+                    return;
+                }
+            }
+        }, 2000);
+    }
+
+    function attack(attacker, defender) {
+        const advantage = elementAdvantages[attacker.element][defender.element];
+        const damage = Math.max(0, attacker.attack * advantage - defender.defense);
+        defender.hp -= damage;
+
+        alert(`${attacker.name} が ${defender.name} に ${damage.toFixed(1)} のダメージを与えた！`);
+    }
+</script>
+
         }
 
         // 初期化
