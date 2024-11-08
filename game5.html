@@ -18,14 +18,14 @@
 
         #gameArea {
             display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-gap: 10px;
+            grid-template-columns: repeat(7, 70px);
+            grid-gap: 5px;
             margin-top: 20px;
         }
 
         .hole {
-            width: 100px;
-            height: 100px;
+            width: 70px;
+            height: 70px;
             background-color: #d2b48c; /* 土の色 */
             position: relative;
             border-radius: 10px;
@@ -33,13 +33,13 @@
         }
 
         .mole {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background-color: brown;
             border-radius: 50%;
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 10px;
+            left: 10px;
             display: none;
         }
 
@@ -76,47 +76,19 @@
         <button id="startButton" onclick="startGame()">スタート</button>
         <p id="scoreDisplay">スコア: 0</p>
 
-        <div id="gameArea">
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-            <div class="hole" onclick="hitMole(this)">
-                <div class="mole"></div>
-            </div>
-        </div>
+        <div id="gameArea"></div>
 
         <button id="restartButton" onclick="resetGame()" style="display: none;">リスタート</button>
     </section>
 
     <script>
+        const gameArea = document.getElementById('gameArea');
         const scoreDisplay = document.getElementById('scoreDisplay');
         const startButton = document.getElementById('startButton');
         const restartButton = document.getElementById('restartButton');
-        const holes = document.querySelectorAll('.hole');
 
         let score = 0;
-        let activeMole = null;
+        let activeMoles = [];
         let gameInterval;
         let gameRunning = false;
 
@@ -125,42 +97,65 @@
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
+        // 7x7のマス目を生成
+        function createGrid() {
+            gameArea.innerHTML = '';
+            for (let i = 0; i < 49; i++) {
+                const hole = document.createElement('div');
+                hole.classList.add('hole');
+                const mole = document.createElement('div');
+                mole.classList.add('mole');
+                hole.appendChild(mole);
+                hole.addEventListener('click', () => hitMole(mole));
+                gameArea.appendChild(hole);
+            }
+        }
+
         function startGame() {
             score = 0;
             scoreDisplay.textContent = 'スコア: ' + score;
             startButton.style.display = 'none';
             restartButton.style.display = 'none';
             gameRunning = true;
+            createGrid();
 
             gameInterval = setInterval(() => {
-                if (activeMole) {
-                    activeMole.style.display = 'none';
-                }
+                clearMoles();
+                activateRandomMoles(2);
+            }, 1000);
 
+            // 30秒後にゲーム終了
+            setTimeout(() => {
+                if (gameRunning) endGame();
+            }, 30000); // 30秒
+        }
+
+        function clearMoles() {
+            activeMoles.forEach(mole => mole.style.display = 'none');
+            activeMoles = [];
+        }
+
+        function activateRandomMoles(count) {
+            const holes = document.querySelectorAll('.hole');
+            for (let i = 0; i < count; i++) {
                 const randomHole = holes[Math.floor(Math.random() * holes.length)];
                 const mole = randomHole.querySelector('.mole');
                 mole.style.display = 'block';
-                activeMole = mole;
-            }, 1000);
+                activeMoles.push(mole);
+            }
         }
 
-        function hitMole(hole) {
-            if (!gameRunning) return;
+        function hitMole(mole) {
+            if (!gameRunning || mole.style.display === 'none') return;
 
-            const mole = hole.querySelector('.mole');
-            if (mole && mole.style.display === 'block') {
-                mole.style.display = 'none';
-                score += 1;
-                scoreDisplay.textContent = 'スコア: ' + score;
-            }
+            mole.style.display = 'none';
+            score++;
+            scoreDisplay.textContent = 'スコア: ' + score;
         }
 
         function resetGame() {
             clearInterval(gameInterval);
-            if (activeMole) {
-                activeMole.style.display = 'none';
-            }
-
+            clearMoles();
             startButton.style.display = 'inline-block';
             restartButton.style.display = 'none';
             score = 0;
@@ -168,19 +163,13 @@
             gameRunning = false;
         }
 
-        // ゲーム終了後の処理
         function endGame() {
             clearInterval(gameInterval);
             gameRunning = false;
-            activeMole.style.display = 'none';
-            resultDisplay.textContent = "ゲーム終了! スコア: " + score;
+            clearMoles();
+            alert('ゲーム終了！ あなたのスコアは: ' + score);
             restartButton.style.display = 'inline-block';
         }
-
-        // 一定時間でゲーム終了
-        setTimeout(() => {
-            if (gameRunning) endGame();
-        }, 30000); // 30秒で終了
     </script>
 </body>
 </html>
