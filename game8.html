@@ -52,6 +52,29 @@
             margin-top: 10px;
             font-size: 18px;
         }
+
+        .start-reset-container {
+            margin-top: 20px;
+        }
+
+        .start-btn, .reset-btn {
+            width: 150px;
+            height: 50px;
+            font-size: 18px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .start-btn:active, .reset-btn:active {
+            background-color: #666;
+        }
+
+        .reset-btn {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +101,11 @@
             <button class="control-btn" onclick="moveRight()">→</button>
             <button class="control-btn" onclick="moveDown()">↓</button>
         </div>
+
+        <div class="start-reset-container">
+            <button class="start-btn" onclick="startGame()">スタート</button>
+            <button class="reset-btn" onclick="resetGame()">リセット</button>
+        </div>
     </div>
 
     <script>
@@ -90,6 +118,9 @@
         let board = Array.from({ length: rows }, () => Array(cols).fill(0));
         let currentPiece;
         let score = 0;
+        let gameOver = false;
+        let gameStarted = false;
+        let gameLoopInterval;
 
         const pieces = [
             [[1, 1, 1, 1]], // I
@@ -104,6 +135,11 @@
         function createPiece() {
             const type = Math.floor(Math.random() * pieces.length);
             currentPiece = { shape: pieces[type], row: 0, col: Math.floor(cols / 2) - 1 };
+
+            // ゲームオーバー判定
+            if (collide()) {
+                endGame();
+            }
         }
 
         function drawBoard() {
@@ -131,11 +167,14 @@
         }
 
         function movePiece(dx, dy) {
+            if (gameOver || !gameStarted) return;
             currentPiece.col += dx;
             currentPiece.row += dy;
+
             if (collide()) {
                 currentPiece.col -= dx;
                 currentPiece.row -= dy;
+
                 if (dy === 1) {
                     mergePiece();
                     createPiece();
@@ -146,19 +185,20 @@
         }
 
         function rotate() {
+            if (gameOver || !gameStarted) return;
             const shape = currentPiece.shape;
             currentPiece.shape = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
-            if (collide()) currentPiece.shape = shape; // 無効化
+            if (collide()) currentPiece.shape = shape;
             drawBoard();
         }
 
         function collide() {
             return currentPiece.shape.some((row, y) =>
                 row.some((value, x) =>
-                    value && 
-                    (board[currentPiece.row + y] === undefined || 
-                    board[currentPiece.row + y][currentPiece.col + x] === undefined || 
-                    board[currentPiece.row + y][currentPiece.col + x])
+                    value &&
+                    (board[currentPiece.row + y] === undefined ||
+                     board[currentPiece.row + y][currentPiece.col + x] === undefined ||
+                     board[currentPiece.row + y][currentPiece.col + x])
                 )
             );
         }
@@ -195,13 +235,38 @@
         }
 
         function gameLoop() {
-            movePiece(0, 1);
-            setTimeout(gameLoop, 500);
+            if (!gameOver) {
+                movePiece(0, 1);
+            }
         }
 
-        createPiece();
-        drawBoard();
-        gameLoop();
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                createPiece();
+                drawBoard();
+                gameLoopInterval = setInterval(gameLoop, 500);
+                document.querySelector('.start-btn').style.display = 'none';
+            }
+        }
+
+        function endGame() {
+            gameOver = true;
+            clearInterval(gameLoopInterval);
+            alert('ゲームオーバー！スコア: ' + score);
+            document.querySelector('.reset-btn').style.display = 'inline-block';
+        }
+
+        function resetGame() {
+            gameStarted = false;
+            gameOver = false;
+            score = 0;
+            board = Array.from({ length: rows }, () => Array(cols).fill(0));
+            document.getElementById('score').textContent = 'スコア: 0';
+            document.querySelector('.start-btn').style.display = 'inline-block';
+            document.querySelector('.reset-btn').style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
