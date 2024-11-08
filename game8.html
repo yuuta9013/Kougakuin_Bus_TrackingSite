@@ -3,163 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>シンプルモンスターバトルゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>テトリスゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #000;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
 
-        .game {
+        canvas {
+            margin-top: 20px;
+            background-color: #333;
+        }
+
+        .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 80vh;
         }
 
-        .card {
-            border: 1px solid #333;
-            border-radius: 8px;
-            width: 120px;
-            margin: 10px;
-            padding: 5px;
-            background-color: #f5f5f5;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .card img {
-            width: 100%;
-            border-radius: 5px;
-        }
-
-        .card h3 {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-
-        .card p {
-            margin: 3px 0;
-            font-size: 12px;
-        }
-
-        #startButton {
-            width: 150px;
-            height: 40px;
-            font-size: 16px;
-            margin: 10px;
-        }
-
-        #battleField {
+        .controls {
             margin-top: 20px;
-            border: 1px solid #444;
-            padding: 10px;
-            width: 90%;
-            background-color: #e0e0e0;
-        }
-
-        header {
-            width: 100%;
             display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background-color: #eee;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .menu-btn {
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            margin: 5px;
             font-size: 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        nav {
-            display: none;
-            flex-direction: column;
+        .control-btn:active {
+            background-color: #666;
         }
 
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            margin: 5px 0;
+        #score {
+            margin-top: 10px;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu">
+        <nav id="menu" style="display: none;">
             <ul>
-                <li><a href="index.html">位置情報</a></li>
-                <li><a href="notification.html">お知らせ</a></li>
-                <li><a href="home.html">ミニゲーム</a></li>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
                 <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
             </ul>
         </nav>
     </header>
 
-    <section class="game">
-        <h1>シンプルモンスターバトルゲーム</h1>
-        <button id="startButton" onclick="startBattle()">バトル開始</button>
-        <div id="battleField"></div>
-    </section>
+    <div class="game-container">
+        <h1>テトリスゲーム</h1>
+        <canvas id="gameCanvas" width="240" height="400"></canvas>
+        <div id="score">スコア: 0</div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="moveLeft()">←</button>
+            <button class="control-btn" onclick="rotate()">↻</button>
+            <button class="control-btn" onclick="moveRight()">→</button>
+            <button class="control-btn" onclick="moveDown()">↓</button>
+        </div>
+    </div>
 
     <script>
-        let playerMonster = {
-            name: "プレイヤーモンスター",
-            hp: 100,
-            attack: 30
-        };
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const grid = 20; // 1マスのサイズ
+        const rows = canvas.height / grid;
+        const cols = canvas.width / grid;
 
-        let enemyMonster = {
-            name: "エネミーモンスター",
-            hp: 80,
-            attack: 20
-        };
+        let board = Array.from({ length: rows }, () => Array(cols).fill(0));
+        let currentPiece;
+        let score = 0;
+
+        const pieces = [
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 0], [1, 1, 1]], // T
+            [[1, 0, 0], [1, 1, 1]], // L
+            [[0, 0, 1], [1, 1, 1]], // J
+            [[0, 1, 1], [1, 1, 0]], // S
+            [[1, 1, 0], [0, 1, 1]]  // Z
+        ];
+
+        function createPiece() {
+            const type = Math.floor(Math.random() * pieces.length);
+            currentPiece = { shape: pieces[type], row: 0, col: Math.floor(cols / 2) - 1 };
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            board.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        ctx.fillStyle = 'cyan';
+                        ctx.fillRect(x * grid, y * grid, grid - 1, grid - 1);
+                    }
+                });
+            });
+            drawPiece();
+        }
+
+        function drawPiece() {
+            ctx.fillStyle = 'yellow';
+            currentPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        ctx.fillRect((currentPiece.col + x) * grid, (currentPiece.row + y) * grid, grid - 1, grid - 1);
+                    }
+                });
+            });
+        }
+
+        function movePiece(dx, dy) {
+            currentPiece.col += dx;
+            currentPiece.row += dy;
+            if (collide()) {
+                currentPiece.col -= dx;
+                currentPiece.row -= dy;
+                if (dy === 1) {
+                    mergePiece();
+                    createPiece();
+                    clearLines();
+                }
+            }
+            drawBoard();
+        }
+
+        function rotate() {
+            const shape = currentPiece.shape;
+            currentPiece.shape = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
+            if (collide()) currentPiece.shape = shape; // 回転無効
+            drawBoard();
+        }
+
+        function collide() {
+            return currentPiece.shape.some((row, y) =>
+                row.some((value, x) => value && (board[currentPiece.row + y]?.[currentPiece.col + x] || 0))
+            );
+        }
+
+        function mergePiece() {
+            currentPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        board[currentPiece.row + y][currentPiece.col + x] = value;
+                    }
+                });
+            });
+        }
+
+        function clearLines() {
+            board = board.filter(row => !row.every(value => value));
+            while (board.length < rows) {
+                board.unshift(Array(cols).fill(0));
+            }
+            score += 10;
+            document.getElementById('score').textContent = `スコア: ${score}`;
+        }
+
+        function moveLeft() {
+            movePiece(-1, 0);
+        }
+
+        function moveRight() {
+            movePiece(1, 0);
+        }
+
+        function moveDown() {
+            movePiece(0, 1);
+        }
+
+        function gameLoop() {
+            movePiece(0, 1);
+            setTimeout(gameLoop, 500);
+        }
+
+        createPiece();
+        drawBoard();
+        gameLoop();
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
-        }
-
-        function startBattle() {
-            let battleField = document.getElementById("battleField");
-            battleField.innerHTML = `
-                <div class="card">
-                    <h3>${playerMonster.name}</h3>
-                    <p>HP: <span id="playerHp">${playerMonster.hp}</span></p>
-                    <p>攻撃力: ${playerMonster.attack}</p>
-                </div>
-                <div class="card">
-                    <h3>${enemyMonster.name}</h3>
-                    <p>HP: <span id="enemyHp">${enemyMonster.hp}</span></p>
-                    <p>攻撃力: ${enemyMonster.attack}</p>
-                </div>
-            `;
-
-            const battleInterval = setInterval(() => {
-                enemyMonster.hp -= playerMonster.attack;
-                playerMonster.hp -= enemyMonster.attack;
-
-                document.getElementById("playerHp").textContent = playerMonster.hp;
-                document.getElementById("enemyHp").textContent = enemyMonster.hp;
-
-                if (playerMonster.hp <= 0 || enemyMonster.hp <= 0) {
-                    clearInterval(battleInterval);
-                    const result = playerMonster.hp > 0 ? "プレイヤーの勝利！" : "敵の勝利！";
-                    alert(result);
-                    resetGame();
-                }
-            }, 1000);
-        }
-
-        function resetGame() {
-            playerMonster.hp = 100;
-            enemyMonster.hp = 80;
-            document.getElementById("battleField").innerHTML = '';
         }
     </script>
 </body>
