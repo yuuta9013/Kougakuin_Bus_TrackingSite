@@ -85,7 +85,7 @@
         let timer = 0;
         let timerInterval;
         let sequence = [];
-        let level = 3;
+        let level = 6; // 表示する数字を6個に設定
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
@@ -121,7 +121,7 @@
                     prepareInputs(sequence.length);
                     submitButton.style.display = 'inline-block';
                 }
-            }, 1000); // 各数字を1秒間表示
+            }, 500); // 各数字を0.5秒間表示
         }
 
         function prepareInputs(length) {
@@ -145,7 +145,6 @@
                 alert(`おめでとうございます！正解です！経過時間: ${timer} 秒`);
                 submitButton.style.display = 'none';
                 restartButton.style.display = 'inline-block';
-                level++; // レベルアップ
             } else {
                 alert('残念、不正解です。もう一度挑戦してください。');
             }
@@ -161,7 +160,6 @@
 
         function resetGame() {
             clearInterval(timerInterval);
-            level = 3; // レベルを初期値に戻す
             startButton.style.display = 'inline-block';
             submitButton.style.display = 'none';
             restartButton.style.display = 'none';
