@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タワーディフェンスゲーム</title>
+    <title>トレーディングカードゲーム</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f0f8ff;
         }
 
         .game {
@@ -17,47 +16,48 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 90vh;
+            min-height: 80vh;
         }
 
-        #gameArea {
-            width: 600px;
-            height: 600px;
-            background-color: #dcdcdc;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #333;
+        #cardContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
-        .enemy, .tower {
-            position: absolute;
-            border-radius: 50%;
-        }
-
-        .enemy {
-            width: 30px;
-            height: 30px;
-            background-color: red;
-        }
-
-        .tower {
-            width: 40px;
-            height: 40px;
-            background-color: blue;
-            cursor: pointer;
-        }
-
-        #scoreDisplay, #baseHealthDisplay {
-            font-size: 20px;
+        .card {
+            border: 2px solid #444;
+            border-radius: 10px;
+            width: 150px;
             margin: 10px;
+            padding: 10px;
+            text-align: center;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         }
 
-        #restartButton {
+        .card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .card h3 {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        #startButton {
             width: 200px;
             height: 50px;
             font-size: 20px;
             margin-top: 10px;
-            display: none;
         }
     </style>
 </head>
@@ -75,118 +75,71 @@
     </header>
 
     <section class="game">
-        <h1>タワーディフェンスゲーム</h1>
-        <p>敵を倒して基地を守れ！</p>
-        <div id="scoreDisplay">スコア: 0</div>
-        <div id="baseHealthDisplay">基地の体力: 100</div>
-        <div id="gameArea"></div>
-        <button id="restartButton" onclick="resetGame()">リスタート</button>
+        <h1>トレーディングカードゲーム</h1>
+        <p>自分のカードデッキを組んで戦いましょう！</p>
+        <button id="startButton" onclick="startGame()">ゲーム開始</button>
+        <div id="cardContainer"></div>
     </section>
 
     <script>
-        const gameArea = document.getElementById('gameArea');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const baseHealthDisplay = document.getElementById('baseHealthDisplay');
-        const restartButton = document.getElementById('restartButton');
+        const cardContainer = document.getElementById('cardContainer');
 
-        let score = 0;
-        let baseHealth = 100;
-        let enemyInterval;
-        let towerActive = false;
+        // カードデータのテンプレート（管理者がここにカードを追加できます）
+        const cards = [
+            {
+                name: "ファイアドラゴン",
+                image: "https://via.placeholder.com/150",
+                description: "炎を操るドラゴン。強力な火炎攻撃を持つ。",
+                attack: 80,
+                defense: 50
+            },
+            {
+                name: "ウォーターナイト",
+                image: "https://via.placeholder.com/150",
+                description: "水の力を使う騎士。防御力が高い。",
+                attack: 50,
+                defense: 80
+            },
+            // 管理者は以下のテンプレートをコピーして新しいカードを追加できます
+            /*
+            {
+                name: "カード名",
+                image: "カードの画像URL",
+                description: "カードの説明文",
+                attack: 攻撃力（数値）,
+                defense: 防御力（数値）
+            },
+            */
+        ];
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
-        function createEnemy() {
-            const enemy = document.createElement('div');
-            enemy.classList.add('enemy');
-            enemy.style.top = `${Math.random() * (gameArea.clientHeight - 30)}px`;
-            enemy.style.left = `0px`;
-
-            gameArea.appendChild(enemy);
-
-            let enemySpeed = Math.random() * 2 + 1;
-
-            const moveEnemy = setInterval(() => {
-                let currentLeft = parseFloat(enemy.style.left);
-                enemy.style.left = currentLeft + enemySpeed + 'px';
-
-                if (currentLeft + 30 >= gameArea.clientWidth) {
-                    clearInterval(moveEnemy);
-                    gameArea.removeChild(enemy);
-                    baseHealth -= 10;
-                    baseHealthDisplay.textContent = `基地の体力: ${baseHealth}`;
-                    checkGameOver();
-                }
-            }, 20);
-
-            enemy.onclick = () => {
-                clearInterval(moveEnemy);
-                gameArea.removeChild(enemy);
-                score += 10;
-                scoreDisplay.textContent = `スコア: ${score}`;
-            };
-        }
-
-        function createTower(x, y) {
-            const tower = document.createElement('div');
-            tower.classList.add('tower');
-            tower.style.left = `${x - 20}px`;
-            tower.style.top = `${y - 20}px`;
-            gameArea.appendChild(tower);
-
-            tower.onclick = () => {
-                if (towerActive) {
-                    tower.remove();
-                    towerActive = false;
-                }
-            };
-
-            setInterval(() => {
-                if (tower.parentElement) {
-                    const enemies = Array.from(document.getElementsByClassName('enemy'));
-                    enemies.forEach(enemy => {
-                        const dx = parseFloat(enemy.style.left) + 15 - (x - 20 + 20);
-                        const dy = parseFloat(enemy.style.top) + 15 - (y - 20 + 20);
-                        if (Math.sqrt(dx * dx + dy * dy) < 100) {
-                            enemy.click();
-                        }
-                    });
-                }
-            }, 500);
-        }
-
-        function checkGameOver() {
-            if (baseHealth <= 0) {
-                clearInterval(enemyInterval);
-                alert(`ゲームオーバー！最終スコア: ${score}`);
-                restartButton.style.display = 'inline-block';
-            }
-        }
-
-        function resetGame() {
-            clearInterval(enemyInterval);
-            score = 0;
-            baseHealth = 100;
-            scoreDisplay.textContent = `スコア: ${score}`;
-            baseHealthDisplay.textContent = `基地の体力: ${baseHealth}`;
-            gameArea.innerHTML = '';
-            restartButton.style.display = 'none';
-            startGame();
-        }
-
         function startGame() {
-            enemyInterval = setInterval(createEnemy, 1000);
-            gameArea.onclick = (e) => {
-                if (!towerActive) {
-                    createTower(e.offsetX, e.offsetY);
-                    towerActive = true;
-                }
-            };
+            cardContainer.innerHTML = ''; // 画面のリセット
+            displayCards(cards);
         }
 
+        function displayCards(cards) {
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+
+                cardElement.innerHTML = `
+                    <img src="${card.image}" alt="${card.name}">
+                    <h3>${card.name}</h3>
+                    <p>${card.description}</p>
+                    <p><strong>攻撃力:</strong> ${card.attack}</p>
+                    <p><strong>防御力:</strong> ${card.defense}</p>
+                `;
+
+                cardContainer.appendChild(cardElement);
+            });
+        }
+
+        // 初期化
         startGame();
     </script>
 </body>
