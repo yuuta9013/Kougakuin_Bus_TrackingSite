@@ -19,7 +19,7 @@
             min-height: 80vh;
         }
 
-        #cardContainer {
+        #cardContainer, #shopContainer {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -53,11 +53,24 @@
             font-size: 14px;
         }
 
-        #startButton {
+        #startButton, #shopButton {
             width: 200px;
             height: 50px;
             font-size: 20px;
             margin-top: 10px;
+        }
+
+        #currencyDisplay {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        #battleField {
+            margin-top: 20px;
+            border: 2px solid #444;
+            padding: 20px;
+            width: 80%;
+            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -76,39 +89,121 @@
 
     <section class="game">
         <h1>トレーディングカードゲーム</h1>
-        <p>自分のカードデッキを組んで戦いましょう！</p>
+        <p>カードを集めてデッキを作り、戦おう！</p>
+        <div id="currencyDisplay">ゲーム内通貨: 0G</div>
         <button id="startButton" onclick="startGame()">ゲーム開始</button>
+        <button id="shopButton" onclick="openShop()">ショップ</button>
         <div id="cardContainer"></div>
+        <div id="battleField" style="display:none;"></div>
+        <div id="shopContainer" style="display:none;"></div>
     </section>
 
     <script>
         const cardContainer = document.getElementById('cardContainer');
+        const shopContainer = document.getElementById('shopContainer');
+        const battleField = document.getElementById('battleField');
+        const currencyDisplay = document.getElementById('currencyDisplay');
 
-        // カードデータのテンプレート（管理者がここにカードを追加できます）
+        let currency = 0;
+        let playerDeck = [];
+        let enemyDeck = [];
+        let battleDecks = {
+            player: [],
+            enemy: []
+        };
+        let currentPlayerCard = null;
+        let currentEnemyCard = null;
+
+        const elements = {
+            fire: '火',
+            water: '水',
+            grass: '草'
+        };
+
         const cards = [
             {
                 name: "ファイアドラゴン",
                 image: "https://via.placeholder.com/150",
-                description: "炎を操るドラゴン。強力な火炎攻撃を持つ。",
+                description: "炎を操るドラゴン。",
                 attack: 80,
-                defense: 50
+                defense: 50,
+                hp: 100,
+                element: elements.fire
             },
             {
                 name: "ウォーターナイト",
                 image: "https://via.placeholder.com/150",
-                description: "水の力を使う騎士。防御力が高い。",
+                description: "水の力を使う騎士。",
                 attack: 50,
-                defense: 80
+                defense: 80,
+                hp: 100,
+                element: elements.water
             },
-            // 管理者は以下のテンプレートをコピーして新しいカードを追加できます
+            // 新しいカードを追加
             /*
             {
                 name: "カード名",
                 image: "カードの画像URL",
                 description: "カードの説明文",
                 attack: 攻撃力（数値）,
-                defense: 防御力（数値）
+                defense: 防御力（数値）,
+                hp: HP（数値）,
+                element: 属性（火、水、草など）
             },
+            */
+        ];
+
+        const shopCards = [
+            {
+                name: "グラスビースト",
+                image: "https://via.placeholder.com/150",
+                description: "草の力を宿した獣。",
+                attack: 60,
+                defense: 60,
+                hp: 100,
+                element: elements.grass,
+                price: 100
+            },
+            // 新しいカードを追加
+            /*
+            {
+                name: "カード名",
+                image: "カードの画像URL",
+                description: "カードの説明文",
+                attack: 攻撃力（数値）,
+                defense: 防御力（数値）,
+                hp: HP（数値）,
+                element: 属性（火、水、草など）,
+                price: 価格（数値）
+            },
+            */
+        ];
+
+        const enemyDecks = [
+            [
+                {
+                    name: "エネミーファイア",
+                    image: "https://via.placeholder.com/150",
+                    description: "炎のモンスター。",
+                    attack: 70,
+                    defense: 60,
+                    hp: 100,
+                    element: elements.fire
+                }
+            ],
+            // 管理者が追加可能
+            /*
+            [
+                {
+                    name: "カード名",
+                    image: "カードの画像URL",
+                    description: "カードの説明文",
+                    attack: 攻撃力（数値）,
+                    defense: 防御力（数値）,
+                    hp: HP（数値）,
+                    element: 属性（火、水、草など）
+                }
+            ],
             */
         ];
 
@@ -118,29 +213,59 @@
         }
 
         function startGame() {
-            cardContainer.innerHTML = ''; // 画面のリセット
-            displayCards(cards);
+            cardContainer.innerHTML = ''; 
+            battleField.style.display = 'block';
+            prepareBattle();
         }
 
-        function displayCards(cards) {
-            cards.forEach(card => {
+        function openShop() {
+            shopContainer.innerHTML = '';
+            shopContainer.style.display = 'block';
+            displayShop(shopCards);
+        }
+
+        function displayShop(shopCards) {
+            shopCards.forEach(card => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
-
                 cardElement.innerHTML = `
                     <img src="${card.image}" alt="${card.name}">
                     <h3>${card.name}</h3>
                     <p>${card.description}</p>
                     <p><strong>攻撃力:</strong> ${card.attack}</p>
                     <p><strong>防御力:</strong> ${card.defense}</p>
+                    <p><strong>HP:</strong> ${card.hp}</p>
+                    <p><strong>属性:</strong> ${card.element}</p>
+                    <p><strong>価格:</strong> ${card.price}G</p>
+                    <button onclick="buyCard(${JSON.stringify(card)})">購入</button>
                 `;
-
-                cardContainer.appendChild(cardElement);
+                shopContainer.appendChild(cardElement);
             });
         }
 
+        function buyCard(card) {
+            if (currency >= card.price) {
+                currency -= card.price;
+                playerDeck.push(card);
+                updateCurrencyDisplay();
+                alert(`${card.name} を購入しました！`);
+            } else {
+                alert("通貨が不足しています！");
+            }
+        }
+
+        function updateCurrencyDisplay() {
+            currencyDisplay.textContent = `ゲーム内通貨: ${currency}G`;
+        }
+
+        function prepareBattle() {
+            alert("バトルを準備中...");
+            // 現在は簡単なデモ、バトルロジックをここに追加可能
+        }
+
         // 初期化
-        startGame();
+        updateCurrencyDisplay();
+        displayShop(shopCards);
     </script>
 </body>
 </html>
