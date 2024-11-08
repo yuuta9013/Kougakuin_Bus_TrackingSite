@@ -18,7 +18,8 @@
 
         #gameArea {
             display: grid;
-            grid-template-columns: repeat(7, 70px);
+            grid-template-columns: repeat(4, 70px); /* 横4列 */
+            grid-template-rows: repeat(7, 70px); /* 縦7行 */
             grid-gap: 5px;
             margin-top: 20px;
         }
@@ -97,10 +98,10 @@
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
-        // 7x7のマス目を生成
+        // 縦7×横4のマス目を生成
         function createGrid() {
             gameArea.innerHTML = '';
-            for (let i = 0; i < 49; i++) {
+            for (let i = 0; i < 28; i++) { // 7x4 = 28
                 const hole = document.createElement('div');
                 hole.classList.add('hole');
                 const mole = document.createElement('div');
@@ -121,7 +122,7 @@
 
             gameInterval = setInterval(() => {
                 clearMoles();
-                activateRandomMoles(2);
+                activateRandomMoles(2); // ランダムに2体のモグラを出現させる
             }, 1000);
 
             // 30秒後にゲーム終了
