@@ -83,7 +83,7 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const grid = 20; // 1マスのサイズ
+        const grid = 20;
         const rows = canvas.height / grid;
         const cols = canvas.width / grid;
 
@@ -148,13 +148,18 @@
         function rotate() {
             const shape = currentPiece.shape;
             currentPiece.shape = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
-            if (collide()) currentPiece.shape = shape; // 回転無効
+            if (collide()) currentPiece.shape = shape; // 無効化
             drawBoard();
         }
 
         function collide() {
             return currentPiece.shape.some((row, y) =>
-                row.some((value, x) => value && (board[currentPiece.row + y]?.[currentPiece.col + x] || 0))
+                row.some((value, x) =>
+                    value && 
+                    (board[currentPiece.row + y] === undefined || 
+                    board[currentPiece.row + y][currentPiece.col + x] === undefined || 
+                    board[currentPiece.row + y][currentPiece.col + x])
+                )
             );
         }
 
