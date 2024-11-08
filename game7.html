@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記憶力テストゲーム</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        #numberDisplay {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        #inputContainer {
+            margin: 20px;
+        }
+
+        #inputContainer input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            margin: 5px;
+        }
+
+        #startButton, #submitButton, #restartButton {
+            width: 200px;
+            height: 50px;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        #timer {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>記憶力テストゲーム</h1>
+        <p>画面に表示される数字を記憶し、正しい順番で入力してください。</p>
+        <div id="timer">タイマー: 0 秒</div>
+        <div id="numberDisplay"></div>
+        <div id="inputContainer"></div>
+        <button id="startButton" onclick="startGame()">スタート</button>
+        <button id="submitButton" onclick="checkSequence()" style="display: none;">解答を提出</button>
+        <button id="restartButton" onclick="resetGame()" style="display: none;">リスタート</button>
+    </section>
+
+    <script>
+        const numberDisplay = document.getElementById('numberDisplay');
+        const inputContainer = document.getElementById('inputContainer');
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('startButton');
+        const submitButton = document.getElementById('submitButton');
+        const restartButton = document.getElementById('restartButton');
+
+        let timer = 0;
+        let timerInterval;
+        let sequence = [];
+        let level = 3;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            resetInputs();
+            sequence = generateSequence(level);
+            displaySequence(sequence);
+            startTimer();
+            startButton.style.display = 'none';
+        }
+
+        function generateSequence(length) {
+            const sequence = [];
+            for (let i = 0; i < length; i++) {
+                sequence.push(Math.floor(Math.random() * 10)); // 0-9のランダムな数字
+            }
+            return sequence;
+        }
+
+        function displaySequence(sequence) {
+            let index = 0;
+            numberDisplay.textContent = sequence[index];
+            const displayInterval = setInterval(() => {
+                index++;
+                if (index < sequence.length) {
+                    numberDisplay.textContent = sequence[index];
+                } else {
+                    clearInterval(displayInterval);
+                    numberDisplay.textContent = '';
+                    prepareInputs(sequence.length);
+                    submitButton.style.display = 'inline-block';
+                }
+            }, 1000); // 各数字を1秒間表示
+        }
+
+        function prepareInputs(length) {
+            inputContainer.innerHTML = '';
+            for (let i = 0; i < length; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.maxLength = 1;
+                input.oninput = () => {
+                    input.value = input.value.replace(/[^0-9]/g, '');
+                };
+                inputContainer.appendChild(input);
+            }
+        }
+
+        function checkSequence() {
+            const inputs = Array.from(inputContainer.querySelectorAll('input'));
+            const userSequence = inputs.map(input => parseInt(input.value, 10));
+            if (JSON.stringify(userSequence) === JSON.stringify(sequence)) {
+                clearInterval(timerInterval);
+                alert(`おめでとうございます！正解です！経過時間: ${timer} 秒`);
+                submitButton.style.display = 'none';
+                restartButton.style.display = 'inline-block';
+                level++; // レベルアップ
+            } else {
+                alert('残念、不正解です。もう一度挑戦してください。');
+            }
+        }
+
+        function startTimer() {
+            timer = 0;
+            timerInterval = setInterval(() => {
+                timer++;
+                timerDisplay.textContent = `タイマー: ${timer} 秒`;
+            }, 1000);
+        }
+
+        function resetGame() {
+            clearInterval(timerInterval);
+            level = 3; // レベルを初期値に戻す
+            startButton.style.display = 'inline-block';
+            submitButton.style.display = 'none';
+            restartButton.style.display = 'none';
+            numberDisplay.textContent = '';
+            timerDisplay.textContent = 'タイマー: 0 秒';
+            inputContainer.innerHTML = '';
+        }
+
+        function resetInputs() {
+            inputContainer.innerHTML = '';
+            numberDisplay.textContent = '';
+        }
+    </script>
+</body>
+</html>
