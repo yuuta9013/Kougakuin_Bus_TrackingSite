@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タワーディフェンスゲーム</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+        }
+
+        #gameArea {
+            width: 600px;
+            height: 600px;
+            background-color: #dcdcdc;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+
+        .enemy, .tower {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .enemy {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+        }
+
+        .tower {
+            width: 40px;
+            height: 40px;
+            background-color: blue;
+            cursor: pointer;
+        }
+
+        #scoreDisplay, #baseHealthDisplay {
+            font-size: 20px;
+            margin: 10px;
+        }
+
+        #restartButton {
+            width: 200px;
+            height: 50px;
+            font-size: 20px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>タワーディフェンスゲーム</h1>
+        <p>敵を倒して基地を守れ！</p>
+        <div id="scoreDisplay">スコア: 0</div>
+        <div id="baseHealthDisplay">基地の体力: 100</div>
+        <div id="gameArea"></div>
+        <button id="restartButton" onclick="resetGame()">リスタート</button>
+    </section>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const baseHealthDisplay = document.getElementById('baseHealthDisplay');
+        const restartButton = document.getElementById('restartButton');
+
+        let score = 0;
+        let baseHealth = 100;
+        let enemyInterval;
+        let towerActive = false;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function createEnemy() {
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+            enemy.style.top = `${Math.random() * (gameArea.clientHeight - 30)}px`;
+            enemy.style.left = `0px`;
+
+            gameArea.appendChild(enemy);
+
+            let enemySpeed = Math.random() * 2 + 1;
+
+            const moveEnemy = setInterval(() => {
+                let currentLeft = parseFloat(enemy.style.left);
+                enemy.style.left = currentLeft + enemySpeed + 'px';
+
+                if (currentLeft + 30 >= gameArea.clientWidth) {
+                    clearInterval(moveEnemy);
+                    gameArea.removeChild(enemy);
+                    baseHealth -= 10;
+                    baseHealthDisplay.textContent = `基地の体力: ${baseHealth}`;
+                    checkGameOver();
+                }
+            }, 20);
+
+            enemy.onclick = () => {
+                clearInterval(moveEnemy);
+                gameArea.removeChild(enemy);
+                score += 10;
+                scoreDisplay.textContent = `スコア: ${score}`;
+            };
+        }
+
+        function createTower(x, y) {
+            const tower = document.createElement('div');
+            tower.classList.add('tower');
+            tower.style.left = `${x - 20}px`;
+            tower.style.top = `${y - 20}px`;
+            gameArea.appendChild(tower);
+
+            tower.onclick = () => {
+                if (towerActive) {
+                    tower.remove();
+                    towerActive = false;
+                }
+            };
+
+            setInterval(() => {
+                if (tower.parentElement) {
+                    const enemies = Array.from(document.getElementsByClassName('enemy'));
+                    enemies.forEach(enemy => {
+                        const dx = parseFloat(enemy.style.left) + 15 - (x - 20 + 20);
+                        const dy = parseFloat(enemy.style.top) + 15 - (y - 20 + 20);
+                        if (Math.sqrt(dx * dx + dy * dy) < 100) {
+                            enemy.click();
+                        }
+                    });
+                }
+            }, 500);
+        }
+
+        function checkGameOver() {
+            if (baseHealth <= 0) {
+                clearInterval(enemyInterval);
+                alert(`ゲームオーバー！最終スコア: ${score}`);
+                restartButton.style.display = 'inline-block';
+            }
+        }
+
+        function resetGame() {
+            clearInterval(enemyInterval);
+            score = 0;
+            baseHealth = 100;
+            scoreDisplay.textContent = `スコア: ${score}`;
+            baseHealthDisplay.textContent = `基地の体力: ${baseHealth}`;
+            gameArea.innerHTML = '';
+            restartButton.style.display = 'none';
+            startGame();
+        }
+
+        function startGame() {
+            enemyInterval = setInterval(createEnemy, 1000);
+            gameArea.onclick = (e) => {
+                if (!towerActive) {
+                    createTower(e.offsetX, e.offsetY);
+                    towerActive = true;
+                }
+            };
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
