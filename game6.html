@@ -94,17 +94,37 @@
         let timer = 0;
         let timerInterval;
 
-        const solvedBoard = [
-            [5, 3, 4, 6, 7, 8, 9, 1, 2],
-            [6, 7, 2, 1, 9, 5, 3, 4, 8],
-            [1, 9, 8, 3, 4, 2, 5, 6, 7],
-            [8, 5, 9, 7, 6, 1, 4, 2, 3],
-            [4, 2, 6, 8, 5, 3, 7, 9, 1],
-            [7, 1, 3, 9, 2, 4, 8, 5, 6],
-            [9, 6, 1, 5, 3, 7, 2, 8, 4],
-            [2, 8, 7, 4, 1, 9, 6, 3, 5],
-            [3, 4, 5, 2, 8, 6, 1, 7, 9]
+        const templates = [
+            {
+                solved: [
+                    [5, 3, 4, 6, 7, 8, 9, 1, 2],
+                    [6, 7, 2, 1, 9, 5, 3, 4, 8],
+                    [1, 9, 8, 3, 4, 2, 5, 6, 7],
+                    [8, 5, 9, 7, 6, 1, 4, 2, 3],
+                    [4, 2, 6, 8, 5, 3, 7, 9, 1],
+                    [7, 1, 3, 9, 2, 4, 8, 5, 6],
+                    [9, 6, 1, 5, 3, 7, 2, 8, 4],
+                    [2, 8, 7, 4, 1, 9, 6, 3, 5],
+                    [3, 4, 5, 2, 8, 6, 1, 7, 9]
+                ]
+            },
+            {
+                solved: [
+                    [8, 2, 7, 1, 5, 4, 3, 9, 6],
+                    [9, 6, 5, 3, 2, 7, 1, 4, 8],
+                    [3, 4, 1, 6, 8, 9, 7, 5, 2],
+                    [5, 9, 3, 4, 6, 8, 2, 7, 1],
+                    [4, 7, 2, 5, 1, 3, 6, 8, 9],
+                    [6, 1, 8, 9, 7, 2, 4, 3, 5],
+                    [7, 8, 6, 2, 3, 5, 9, 1, 4],
+                    [1, 5, 4, 7, 9, 6, 8, 2, 3],
+                    [2, 3, 9, 8, 4, 1, 5, 6, 7]
+                ]
+            }
+            // さらにテンプレートを追加可能
         ];
+
+        let currentSolution;
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
@@ -113,7 +133,9 @@
 
         function generateSudokuGrid() {
             sudokuGrid.innerHTML = '';
-            const initialBoard = createPuzzle();
+            const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+            currentSolution = randomTemplate.solved;
+            const initialBoard = createPuzzle(currentSolution);
 
             for (let row = 0; row < 9; row++) {
                 for (let col = 0; col < 9; col++) {
@@ -136,8 +158,8 @@
             }
         }
 
-        function createPuzzle() {
-            const boardCopy = JSON.parse(JSON.stringify(solvedBoard));
+        function createPuzzle(solution) {
+            const boardCopy = JSON.parse(JSON.stringify(solution));
             let clues = 30; // 初期配置の数
             while (clues > 0) {
                 const row = Math.floor(Math.random() * 9);
@@ -151,19 +173,22 @@
         }
 
         function checkSolution() {
-            const cells = document.querySelectorAll('.cell input');
+            const cells = document.querySelectorAll('.cell');
             let isSolved = true;
             let index = 0;
 
             cells.forEach((cell, i) => {
                 const row = Math.floor(index / 9);
                 const col = index % 9;
-                const value = parseInt(cell.value, 10);
-                if (value !== solvedBoard[row][col]) {
-                    cell.style.backgroundColor = '#f88'; // 赤で間違いを示す
+
+                const input = cell.querySelector('input');
+                const value = input ? parseInt(input.value, 10) : parseInt(cell.textContent, 10);
+
+                if (value !== currentSolution[row][col]) {
+                    if (input) input.style.backgroundColor = '#f88'; // 間違い
                     isSolved = false;
                 } else {
-                    cell.style.backgroundColor = '#8f8'; // 緑で正解を示す
+                    if (input) input.style.backgroundColor = '#8f8'; // 正解
                 }
                 index++;
             });
@@ -195,7 +220,6 @@
             startTimer();
         }
 
-        // 初期化
         generateSudokuGrid();
         startTimer();
     </script>
