@@ -1,113 +1,317 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f3e1; /* 薄いクリーム色 */
-}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テトリスゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f3e1;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
 
-header {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    text-align: left;
-    position: relative;
-}
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
 
-.menu-btn {
-    background-color: #333;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-}
+        canvas {
+            background-color: #333;
+            margin-top: 20px;
+        }
 
-nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
 
-nav ul li {
-    display: inline;
-    margin-right: 20px;
-}
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
+        .control-btn:active {
+            background-color: #666;
+        }
 
-#map {
-    width: 100%;
-    height: 500px;
-    margin-bottom: 20px;
-}
+        #score {
+            margin-top: 10px;
+            font-size: 18px;
+        }
 
-#busStopContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-}
+        .start-reset-container {
+            margin-top: 20px;
+        }
 
-#busStopSelect {
-    padding: 10px;
-    width: 200px;
-    font-size: 16px;
-}
+        .start-btn, .reset-btn {
+            width: 150px;
+            height: 50px;
+            font-size: 18px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-.delay-box {
-    margin-left: 10px;
-    padding: 10px;
-    background-color: white; /* 白い枠 */
-    border-radius: 5px;
-    font-size: 16px;
-}
+        .start-btn:active, .reset-btn:active {
+            background-color: #666;
+        }
 
-.hint-box {
-    position: absolute; /* 変更 */
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #d2b48c; /* 薄い茶色 */
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 14px;
-    display: none;
-    z-index: 1000; /* 追加 */
-}
+        .reset-btn {
+            display: none;
+        }
 
-/* カスタムバスアイコン */
-.custom-bus-icon-yellow {
-    background-color: yellow;
-    color: black;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 30px;
-}
+        header {
+            position: relative;
+            background: #222;
+            padding: 10px;
+            color: white;
+        }
 
-.custom-bus-icon-green {
-    background-color: green;
-    color: white;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 30px;
-}
+        .menu-btn {
+            background: none;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
 
-/* おみくじリンクボタンのスタイル */
-.game-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 18px;
-    color: white;
-    background-color: #333;
-    border-radius: 5px;
-    text-decoration: none;
-}
+        nav {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            background: #333;
+            display: none;
+            text-align: center;
+        }
 
-.game-link:hover {
-    background-color: #555;
-}
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            padding: 10px 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="game-container">
+        <h1>テトリスゲーム</h1>
+        <canvas id="gameCanvas" width="240" height="400"></canvas>
+        <div id="score">スコア: 0</div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="moveLeft()">←</button>
+            <button class="control-btn" onclick="rotate()">↻</button>
+            <button class="control-btn" onclick="moveRight()">→</button>
+            <button class="control-btn" onclick="moveDown()">↓</button>
+        </div>
+
+        <div class="start-reset-container">
+            <button class="start-btn" onclick="startGame()">スタート</button>
+            <button class="reset-btn" onclick="resetGame()">リセット</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const grid = 20;
+        const rows = canvas.height / grid;
+        const cols = canvas.width / grid;
+
+        let board = Array.from({ length: rows }, () => Array(cols).fill(0));
+        let currentPiece;
+        let score = 0;
+        let gameOver = false;
+        let gameStarted = false;
+        let gameLoopInterval;
+
+        const pieces = [
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 0], [1, 1, 1]], // T
+            [[1, 0, 0], [1, 1, 1]], // L
+            [[0, 0, 1], [1, 1, 1]], // J
+            [[0, 1, 1], [1, 1, 0]], // S
+            [[1, 1, 0], [0, 1, 1]]  // Z
+        ];
+
+        function createPiece() {
+            const type = Math.floor(Math.random() * pieces.length);
+            currentPiece = { shape: pieces[type], row: 0, col: Math.floor(cols / 2) - 1 };
+
+            // ゲームオーバー判定
+            if (collide()) {
+                endGame();
+            }
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            board.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        ctx.fillStyle = 'cyan';
+                        ctx.fillRect(x * grid, y * grid, grid - 1, grid - 1);
+                    }
+                });
+            });
+            drawPiece();
+        }
+
+        function drawPiece() {
+            ctx.fillStyle = 'yellow';
+            currentPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        ctx.fillRect((currentPiece.col + x) * grid, (currentPiece.row + y) * grid, grid - 1, grid - 1);
+                    }
+                });
+            });
+        }
+
+        function movePiece(dx, dy) {
+            if (gameOver || !gameStarted) return;
+            currentPiece.col += dx;
+            currentPiece.row += dy;
+
+            if (collide()) {
+                currentPiece.col -= dx;
+                currentPiece.row -= dy;
+
+                if (dy === 1) {
+                    mergePiece();
+                    createPiece();
+                    clearLines();
+                }
+            }
+            drawBoard();
+        }
+
+        function rotate() {
+            if (gameOver || !gameStarted) return;
+            const shape = currentPiece.shape;
+            currentPiece.shape = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
+            if (collide()) currentPiece.shape = shape;
+            drawBoard();
+        }
+
+        function collide() {
+            return currentPiece.shape.some((row, y) =>
+                row.some((value, x) =>
+                    value &&
+                    (board[currentPiece.row + y] === undefined ||
+                     board[currentPiece.row + y][currentPiece.col + x] === undefined ||
+                     board[currentPiece.row + y][currentPiece.col + x])
+                )
+            );
+        }
+
+        function mergePiece() {
+            currentPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        board[currentPiece.row + y][currentPiece.col + x] = value;
+                    }
+                });
+            });
+        }
+
+        function clearLines() {
+            board = board.filter(row => !row.every(value => value));
+            while (board.length < rows) {
+                board.unshift(Array(cols).fill(0));
+            }
+            score += 10;
+            document.getElementById('score').textContent = `スコア: ${score}`;
+        }
+
+        function moveLeft() {
+            movePiece(-1, 0);
+        }
+
+        function moveRight() {
+            movePiece(1, 0);
+        }
+
+        function moveDown() {
+            movePiece(0, 1);
+        }
+
+        function gameLoop() {
+            if (!gameOver) {
+                movePiece(0, 1);
+            }
+        }
+
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                createPiece();
+                drawBoard();
+                gameLoopInterval = setInterval(gameLoop, 500);
+                document.querySelector('.start-btn').style.display = 'none';
+            }
+        }
+
+        function endGame() {
+            gameOver = true;
+            clearInterval(gameLoopInterval);
+            alert('ゲームオーバー！スコア: ' + score);
+            document.querySelector('.reset-btn').style.display = 'inline-block';
+        }
+
+        function resetGame() {
+            gameStarted = false;
+            gameOver = false;
+            score = 0;
+            board = Array.from({ length: rows }, () => Array(cols).fill(0));
+            document.getElementById('score').textContent = 'スコア: 0';
+            document.querySelector('.start-btn').style.display = 'inline-block';
+            document.querySelector('.reset-btn').style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+    </script>
+</body>
+</html>
