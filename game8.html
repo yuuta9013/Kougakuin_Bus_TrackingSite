@@ -3,114 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テトリスゲーム</title>
+    <title>マインスイーパーチャレンジ</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        .game-container {
+        .game {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 80vh;
-        }
-
-        canvas {
-            background-color: #333;
-            margin-top: 20px;
-        }
-
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .control-btn {
-            width: 70px;
-            height: 70px;
-            font-size: 20px;
-            background-color: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .control-btn:active {
-            background-color: #666;
-        }
-
-        #score {
-            margin-top: 10px;
-            font-size: 18px;
-        }
-
-        .start-reset-container {
-            margin-top: 20px;
-        }
-
-        .start-btn, .reset-btn {
-            width: 150px;
-            height: 50px;
-            font-size: 18px;
-            background-color: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .start-btn:active, .reset-btn:active {
-            background-color: #666;
-        }
-
-        .reset-btn {
-            display: none;
-        }
-
-        header {
-            position: relative;
-            background: #222;
-            padding: 10px;
-            color: white;
-        }
-
-        .menu-btn {
-            background: none;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        nav {
-            position: absolute;
-            top: 50px;
-            left: 0;
-            width: 100%;
-            background: #333;
-            display: none;
             text-align: center;
         }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
+        #grid {
+            display: grid;
+            gap: 2px;
+            margin: 20px;
         }
-
-        nav ul li {
-            padding: 10px 0;
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: #ddd;
+            text-align: center;
+            line-height: 40px;
+            font-size: 18px;
+            cursor: pointer;
         }
-
-        nav ul li a {
-            color: white;
-            text-decoration: none;
+        .mine {
+            background-color: red;
+        }
+        .revealed {
+            background-color: #bbb;
+            cursor: default;
         }
     </style>
 </head>
@@ -127,187 +50,116 @@
         </nav>
     </header>
 
-    <div class="game-container">
-        <h1>テトリスゲーム</h1>
-        <canvas id="gameCanvas" width="240" height="400"></canvas>
-        <div id="score">スコア: 0</div>
-
-        <div class="controls">
-            <button class="control-btn" onclick="moveLeft()">←</button>
-            <button class="control-btn" onclick="rotate()">↻</button>
-            <button class="control-btn" onclick="moveRight()">→</button>
-            <button class="control-btn" onclick="moveDown()">↓</button>
-        </div>
-
-        <div class="start-reset-container">
-            <button class="start-btn" onclick="startGame()">スタート</button>
-            <button class="reset-btn" onclick="resetGame()">リセット</button>
-        </div>
-    </div>
+    <section class="game">
+        <h1>マインスイーパーチャレンジ</h1>
+        <p>地雷を避けてすべてのセルを開こう！</p>
+        <button onclick="startGame()">ゲーム開始</button>
+        <div id="grid"></div>
+        <p id="status">ゲーム状態: プレイしていません</p>
+    </section>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const grid = 20;
-        const rows = canvas.height / grid;
-        const cols = canvas.width / grid;
-
-        let board = Array.from({ length: rows }, () => Array(cols).fill(0));
-        let currentPiece;
-        let score = 0;
-        let gameOver = false;
-        let gameStarted = false;
-        let gameLoopInterval;
-
-        const pieces = [
-            [[1, 1, 1, 1]], // I
-            [[1, 1], [1, 1]], // O
-            [[0, 1, 0], [1, 1, 1]], // T
-            [[1, 0, 0], [1, 1, 1]], // L
-            [[0, 0, 1], [1, 1, 1]], // J
-            [[0, 1, 1], [1, 1, 0]], // S
-            [[1, 1, 0], [0, 1, 1]]  // Z
-        ];
-
-        function createPiece() {
-            const type = Math.floor(Math.random() * pieces.length);
-            currentPiece = { shape: pieces[type], row: 0, col: Math.floor(cols / 2) - 1 };
-
-            // ゲームオーバー判定
-            if (collide()) {
-                endGame();
-            }
-        }
-
-        function drawBoard() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            board.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value) {
-                        ctx.fillStyle = 'cyan';
-                        ctx.fillRect(x * grid, y * grid, grid - 1, grid - 1);
-                    }
-                });
-            });
-            drawPiece();
-        }
-
-        function drawPiece() {
-            ctx.fillStyle = 'yellow';
-            currentPiece.shape.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value) {
-                        ctx.fillRect((currentPiece.col + x) * grid, (currentPiece.row + y) * grid, grid - 1, grid - 1);
-                    }
-                });
-            });
-        }
-
-        function movePiece(dx, dy) {
-            if (gameOver || !gameStarted) return;
-            currentPiece.col += dx;
-            currentPiece.row += dy;
-
-            if (collide()) {
-                currentPiece.col -= dx;
-                currentPiece.row -= dy;
-
-                if (dy === 1) {
-                    mergePiece();
-                    createPiece();
-                    clearLines();
-                }
-            }
-            drawBoard();
-        }
-
-        function rotate() {
-            if (gameOver || !gameStarted) return;
-            const shape = currentPiece.shape;
-            currentPiece.shape = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
-            if (collide()) currentPiece.shape = shape;
-            drawBoard();
-        }
-
-        function collide() {
-            return currentPiece.shape.some((row, y) =>
-                row.some((value, x) =>
-                    value &&
-                    (board[currentPiece.row + y] === undefined ||
-                     board[currentPiece.row + y][currentPiece.col + x] === undefined ||
-                     board[currentPiece.row + y][currentPiece.col + x])
-                )
-            );
-        }
-
-        function mergePiece() {
-            currentPiece.shape.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value) {
-                        board[currentPiece.row + y][currentPiece.col + x] = value;
-                    }
-                });
-            });
-        }
-
-        function clearLines() {
-            board = board.filter(row => !row.every(value => value));
-            while (board.length < rows) {
-                board.unshift(Array(cols).fill(0));
-            }
-            score += 10;
-            document.getElementById('score').textContent = `スコア: ${score}`;
-        }
-
-        function moveLeft() {
-            movePiece(-1, 0);
-        }
-
-        function moveRight() {
-            movePiece(1, 0);
-        }
-
-        function moveDown() {
-            movePiece(0, 1);
-        }
-
-        function gameLoop() {
-            if (!gameOver) {
-                movePiece(0, 1);
-            }
-        }
-
-        function startGame() {
-            if (!gameStarted) {
-                gameStarted = true;
-                createPiece();
-                drawBoard();
-                gameLoopInterval = setInterval(gameLoop, 500);
-                document.querySelector('.start-btn').style.display = 'none';
-            }
-        }
-
-        function endGame() {
-            gameOver = true;
-            clearInterval(gameLoopInterval);
-            alert('ゲームオーバー！スコア: ' + score);
-            document.querySelector('.reset-btn').style.display = 'inline-block';
-        }
-
-        function resetGame() {
-            gameStarted = false;
-            gameOver = false;
-            score = 0;
-            board = Array.from({ length: rows }, () => Array(cols).fill(0));
-            document.getElementById('score').textContent = 'スコア: 0';
-            document.querySelector('.start-btn').style.display = 'inline-block';
-            document.querySelector('.reset-btn').style.display = 'none';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        const gridSize = 5; // 5x5のグリッド
+        const mineCount = 5;
+        let grid = [];
+        let revealedCount = 0;
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            grid = [];
+            revealedCount = 0;
+            document.getElementById("status").textContent = "ゲーム状態: プレイ中";
+            generateGrid();
+        }
+
+        function generateGrid() {
+            const gridElement = document.getElementById("grid");
+            gridElement.innerHTML = '';
+            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+            for (let i = 0; i < gridSize; i++) {
+                grid[i] = [];
+                for (let j = 0; j < gridSize; j++) {
+                    grid[i][j] = { mine: false, revealed: false, neighboringMines: 0 };
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.onclick = () => revealCell(i, j);
+                    gridElement.appendChild(cell);
+                }
+            }
+
+            placeMines();
+        }
+
+        function placeMines() {
+            let placedMines = 0;
+            while (placedMines < mineCount) {
+                const row = Math.floor(Math.random() * gridSize);
+                const col = Math.floor(Math.random() * gridSize);
+                if (!grid[row][col].mine) {
+                    grid[row][col].mine = true;
+                    placedMines++;
+                    updateNeighborCounts(row, col);
+                }
+            }
+        }
+
+        function updateNeighborCounts(row, col) {
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    const newRow = row + i;
+                    const newCol = col + j;
+                    if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+                        grid[newRow][newCol].neighboringMines++;
+                    }
+                }
+            }
+        }
+
+        function revealCell(row, col) {
+            if (grid[row][col].revealed) return;
+
+            const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+            grid[row][col].revealed = true;
+            cell.classList.add('revealed');
+            revealedCount++;
+
+            if (grid[row][col].mine) {
+                cell.textContent = '💣';
+                cell.classList.add('mine');
+                endGame(false);
+            } else {
+                cell.textContent = grid[row][col].neighboringMines || '';
+                if (revealedCount === gridSize * gridSize - mineCount) {
+                    endGame(true);
+                }
+            }
+        }
+
+        function endGame(won) {
+            document.getElementById("status").textContent = won ? "ゲーム状態: 勝利！" : "ゲーム状態: 敗北...";
+            revealAllCells();
+        }
+
+        function revealAllCells() {
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.querySelector(`.cell[data-row='${i}'][data-col='${j}']`);
+                    if (grid[i][j].mine) {
+                        cell.textContent = '💣';
+                        cell.classList.add('mine');
+                    } else {
+                        cell.textContent = grid[i][j].neighboringMines || '';
+                    }
+                    cell.classList.add('revealed');
+                }
+            }
         }
     </script>
 </body>
