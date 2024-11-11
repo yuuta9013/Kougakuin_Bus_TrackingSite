@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フルーツキャッチゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f3e1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            background-color: #87CEEB;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            width: 100px;
+            height: 50px;
+            font-size: 18px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .control-btn:active {
+            background-color: #666;
+        }
+
+        #score {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1>フルーツキャッチゲーム</h1>
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    <div id="score">スコア: 0</div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="moveBasket(-20)">← 左</button>
+        <button class="control-btn" onclick="moveBasket(20)">右 →</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const basket = { x: 175, y: 450, width: 50, height: 30 };
+        const fruits = [];
+        let score = 0;
+        let gameLoopInterval;
+
+        function startGame() {
+            fruits.push(createFruit());
+            gameLoopInterval = setInterval(gameLoop, 50);
+        }
+
+        function createFruit() {
+            return { x: Math.random() * 350, y: 0, radius: 15, speed: 3 + Math.random() * 3 };
+        }
+
+        function drawBasket() {
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+        }
+
+        function drawFruit(fruit) {
+            ctx.beginPath();
+            ctx.arc(fruit.x, fruit.y, fruit.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function moveBasket(dx) {
+            basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x + dx));
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBasket();
+            fruits.forEach((fruit, index) => {
+                fruit.y += fruit.speed;
+                drawFruit(fruit);
+
+                // バスケットとフルーツの衝突判定
+                if (
+                    fruit.y + fruit.radius > basket.y &&
+                    fruit.x > basket.x &&
+                    fruit.x < basket.x + basket.width
+                ) {
+                    fruits.splice(index, 1);
+                    score += 10;
+                    document.getElementById('score').textContent = `スコア: ${score}`;
+                } else if (fruit.y > canvas.height) {
+                    fruits.splice(index, 1);
+                }
+            });
+
+            if (Math.random() < 0.02) {
+                fruits.push(createFruit());
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
