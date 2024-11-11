@@ -6,12 +6,110 @@
     <title>マインスイーパーチャレンジ</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f3e1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            padding: 10px;
+        }
+
+        .menu-btn {
+            background: none;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        nav {
+            display: none;
+            background: #333;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            margin: 10px 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        #puzzle {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .tile {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #444;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .empty {
+            background-color: #f8f3e1;
+            cursor: default;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
     </style>
 </head>
 <body>
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
+        <nav id="menu">
             <ul>
                 <li><a href="index.html">位置情報</a></li><br>
                 <li><a href="notification.html">お知らせ</a></li><br>
@@ -21,13 +119,81 @@
         </nav>
     </header>
 
-<p>スライドパズル</p>
+    <p>スライドパズル</p>
     
-
     <section class="game">
+        <div id="puzzle"></div>
+        <div id="status">順番通りに並べてください！</div>
+        <button onclick="resetPuzzle()">リセット</button>
     </section>
 
     <script>
+        const puzzleElement = document.getElementById('puzzle');
+        const statusElement = document.getElementById('status');
+        let tiles = [];
+        const gridSize = 3;
+
+        function createPuzzle() {
+            tiles = [...Array(gridSize * gridSize - 1).keys()].map(x => x + 1);
+            tiles.push(''); // 空白タイル
+
+            shuffleArray(tiles);
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            puzzleElement.innerHTML = '';
+            tiles.forEach((tile, index) => {
+                const tileElement = document.createElement('div');
+                tileElement.classList.add('tile');
+                if (tile === '') {
+                    tileElement.classList.add('empty');
+                } else {
+                    tileElement.textContent = tile;
+                    tileElement.onclick = () => moveTile(index);
+                }
+                puzzleElement.appendChild(tileElement);
+            });
+        }
+
+        function moveTile(index) {
+            const emptyIndex = tiles.indexOf('');
+            const [emptyRow, emptyCol] = [Math.floor(emptyIndex / gridSize), emptyIndex % gridSize];
+            const [tileRow, tileCol] = [Math.floor(index / gridSize), index % gridSize];
+
+            if (Math.abs(emptyRow - tileRow) + Math.abs(emptyCol - tileCol) === 1) {
+                tiles[emptyIndex] = tiles[index];
+                tiles[index] = '';
+                renderPuzzle();
+                checkWin();
+            }
+        }
+
+        function checkWin() {
+            const winningOrder = [...Array(gridSize * gridSize - 1).keys()].map(x => x + 1).concat('');
+            if (JSON.stringify(tiles) === JSON.stringify(winningOrder)) {
+                statusElement.textContent = 'おめでとうございます！クリアしました！';
+            }
+        }
+
+        function resetPuzzle() {
+            statusElement.textContent = '順番通りに並べてください！';
+            createPuzzle();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        createPuzzle();
     </script>
 </body>
 </html>
