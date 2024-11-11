@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マインスイーパーチャレンジ</title>
+    <title>スライドパズル</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -59,16 +59,21 @@
             min-height: 80vh;
         }
 
+        #puzzle-container {
+            overflow: auto;
+            width: 100%;
+            max-width: 95vw;
+        }
+
         #puzzle {
             display: grid;
-            grid-template-columns: repeat(3, 80px);
             gap: 5px;
             margin-top: 20px;
         }
 
         .tile {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -104,6 +109,12 @@
         button:hover {
             background-color: #666;
         }
+
+        select {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -122,7 +133,15 @@
     <p>スライドパズル</p>
     
     <section class="game">
-        <div id="puzzle"></div>
+        <select id="difficulty" onchange="changeDifficulty()">
+            <option value="3">イージー (3x3)</option>
+            <option value="5">ノーマル (5x5)</option>
+            <option value="9">ハード (9x9)</option>
+            <option value="11">エクストラ (11x11)</option>
+        </select>
+        <div id="puzzle-container">
+            <div id="puzzle"></div>
+        </div>
         <div id="status">順番通りに並べてください！</div>
         <button onclick="resetPuzzle()">リセット</button>
     </section>
@@ -131,17 +150,46 @@
         const puzzleElement = document.getElementById('puzzle');
         const statusElement = document.getElementById('status');
         let tiles = [];
-        const gridSize = 3;
+        let gridSize = 3;
 
         function createPuzzle() {
             tiles = [...Array(gridSize * gridSize - 1).keys()].map(x => x + 1);
             tiles.push(''); // 空白タイル
 
-            shuffleArray(tiles);
+            shufflePuzzle();
             renderPuzzle();
         }
 
+        function shufflePuzzle() {
+            const directions = [
+                { row: -1, col: 0 },  // 上
+                { row: 1, col: 0 },   // 下
+                { row: 0, col: -1 },  // 左
+                { row: 0, col: 1 }    // 右
+            ];
+
+            let emptyIndex = tiles.indexOf('');
+            let emptyRow = Math.floor(emptyIndex / gridSize);
+            let emptyCol = emptyIndex % gridSize;
+
+            for (let i = 0; i < 100; i++) {
+                const direction = directions[Math.floor(Math.random() * directions.length)];
+                const newRow = emptyRow + direction.row;
+                const newCol = emptyCol + direction.col;
+
+                if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+                    const newIndex = newRow * gridSize + newCol;
+                    tiles[emptyIndex] = tiles[newIndex];
+                    tiles[newIndex] = '';
+                    emptyIndex = newIndex;
+                    emptyRow = newRow;
+                    emptyCol = newCol;
+                }
+            }
+        }
+
         function renderPuzzle() {
+            puzzleElement.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`;
             puzzleElement.innerHTML = '';
             tiles.forEach((tile, index) => {
                 const tileElement = document.createElement('div');
@@ -181,11 +229,9 @@
             createPuzzle();
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
+        function changeDifficulty() {
+            gridSize = parseInt(document.getElementById('difficulty').value, 10);
+            resetPuzzle();
         }
 
         function toggleMenu() {
