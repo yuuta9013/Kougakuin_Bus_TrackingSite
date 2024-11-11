@@ -122,25 +122,47 @@
             }
         }
 
-        function revealCell(row, col) {
-            if (grid[row][col].revealed) return;
+           function revealCell(row, col) {
+        if (grid[row][col].revealed) return;
 
-            const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
-            grid[row][col].revealed = true;
-            cell.classList.add('revealed');
-            revealedCount++;
+        const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+        grid[row][col].revealed = true;
+        cell.classList.add('revealed');
+        revealedCount++;
 
-            if (grid[row][col].mine) {
-                cell.textContent = '💣';
-                cell.classList.add('mine');
-                endGame(false);
-            } else {
-                cell.textContent = grid[row][col].neighboringMines || '';
-                if (revealedCount === gridSize * gridSize - mineCount) {
-                    endGame(true);
+        if (grid[row][col].mine) {
+            cell.textContent = '💣';
+            cell.classList.add('mine');
+            endGame(false);
+        } else {
+            const neighboringMines = grid[row][col].neighboringMines;
+            cell.textContent = neighboringMines || '';
+            
+            if (neighboringMines === 0) {
+                revealAdjacentCells(row, col); // 隣接するセルを自動的に開く
+            }
+
+            if (revealedCount === gridSize * gridSize - mineCount) {
+                endGame(true);
+            }
+        }
+    }
+
+    function revealAdjacentCells(row, col) {
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                const newRow = row + i;
+                const newCol = col + j;
+                if (
+                    newRow >= 0 && newRow < gridSize &&
+                    newCol >= 0 && newCol < gridSize &&
+                    !grid[newRow][newCol].revealed
+                ) {
+                    revealCell(newRow, newCol);
                 }
             }
         }
+    }
 
         function endGame(won) {
             document.getElementById("status").textContent = won ? "ゲーム状態: 勝利！" : "ゲーム状態: 敗北...";
