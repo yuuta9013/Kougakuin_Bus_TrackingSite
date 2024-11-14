@@ -68,28 +68,8 @@
         <p id="resultDisplay">ターゲットにたどり着け！</p>
     </section>
 
-    <script>
-        let gamepadIndex = null;
-        const character = document.getElementById("character");
-        const target = document.getElementById("target");
-        const gameArea = document.getElementById("gameArea");
-
-        const characterSpeed = 5;
-
-        function toggleMenu() {
-            const menu = document.getElementById("menu");
-            menu.style.display = menu.style.display === "none" ? "block" : "none";
-        }
-
-        // ターゲットのランダム配置
-        function placeTarget() {
-            const maxX = gameArea.clientWidth - 30;
-            const maxY = gameArea.clientHeight - 30;
-            target.style.left = Math.random() * maxX + "px";
-            target.style.top = Math.random() * maxY + "px";
-        }
-
-     // キャラクターの移動処理
+<script>
+    // キャラクターの移動処理
     function moveCharacter(dx, dy) {
         const rect = character.getBoundingClientRect();
         const areaRect = gameArea.getBoundingClientRect();
@@ -107,6 +87,22 @@
         checkCollision();
     }
 
+    // ターゲットとの衝突判定
+    function checkCollision() {
+        const charRect = character.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        if (
+            charRect.left < targetRect.right &&
+            charRect.right > targetRect.left &&
+            charRect.top < targetRect.bottom &&
+            charRect.bottom > targetRect.top
+        ) {
+            document.getElementById("resultDisplay").textContent = "成功！ターゲットに到達！";
+            placeTarget();
+        }
+    }
+
     // ゲームパッドの入力処理
     function handleGamepadInput() {
         const gamepad = navigator.getGamepads()[gamepadIndex];
@@ -118,22 +114,27 @@
         let axisX = gamepad.axes[0];
         let axisY = gamepad.axes[1];
 
-        // デッドゾーンの設定
+        // デッドゾーンの適用
         axisX = Math.abs(axisX) > deadZone ? axisX : 0;
         axisY = Math.abs(axisY) > deadZone ? axisY : 0;
 
-        // スティックが閾値を超える場合のみ移動
-        if (Math.abs(axisX) > threshold) {
-            moveCharacter(axisX * characterSpeed, 0);
-        }
-        if (Math.abs(axisY) > threshold) {
-            moveCharacter(0, axisY * characterSpeed);
+        // スティックが閾値を超える場合にキャラクターを動かす
+        if (Math.abs(axisX) > threshold || Math.abs(axisY) > threshold) {
+            moveCharacter(axisX * characterSpeed, axisY * characterSpeed);
         }
 
+        // 次のフレームで再びこの関数を呼び出す
         requestAnimationFrame(handleGamepadInput);
     }
 
-    // 初期化処理はそのまま
+    // ゲーム開始時のターゲット配置
+    function placeTarget() {
+        const maxX = gameArea.clientWidth - 30;
+        const maxY = gameArea.clientHeight - 30;
+        target.style.left = Math.random() * maxX + "px";
+        target.style.top = Math.random() * maxY + "px";
+    }
+
     window.addEventListener("gamepadconnected", (event) => {
         gamepadIndex = event.gamepad.index;
         document.getElementById("resultDisplay").textContent = "ゲームパッド接続: 準備完了";
@@ -146,6 +147,7 @@
     });
 
     placeTarget();
-    </script>
+</script>
+
 </body>
 </html>
