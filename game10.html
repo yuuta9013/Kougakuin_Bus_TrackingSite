@@ -1,5 +1,95 @@
-<script>
-    // キャラクターの移動処理
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームパッド対応アクションゲーム</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        #gameArea {
+            width: 500px;
+            height: 500px;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid black;
+        }
+        .character {
+            width: 40px;
+            height: 40px;
+            background-color: blue;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+        .target {
+            width: 30px;
+            height: 30px;
+            background-color: green;
+            position: absolute;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="game">
+        <h1>ゲームパッド対応アクションゲーム</h1>
+        <p>コントローラーでキャラクターを動かして、緑のターゲットを目指そう！</p>
+        <div id="gameArea">
+            <div id="character" class="character"></div>
+            <div id="target" class="target"></div>
+        </div>
+        <p id="resultDisplay">ターゲットにたどり着け！</p>
+    </section>
+
+    <script>
+        let gamepadIndex = null;
+        const character = document.getElementById("character");
+        const target = document.getElementById("target");
+        const gameArea = document.getElementById("gameArea");
+
+        const characterSpeed = 5;
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        // ターゲットのランダム配置
+        function placeTarget() {
+            const maxX = gameArea.clientWidth - 30;
+            const maxY = gameArea.clientHeight - 30;
+            target.style.left = Math.random() * maxX + "px";
+            target.style.top = Math.random() * maxY + "px";
+        }
+
+     // キャラクターの移動処理
     function moveCharacter(dx, dy) {
         const rect = character.getBoundingClientRect();
         const areaRect = gameArea.getBoundingClientRect();
@@ -56,4 +146,6 @@
     });
 
     placeTarget();
-</script>
+    </script>
+</body>
+</html>
