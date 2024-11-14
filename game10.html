@@ -1,161 +1,59 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ゲームパッド対応アクションゲーム</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .game {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
-        }
-        #gameArea {
-            width: 500px;
-            height: 500px;
-            background-color: #f0f0f0;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid black;
-        }
-        .character {
-            width: 40px;
-            height: 40px;
-            background-color: blue;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-        }
-        .target {
-            width: 30px;
-            height: 30px;
-            background-color: green;
-            position: absolute;
-            border-radius: 50%;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
-            <ul>
-                <li><a href="index.html">位置情報</a></li><br>
-                <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ミニゲーム</a></li><br>
-                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
-            </ul>
-        </nav>
-    </header>
+<script>
+    // キャラクターの移動処理
+    function moveCharacter(dx, dy) {
+        const rect = character.getBoundingClientRect();
+        const areaRect = gameArea.getBoundingClientRect();
 
-    <section class="game">
-        <h1>ゲームパッド対応アクションゲーム</h1>
-        <p>コントローラーでキャラクターを動かして、緑のターゲットを目指そう！</p>
-        <div id="gameArea">
-            <div id="character" class="character"></div>
-            <div id="target" class="target"></div>
-        </div>
-        <p id="resultDisplay">ターゲットにたどり着け！</p>
-    </section>
+        let newX = character.offsetLeft + dx;
+        let newY = character.offsetTop + dy;
 
-    <script>
-        let gamepadIndex = null;
-        const character = document.getElementById("character");
-        const target = document.getElementById("target");
-        const gameArea = document.getElementById("gameArea");
+        // 移動範囲の制限
+        newX = Math.max(0, Math.min(gameArea.clientWidth - rect.width, newX));
+        newY = Math.max(0, Math.min(gameArea.clientHeight - rect.height, newY));
 
-        const characterSpeed = 5;
+        character.style.left = newX + "px";
+        character.style.top = newY + "px";
 
-        function toggleMenu() {
-            const menu = document.getElementById("menu");
-            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        checkCollision();
+    }
+
+    // ゲームパッドの入力処理
+    function handleGamepadInput() {
+        const gamepad = navigator.getGamepads()[gamepadIndex];
+        if (!gamepad) return;
+
+        const threshold = 0.2; // スティックの反応閾値
+        const deadZone = 0.1;  // 中央付近のノイズを無視
+
+        let axisX = gamepad.axes[0];
+        let axisY = gamepad.axes[1];
+
+        // デッドゾーンの設定
+        axisX = Math.abs(axisX) > deadZone ? axisX : 0;
+        axisY = Math.abs(axisY) > deadZone ? axisY : 0;
+
+        // スティックが閾値を超える場合のみ移動
+        if (Math.abs(axisX) > threshold) {
+            moveCharacter(axisX * characterSpeed, 0);
+        }
+        if (Math.abs(axisY) > threshold) {
+            moveCharacter(0, axisY * characterSpeed);
         }
 
-        // ターゲットのランダム配置
-        function placeTarget() {
-            const maxX = gameArea.clientWidth - 30;
-            const maxY = gameArea.clientHeight - 30;
-            target.style.left = Math.random() * maxX + "px";
-            target.style.top = Math.random() * maxY + "px";
-        }
+        requestAnimationFrame(handleGamepadInput);
+    }
 
-        // キャラクターの移動処理
-        function moveCharacter(dx, dy) {
-            const rect = character.getBoundingClientRect();
-            const areaRect = gameArea.getBoundingClientRect();
+    // 初期化処理はそのまま
+    window.addEventListener("gamepadconnected", (event) => {
+        gamepadIndex = event.gamepad.index;
+        document.getElementById("resultDisplay").textContent = "ゲームパッド接続: 準備完了";
+        requestAnimationFrame(handleGamepadInput);
+    });
 
-            let newX = rect.left - areaRect.left + dx;
-            let newY = rect.top - areaRect.top + dy;
+    window.addEventListener("gamepaddisconnected", () => {
+        gamepadIndex = null;
+        document.getElementById("resultDisplay").textContent = "ゲームパッドが切断されました";
+    });
 
-            // 移動範囲の制限
-            newX = Math.max(0, Math.min(gameArea.clientWidth - rect.width, newX));
-            newY = Math.max(0, Math.min(gameArea.clientHeight - rect.height, newY));
-
-            character.style.left = newX + "px";
-            character.style.top = newY + "px";
-
-            checkCollision();
-        }
-
-        // ターゲットとの衝突判定
-        function checkCollision() {
-            const charRect = character.getBoundingClientRect();
-            const targetRect = target.getBoundingClientRect();
-
-            if (
-                charRect.left < targetRect.right &&
-                charRect.right > targetRect.left &&
-                charRect.top < targetRect.bottom &&
-                charRect.bottom > targetRect.top
-            ) {
-                document.getElementById("resultDisplay").textContent = "成功！ターゲットに到達！";
-                placeTarget();
-            }
-        }
-
-        // ゲームパッドの入力処理
-        function handleGamepadInput() {
-            const gamepad = navigator.getGamepads()[gamepadIndex];
-            if (!gamepad) return;
-
-            const threshold = 0.2; // スティックの反応閾値
-
-            const axisX = gamepad.axes[0];
-            const axisY = gamepad.axes[1];
-
-            if (Math.abs(axisX) > threshold) {
-                moveCharacter(axisX * characterSpeed, 0);
-            }
-            if (Math.abs(axisY) > threshold) {
-                moveCharacter(0, axisY * characterSpeed);
-            }
-
-            requestAnimationFrame(handleGamepadInput);
-        }
-
-        window.addEventListener("gamepadconnected", (event) => {
-            gamepadIndex = event.gamepad.index;
-            document.getElementById("resultDisplay").textContent = "ゲームパッド接続: 準備完了";
-            requestAnimationFrame(handleGamepadInput);
-        });
-
-        window.addEventListener("gamepaddisconnected", () => {
-            gamepadIndex = null;
-            document.getElementById("resultDisplay").textContent = "ゲームパッドが切断されました";
-        });
-
-        // ゲーム開始時のターゲット配置
-        placeTarget();
-    </script>
-</body>
-</html>
+    placeTarget();
+</script>
