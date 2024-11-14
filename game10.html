@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>横スクロールアクションゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>横スクロールアクションゲーム - ゲームパッド対応</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            overflow: hidden; /* 横スクロールゲームでスクロールを制限 */
+            overflow: hidden;
         }
         .game {
             display: flex;
@@ -31,48 +30,55 @@
             height: 40px;
             background-color: red;
             position: absolute;
-            bottom: 10px; /* 地面に置く */
-            left: 50px;
+            bottom: 10px;
+            left: 100px; /* 初期位置を少し中央に寄せる */
         }
         .ground {
             position: absolute;
             bottom: 0;
-            width: 2000px; /* スクロール用に長い地面 */
+            width: 2000px; /* 長い地面 */
             height: 20px;
             background-color: green;
-        }
-        .obstacle {
-            position: absolute;
-            width: 20px;
-            height: 40px;
-            background-color: brown;
-            bottom: 20px;
         }
     </style>
 </head>
 <body>
     <section class="game">
-        <h1>横スクロールアクションゲーム</h1>
+        <h1>横スクロールアクションゲーム - ゲームパッド対応</h1>
         <div id="gameArea">
             <div id="character" class="character"></div>
             <div class="ground"></div>
-            <div class="obstacle" style="left: 300px;"></div>
-            <div class="obstacle" style="left: 600px;"></div>
-            <div class="obstacle" style="left: 900px;"></div>
         </div>
-        <p id="status">スペースキーでジャンプ！</p>
+        <p id="status">ゲームパッドでプレイ可能：×ボタンでジャンプ、スティックで左右移動</p>
     </section>
 
     <script>
+        let gamepadIndex = null;
         const character = document.getElementById("character");
         const gameArea = document.getElementById("gameArea");
         const groundHeight = 20;
+        const characterSpeed = 3;
         let velocityY = 0;
         let gravity = 0.8;
         let isJumping = false;
         let scrollOffset = 0;
 
         function gameLoop() {
+            if (gamepadIndex !== null) {
+                const gamepad = navigator.getGamepads()[gamepadIndex];
+                if (gamepad) {
+                    // 左スティックで左右移動
+                    const axisX = gamepad.axes[0];
+                    if (Math.abs(axisX) > 0.2) { // スティックの感度を調整
+                        moveCharacter(axisX * characterSpeed);
+                    }
+                    // ×ボタンでジャンプ (ボタン0)
+                    if (gamepad.buttons[0].pressed) {
+                        jump();
+                    }
+                }
+            }
+
             // 重力処理
             if (character.offsetTop < gameArea.clientHeight - groundHeight - character.clientHeight) {
                 velocityY += gravity;
@@ -83,16 +89,27 @@
                 isJumping = false;
             }
 
-            // スクロール効果
-            scrollOffset += 2; // スクロールスピード
-            gameArea.style.backgroundPositionX = -scrollOffset + "px";
+            // キャラクターが画面の中央を超えたらスクロール
+            const characterLeft = character.offsetLeft;
+            if (characterLeft > gameArea.clientWidth / 2) {
+                scrollOffset += characterSpeed;
+                gameArea.style.backgroundPositionX = -scrollOffset + "px";
+                character.style.left = gameArea.clientWidth / 2 + "px"; // キャラクター位置を固定
+            } else {
+                character.style.left = characterLeft + "px";
+            }
 
-            // キャラクター移動（デモ用に常に右に移動）
-            let characterLeft = character.offsetLeft + 2;
-            character.style.left = characterLeft + "px";
-
-            // ゲームループの継続
             requestAnimationFrame(gameLoop);
+        }
+
+        function moveCharacter(dx) {
+            const newPos = character.offsetLeft + dx;
+            const maxLeft = 0;
+            const maxRight = gameArea.clientWidth - character.clientWidth;
+
+            if (newPos > maxLeft && newPos < maxRight) {
+                character.style.left = newPos + "px";
+            }
         }
 
         function jump() {
@@ -102,10 +119,14 @@
             }
         }
 
-        window.addEventListener("keydown", (event) => {
-            if (event.code === "Space") {
-                jump();
-            }
+        window.addEventListener("gamepadconnected", (event) => {
+            gamepadIndex = event.gamepad.index;
+            document.getElementById("status").textContent = "ゲームパッド接続: プレイ可能";
+        });
+
+        window.addEventListener("gamepaddisconnected", () => {
+            gamepadIndex = null;
+            document.getElementById("status").textContent = "ゲームパッドが切断されました";
         });
 
         gameLoop(); // ゲームを開始
