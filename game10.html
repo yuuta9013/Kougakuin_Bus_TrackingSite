@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">　
-    <title>ゲームパッド対応アクションゲーム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームパッド対応アクションゲーム - 大作版</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -26,22 +26,32 @@
             overflow: hidden;
             border: 2px solid black;
         }
+        .character, .enemy, .item {
+            position: absolute;
+            border-radius: 50%;
+        }
         .character {
             width: 40px;
             height: 40px;
             background-color: blue;
-            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border-radius: 50%;
+        }
+        .enemy {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+        }
+        .item {
+            width: 20px;
+            height: 20px;
+            background-color: yellow;
         }
         .target {
             width: 30px;
             height: 30px;
             background-color: green;
-            position: absolute;
-            border-radius: 50%;
         }
     </style>
 </head>
@@ -59,37 +69,40 @@
     </header>
 
     <section class="game">
-        <h1>ゲームパッド対応アクションゲーム</h1>
-        <p>コントローラーでキャラクターを動かして、緑のターゲットを目指そう！<br>※コントローラーが正しく接続されると、<br>下に書いてある「ターゲットにたどり着け！」の文字が「ゲームパッド接続: 準備完了」の文字に切り替わります</p>
+        <h1>ゲームパッド対応アクションゲーム - 大作版</h1>
+        <p>コントローラーでキャラクターを動かして、ターゲットを目指す大作アクションゲーム！<br>敵を避け、アイテムを集め、ステージをクリアしよう！</p>
         <div id="gameArea">
             <div id="character" class="character"></div>
             <div id="target" class="target"></div>
+            <div id="enemy" class="enemy"></div>
+            <div id="item" class="item"></div>
         </div>
         <p id="resultDisplay">ターゲットにたどり着け！</p>
+        <p id="scoreDisplay">スコア: 0</p>
     </section>
 
 <script>
     let gamepadIndex = null;
     const character = document.getElementById("character");
     const target = document.getElementById("target");
+    const enemy = document.getElementById("enemy");
+    const item = document.getElementById("item");
     const gameArea = document.getElementById("gameArea");
+    let score = 0;
 
-    const characterSpeed = 5; // キャラクターの移動速度
+    const characterSpeed = 5;
 
     function toggleMenu() {
         const menu = document.getElementById("menu");
         menu.style.display = menu.style.display === "none" ? "block" : "none";
     }
 
-    // キャラクターの移動処理
     function moveCharacter(dx, dy) {
         const rect = character.getBoundingClientRect();
         const areaRect = gameArea.getBoundingClientRect();
-
         let newX = character.offsetLeft + dx;
         let newY = character.offsetTop + dy;
 
-        // 移動範囲の制限
         newX = Math.max(0, Math.min(gameArea.clientWidth - rect.width, newX));
         newY = Math.max(0, Math.min(gameArea.clientHeight - rect.height, newY));
 
@@ -97,12 +110,13 @@
         character.style.top = newY + "px";
 
         checkCollision();
+        checkItemPickup();
     }
 
-    // ターゲットとの衝突判定
     function checkCollision() {
         const charRect = character.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
+        const enemyRect = enemy.getBoundingClientRect();
 
         if (
             charRect.left < targetRect.right &&
@@ -110,47 +124,90 @@
             charRect.top < targetRect.bottom &&
             charRect.bottom > targetRect.top
         ) {
-            document.getElementById("resultDisplay").textContent = "成功！ターゲットに到達！";
+            document.getElementById("resultDisplay").textContent = "成功！ターゲットに到達！次のステージへ！";
             placeTarget();
+            score += 10;
+            updateScore();
+        }
+
+        if (
+            charRect.left < enemyRect.right &&
+            charRect.right > enemyRect.left &&
+            charRect.top < enemyRect.bottom &&
+            charRect.bottom > enemyRect.top
+        ) {
+            document.getElementById("resultDisplay").textContent = "ゲームオーバー！敵に接触しました。";
         }
     }
 
-    // ゲームパッドの入力処理
+    function checkItemPickup() {
+        const charRect = character.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+
+        if (
+            charRect.left < itemRect.right &&
+            charRect.right > itemRect.left &&
+            charRect.top < itemRect.bottom &&
+            charRect.bottom > itemRect.top
+        ) {
+            item.style.display = "none";
+            score += 5;
+            updateScore();
+        }
+    }
+
     function handleGamepadInput() {
         const gamepad = navigator.getGamepads()[gamepadIndex];
         if (!gamepad) return;
 
-        const threshold = 0.2; // スティックの反応閾値
-        const deadZone = 0.1;  // 中央付近のノイズを無視
+        const threshold = 0.2;
+        const deadZone = 0.1;
+        let axisX = gamepad.axes[0];
+        let axisY = gamepad.axes[1];
 
-        let axisX = gamepad.axes[0]; // 左スティックの横軸
-        let axisY = gamepad.axes[1]; // 左スティックの縦軸
-
-        // デッドゾーンの適用
         axisX = Math.abs(axisX) > deadZone ? axisX : 0;
         axisY = Math.abs(axisY) > deadZone ? axisY : 0;
 
-        // スティック入力が閾値を超えた場合に移動
         if (Math.abs(axisX) > threshold || Math.abs(axisY) > threshold) {
             moveCharacter(axisX * characterSpeed, axisY * characterSpeed);
         }
 
-        // 次のフレームで再びこの関数を呼び出す
         requestAnimationFrame(handleGamepadInput);
     }
 
-    // ターゲットをランダムな位置に配置
     function placeTarget() {
         const maxX = gameArea.clientWidth - 30;
         const maxY = gameArea.clientHeight - 30;
         target.style.left = Math.random() * maxX + "px";
         target.style.top = Math.random() * maxY + "px";
+
+        placeEnemy();
+        placeItem();
+    }
+
+    function placeEnemy() {
+        const maxX = gameArea.clientWidth - 30;
+        const maxY = gameArea.clientHeight - 30;
+        enemy.style.left = Math.random() * maxX + "px";
+        enemy.style.top = Math.random() * maxY + "px";
+    }
+
+    function placeItem() {
+        item.style.display = "block";
+        const maxX = gameArea.clientWidth - 20;
+        const maxY = gameArea.clientHeight - 20;
+        item.style.left = Math.random() * maxX + "px";
+        item.style.top = Math.random() * maxY + "px";
+    }
+
+    function updateScore() {
+        document.getElementById("scoreDisplay").textContent = "スコア: " + score;
     }
 
     window.addEventListener("gamepadconnected", (event) => {
         gamepadIndex = event.gamepad.index;
         document.getElementById("resultDisplay").textContent = "ゲームパッド接続: 準備完了";
-        requestAnimationFrame(handleGamepadInput); // 入力処理を開始
+        requestAnimationFrame(handleGamepadInput);
     });
 
     window.addEventListener("gamepaddisconnected", () => {
@@ -158,9 +215,7 @@
         document.getElementById("resultDisplay").textContent = "ゲームパッドが切断されました";
     });
 
-    // ゲーム開始時のターゲット配置
     placeTarget();
 </script>
-
 </body>
 </html>
