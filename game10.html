@@ -69,6 +69,18 @@
     </section>
 
 <script>
+    let gamepadIndex = null;
+    const character = document.getElementById("character");
+    const target = document.getElementById("target");
+    const gameArea = document.getElementById("gameArea");
+
+    const characterSpeed = 5; // キャラクターの移動速度
+
+    function toggleMenu() {
+        const menu = document.getElementById("menu");
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
     // キャラクターの移動処理
     function moveCharacter(dx, dy) {
         const rect = character.getBoundingClientRect();
@@ -111,14 +123,14 @@
         const threshold = 0.2; // スティックの反応閾値
         const deadZone = 0.1;  // 中央付近のノイズを無視
 
-        let axisX = gamepad.axes[0];
-        let axisY = gamepad.axes[1];
+        let axisX = gamepad.axes[0]; // 左スティックの横軸
+        let axisY = gamepad.axes[1]; // 左スティックの縦軸
 
         // デッドゾーンの適用
         axisX = Math.abs(axisX) > deadZone ? axisX : 0;
         axisY = Math.abs(axisY) > deadZone ? axisY : 0;
 
-        // スティックが閾値を超える場合にキャラクターを動かす
+        // スティック入力が閾値を超えた場合に移動
         if (Math.abs(axisX) > threshold || Math.abs(axisY) > threshold) {
             moveCharacter(axisX * characterSpeed, axisY * characterSpeed);
         }
@@ -127,7 +139,7 @@
         requestAnimationFrame(handleGamepadInput);
     }
 
-    // ゲーム開始時のターゲット配置
+    // ターゲットをランダムな位置に配置
     function placeTarget() {
         const maxX = gameArea.clientWidth - 30;
         const maxY = gameArea.clientHeight - 30;
@@ -138,7 +150,7 @@
     window.addEventListener("gamepadconnected", (event) => {
         gamepadIndex = event.gamepad.index;
         document.getElementById("resultDisplay").textContent = "ゲームパッド接続: 準備完了";
-        requestAnimationFrame(handleGamepadInput);
+        requestAnimationFrame(handleGamepadInput); // 入力処理を開始
     });
 
     window.addEventListener("gamepaddisconnected", () => {
@@ -146,6 +158,7 @@
         document.getElementById("resultDisplay").textContent = "ゲームパッドが切断されました";
     });
 
+    // ゲーム開始時のターゲット配置
     placeTarget();
 </script>
 
