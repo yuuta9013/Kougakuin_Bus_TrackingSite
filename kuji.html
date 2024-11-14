@@ -9,93 +9,60 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
         }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
+        .game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
         }
-        .menu-btn {
-            font-size: 1.5em;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
+        #result-container {
+            width: 500px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
         }
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        nav ul li {
-            margin: 5px 0;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-        #menu {
-            display: none;
-            background-color: #444;
-            padding: 10px;
-        }
-        h1, h2 {
-            color: #333;
+        h1, h2, p {
+            margin: 10px 0;
         }
         button {
             padding: 10px 20px;
-            font-size: 1em;
+            font-size: 16px;
             margin: 10px 0;
-            cursor: pointer;
-        }
-        #result-container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-        ul li {
-            display: inline-block;
-            margin: 0 10px;
-        }
-        ul li a {
-            text-decoration: none;
-            color: #007BFF;
         }
     </style>
 </head>
 <body>
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu">
+        <nav id="menu" style="display: none;">
             <ul>
-                <li><a href="index.html">地図表示に戻る</a></li>
-                <li><a href="home.html">ゲーム一覧に戻る</a></li>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
             </ul>
         </nav>
     </header>
 
     <section class="game">
         <h1>今日の運勢</h1>
+        <p>「おみくじを引く」ボタンをクリックして今日の運勢を確認しよう！</p>
         <button onclick="drawOmikuji()">おみくじを引く</button>
         <div id="result-container">
-            <h2 id="omikujiresult">結果:</h2>
-            <h2 id="kenkouresult">健康運:</h2>
-            <h2 id="sigotoresult">仕事運:</h2>
-            <h2 id="kinresult">金運:</h2>
-            <h2 id="gakugyouresult">学業運:</h2>
-            <h2 id="ryokouresult">旅行運:</h2>
-            <h2 id="kateiresult">家庭運:</h2>
-            <h2 id="matiresult">待ち人運:</h2>
+            <h2 id="omikujiresult">結果: </h2>
+            <h2 id="kenkouresult">健康運: </h2>
+            <h2 id="sigotoresult">仕事運: </h2>
+            <h2 id="kinresult">金運: </h2>
+            <h2 id="gakugyouresult">学業運: </h2>
+            <h2 id="ryokouresult">旅行運: </h2>
+            <h2 id="kateiresult">家庭運: </h2>
+            <h2 id="matiresult">待ち人運: </h2>
         </div>
     </section>
 
@@ -109,8 +76,7 @@
             const omikujiResults = ["大吉", "中吉", "吉", "末吉", "凶", "大凶"];
             const randomIndex = Math.floor(Math.random() * omikujiResults.length);
 
-            const omikujiresult = omikujiResults[randomIndex];
-            document.getElementById("omikujiresult").innerText = "結果: " + omikujiresult;
+            document.getElementById("omikujiresult").innerText = "結果: " + omikujiResults[randomIndex];
             document.getElementById("kenkouresult").innerText = "健康運: " + getKenkouResult(randomIndex);
             document.getElementById("sigotoresult").innerText = "仕事運: " + getSigotoResult(randomIndex);
             document.getElementById("kinresult").innerText = "金運: " + getKinResult(randomIndex);
@@ -120,93 +86,93 @@
             document.getElementById("matiresult").innerText = "待ち人運: " + getMatiResult(randomIndex);
         }
 
-        function getKenkouResult(index) {
-            const kenkouMessages = [
-                ["心身ともに絶好調！毎日が活力に満ちています", "疲れ知らずで、どんなことも乗り越えられます", "健康を維持する力が強く、日々が楽しく充実します"],
-                ["体調が安定していますが、無理は禁物です", "軽い運動を続ければ、さらに健康が向上します", "適度な休息で体調がさらに整います"],
-                ["小さな体調不良に注意しつつ、まずまずの健康です", "規則正しい生活で、より良い健康が得られます", "ストレス解消を心がけると、体調が安定します"],
-                ["少し疲れが出やすい時期です。無理せず休息を", "食生活に注意すれば体調も良くなります", "軽い運動を心がけると健康が安定します"],
-                ["体調を崩しやすいので、十分な睡眠が必要です", "無理をすると悪化するので、慎重に行動しましょう", "ストレスが溜まりやすい時期なので、リラックスを大切に"],
-                ["健康に大きな注意が必要です。早めに休養を取りましょう", "体調管理を怠ると大きな問題に繋がるかもしれません", "休息を第一に考えて、自分をいたわりましょう"]
-            ];
-            return getRandomMessage(kenkouMessages, index);
-        }
-
-        function getSigotoResult(index) {
-            const sigotoMessages = [
-                ["今月は思いがけないチャンスが訪れ、大きな成果を上げるでしょう", "あなたの努力が実を結び、評価も高まる時です", "周囲のサポートもあり、順調に物事が進みます"],
-                ["徐々に成果が現れ始める時期です。着実に進めば大きな成長が見込めます", "小さな成功が積み重なり、モチベーションが上がるでしょう", "周囲の人と協力すると、スムーズに仕事が進みます"],
-                ["目の前の仕事に集中することで、良い結果が期待できます", "焦らずに取り組めば、少しずつ運が開けてきます", "周囲のサポートに感謝しながら、着実に進んでいきましょう"],
-                ["大きな成果は難しいかもしれませんが、無理せず地道に進むことが大切です", "小さなつまづきがあるかもしれませんが、慎重に対処すれば問題はありません", "一歩一歩前進することを心がければ、少しずつ運が上がります"],
-                ["予期せぬトラブルが起こりやすい時期です。慎重な行動が求められます", "計画通りにいかないことも多いので、焦らず柔軟に対応しましょう", "周囲とのコミュニケーション不足に注意が必要です"],
-                ["大きな失敗のリスクがある時期です。無理な決断は控えましょう", "トラブルが続くかもしれませんが、無理をせず冷静に対処を心がけてください", "困難な時期ですが、焦らず慎重に状況を見極めることが大切です"]
-            ];
-            return getRandomMessage(sigotoMessages, index);
-        }
-
-        function getKinResult(index) {
-            const kinMessages = [
-                ["思いがけない収入が舞い込み、懐が潤うでしょう", "投資や買い物で良い結果が出やすい時です", "金運が絶好調で、無駄遣いも少なく、貯蓄も順調に増える時です"],
-                ["少額ながら収入が増えたり、貯金が増えたりと安定した金運です", "ちょっとした買い物で良い品が手に入り、満足できるでしょう", "無理をせず計画的にお金を使うことで、安定した金運が得られます"],
-                ["予算内で計画的にお金を使うことで、良い流れが生まれるでしょう", "思い切った使い方を避ければ、安定した収支を保てます", "少額の収入があるかもしれません。小さな喜びを感じる時期です"],
-                ["収入や出費に大きな変動はありませんが、節約を意識すると良いでしょう", "無理な投資や大きな買い物は避け、慎重に行動すると安心です", "小さな無駄遣いに注意が必要です"],
-                ["無駄遣いが増えやすい時期です。節約を心がけて対処しましょう", "思わぬ出費に悩まされるかもしれませんが、冷静に対応してください", "金銭管理のミスに注意が必要です"],
-                ["金銭トラブルの可能性があります。慎重な管理が求められます", "不意の大きな出費が発生しやすい時期です", "投資や買い物で損をしやすい運気です。しばらくは控えるのが賢明です"]
-            ];
-            return getRandomMessage(kinMessages, index);
-        }
-
-        function getGakugyouResult(index) {
-            const gakugyouMessages = [
-                ["集中力が高まり、学んだことがスムーズに身につくでしょう", "新しい知識が次々と吸収でき、学業で大きな成果が期待できます", "努力が実り、テストや課題で満足のいく結果が得られるでしょう"],
-                ["積み重ねが評価され、少しずつ結果が出始める時期です", "理解力が高まり、少し難しい内容にもスムーズに取り組めるでしょう", "努力が実を結ぶ兆しがあります"],
-                ["穏やかな学習ペースで進めば、安定した成果が得られるでしょう", "焦らず取り組むことで、少しずつ学力が向上します", "少しの工夫が成果に繋がる時期です"],
-                ["予想以上の成果は難しいですが、地道な努力が大切です", "勉強に集中しにくいかもしれませんが、小さな目標を立ててみましょう", "少しつまずくことがあるかもしれませんが、忍耐強く進めることが重要です"],
-                ["集中力が欠けやすい時期です。計画的に学習することで対処しましょう", "思うように進まないことがあるかもしれませんが、諦めずに継続してください", "学習意欲が低下しがちなので、短期目標でモチベーションを保ちましょう"],
-                ["学業に苦戦しやすい時期です。無理をせず、まずは基礎から固めましょう", "不注意がミスを招きやすいので、慎重に学習を進める必要があります", "なかなか成果が出ないかもしれませんが、焦らずに再挑戦することが大切です"]
-            ];
-            return getRandomMessage(gakugyouMessages, index);
-        }
-
-        function getRyokouResult(index) {
-            const ryokouMessages = [
-                ["旅行中に素敵な出会いや発見があり、充実した時間を過ごせるでしょう", "計画通りに進み、リラックスした楽しい旅になる予感です", "行く先々で良い出来事があり、最高の思い出が作れそうです"],
-                ["安定した旅を楽しめるでしょう。新しい経験が心に残ります", "天候にも恵まれ、気持ちよく旅行を楽しめそうです", "思いがけない素敵な景色やスポットに出会えるかもしれません"],
-                ["特に大きなトラブルもなく、落ち着いて旅行を満喫できるでしょう", "小さなハプニングがあっても、楽しい思い出として残るでしょう", "無理をせず、ゆったりとした旅を心がけると満足できるでしょう"],
-                ["予定通りに行かないこともありますが、柔軟に楽しむ心がけが大切です", "思ったより疲れやすいので、休憩を取りつつ旅を楽しみましょう", "予定の変更に備え、余裕をもってスケジュールを立てると良いでしょう"],
-                ["交通の遅延や混雑に遭うかもしれません。余裕を持った行動が必要です", "体調管理に注意が必要です。無理せず休む時間を取りましょう", "忘れ物や小さなトラブルが起こりやすいので、準備を念入りにしましょう"],
-                ["旅行先でのトラブルに注意が必要です。慎重な計画を立てましょう", "体調不良や予想外の出来事で予定が崩れる可能性があります。慎重に対策を", "旅先でのトラブルが起こりやすいので、安全第一で行動することが重要です"]
-            ];
-            return getRandomMessage(ryokouMessages, index);
-        }
-
-        function getKateiResult(index) {
-            const kateiMessages = [
-                ["家族間の絆が深まり、穏やかで温かい時間を過ごせるでしょう", "家庭内で楽しい出来事が多く、家族みんなが笑顔になる時です", "家族のサポートを感じ、心が安らぐ幸せなひとときを味わえます"],
-                ["家族とのコミュニケーションが円滑で、和やかな日々が続きます", "小さな喜びや感謝を感じられる家庭環境で心が満たされるでしょう", "家族の協力で、スムーズに家事や家庭の問題を解決できそうです"],
-                ["大きな問題はなく、穏やかな家庭生活を楽しめるでしょう", "普段通りの会話ややり取りが、家族の安心感を育みます", "家庭での小さな幸せを感じる時期です。感謝の気持ちを大切にしましょう"],
-                ["家族間で小さな誤解が生じるかもしれませんが、話し合いで解決できます", "疲れやすい時期ですが、家族と過ごす時間でリフレッシュできるでしょう", "少しの工夫で家庭の雰囲気が良くなる時。気遣いを忘れずに"],
-                ["家庭内で意見が食い違いやすい時期です。冷静に対話を心がけましょう", "小さなトラブルが起こりやすいので、早めに対処すると良いでしょう", "気疲れが増えるかもしれませんが、無理せず休息を取りましょう"],
-                ["家庭内でのトラブルが起こりやすい時期です。慎重に対応してください", "感情的になりやすいので、落ち着いて状況を見つめることが大切です", "誤解や行き違いが生じやすいので、丁寧に話し合う時間を持ちましょう"]
-            ];
-            return getRandomMessage(kateiMessages, index);
-        }
-
-        function getMatiResult(index) {
-            const matiMessages = [
-                ["待ち人からの連絡があり、嬉しい再会を果たせるでしょう", "長く待っていた相手とのご縁が深まり、親しい関係へ進展しそうです", "期待通りのタイミングで会うことができ、充実した時間を過ごせるでしょう"],
-                ["待ち人から良い知らせが届き、前向きな展開が期待できそうです", "少し遅れるかもしれませんが、待ち人は必ず訪れるでしょう", "自然な形で再会し、心温まる時間を過ごせる予感です"],
-                ["タイミングが合えば会うことができ、和やかなひとときを楽しめるでしょう", "焦らず待てば、少し遅れても必ず再会の機会があります", "待ち人からの連絡があるかもしれません。気長に待つと吉です"],
-                ["待ち人が現れるまで少し時間がかかるかもしれませんが、忍耐が大切です", "思ったよりも遅れるかもしれませんが、縁があれば再会できます", "タイミングが合わないこともありますが、無理せず流れに任せましょう"],
-                ["待ち人との連絡が途絶えやすい時期です。期待しすぎず気持ちを整えましょう", "相手の都合で予定が変わるかもしれません。無理せずリラックスを心がけましょう", "思った通りにいかないことが多いので、焦らず時を待ちましょう"],
-                ["待ち人が訪れにくい時期です。新しい展開を期待するより、今に集中すると良いでしょう", "連絡が遅れやすい時期で、不安が募るかもしれませんが、無理せず過ごしてください", "再会の機会が遠ざかりがちです。時が来るまで自然の流れに任せましょう"]
-            ];
-            return getRandomMessage(matiMessages, index);
-        }
-
         function getRandomMessage(messages, index) {
             const randomIndex = Math.floor(Math.random() * 3);
             return messages[index][randomIndex];
+        }
+
+        function getKenkouResult(index) {
+            const messages = [
+                ["絶好調！", "心身ともに元気", "活力が湧く"],
+                ["安定中", "無理せず進め", "健康を維持"],
+                ["注意して", "小さな疲れに気を付けて", "休息を意識"],
+                ["やや不調", "疲れが溜まる前に休息", "食事に注意"],
+                ["慎重に", "体調に注意", "十分な休息を"],
+                ["要注意", "大事をとって休む", "健康を最優先"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getSigotoResult(index) {
+            const messages = [
+                ["絶好調", "新たなチャンス", "評価が高まる"],
+                ["順調", "協力を得やすい", "小さな成果を積む"],
+                ["普通", "努力が実を結ぶ", "穏やかに進行"],
+                ["やや不調", "慎重に進め", "ミスに注意"],
+                ["注意", "トラブル回避に集中", "落ち着いた対応が重要"],
+                ["危険", "大きなミスを回避", "無理せず進め"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getKinResult(index) {
+            const messages = [
+                ["大収入！", "投資のチャンス", "貯金が増える"],
+                ["安定収支", "良い買い物ができる", "少額でも満足"],
+                ["無難", "計画的な支出", "節約が吉"],
+                ["注意", "無駄遣いに気を付けて", "慎重な管理が必要"],
+                ["危険", "大きな出費に注意", "金銭トラブル回避"],
+                ["警戒", "大きな損失の恐れ", "慎重な行動が求められる"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getGakugyouResult(index) {
+            const messages = [
+                ["好調", "目標達成", "学びが進む"],
+                ["順調", "集中力UP", "スムーズな進展"],
+                ["普通", "計画的に進めればOK", "ゆっくりと成長"],
+                ["不調", "忍耐が必要", "少しずつ改善"],
+                ["注意", "気力低下", "モチベーション維持がカギ"],
+                ["低調", "焦らずに進め", "基礎を固める"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getRyokouResult(index) {
+            const messages = [
+                ["最高", "素敵な出会い", "楽しい旅"],
+                ["順調", "思い出作り", "景色を楽しむ"],
+                ["無難", "穏やかな旅", "満足のいく計画"],
+                ["不安定", "予定の変更も視野に", "疲れに注意"],
+                ["注意", "トラブル回避を意識", "休息も大切"],
+                ["危険", "計画を見直す", "無理せず楽しむ"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getKateiResult(index) {
+            const messages = [
+                ["最高", "家族の絆が深まる", "楽しい時間を共有"],
+                ["順調", "和やかな家庭", "協力が得られる"],
+                ["普通", "小さな幸せ", "安定した生活"],
+                ["注意", "小さな誤解に注意", "話し合いがカギ"],
+                ["不安定", "家族間での調整が必要", "冷静な対応を"],
+                ["危険", "大きなトラブルに注意", "丁寧な対話を"]
+            ];
+            return getRandomMessage(messages, index);
+        }
+
+        function getMatiResult(index) {
+            const messages = [
+                ["待ち人来る", "嬉しい再会", "充実した時間"],
+                ["少し遅れる", "良い知らせが届く", "期待が持てる"],
+                ["普通", "焦らず待てば良し", "自然な形で再会"],
+                ["やや遅い", "計画の見直しが吉", "待つ心構えが必要"],
+                ["不確実", "連絡に期待せず", "状況を受け入れる"],
+                ["期待薄", "無理をせず自然に", "新たな展開を待つ"]
+            ];
+            return getRandomMessage(messages, index);
         }
     </script>
 </body>
