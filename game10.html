@@ -13,6 +13,35 @@
             margin: 0;
             padding: 0;
         }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: left;
+        }
+        .menu-btn {
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            margin: 5px 0;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        #menu {
+            display: none;
+            background-color: #444;
+            padding: 10px;
+        }
         .game {
             display: flex;
             flex-direction: column;
@@ -55,34 +84,6 @@
             font-size: 16px;
             margin-top: 10px;
             cursor: pointer;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-        }
-        .menu-btn {
-            font-size: 1.5em;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        nav ul li {
-            margin: 5px 0;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-        #menu {
-            display: none;
-            background-color: #444;
-            padding: 10px;
         }
     </style>
 </head>
@@ -152,10 +153,10 @@
 
         function getValidNeighbors(x, y) {
             const deltas = [
-                { dx: -1, dy: 0 },
-                { dx: 1, dy: 0 },
-                { dx: 0, dy: -1 },
-                { dx: 0, dy: 1 }
+                { dx: -2, dy: 0 },
+                { dx: 2, dy: 0 },
+                { dx: 0, dy: -2 },
+                { dx: 0, dy: 2 }
             ];
             return deltas
                 .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
