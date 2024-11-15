@@ -157,35 +157,51 @@
             tiles.push(''); // 空白タイル
 
             shufflePuzzle();
+            ensureSolvable();
             renderPuzzle();
         }
 
         function shufflePuzzle() {
-            const directions = [
-                { row: -1, col: 0 },  // 上
-                { row: 1, col: 0 },   // 下
-                { row: 0, col: -1 },  // 左
-                { row: 0, col: 1 }    // 右
-            ];
+            // Fisher-Yatesアルゴリズムによるシャッフル
+            for (let i = tiles.length - 2; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+            }
+        }
 
-            let emptyIndex = tiles.indexOf('');
-            let emptyRow = Math.floor(emptyIndex / gridSize);
-            let emptyCol = emptyIndex % gridSize;
+        function ensureSolvable() {
+            let inversionCount = countInversions();
 
-            for (let i = 0; i < 100; i++) {
-                const direction = directions[Math.floor(Math.random() * directions.length)];
-                const newRow = emptyRow + direction.row;
-                const newCol = emptyCol + direction.col;
+            const emptyRow = Math.floor(tiles.indexOf('') / gridSize);
 
-                if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
-                    const newIndex = newRow * gridSize + newCol;
-                    tiles[emptyIndex] = tiles[newIndex];
-                    tiles[newIndex] = '';
-                    emptyIndex = newIndex;
-                    emptyRow = newRow;
-                    emptyCol = newCol;
+            if (gridSize % 2 === 0) {
+                // グリッドサイズが偶数のとき
+                if ((emptyRow % 2 === 0 && inversionCount % 2 !== 0) || (emptyRow % 2 !== 0 && inversionCount % 2 === 0)) {
+                    // 解けない場合はタイルを入れ替えて調整
+                    [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
+                }
+            } else {
+                // グリッドサイズが奇数のとき
+                if (inversionCount % 2 !== 0) {
+                    // 解けない場合はタイルを入れ替えて調整
+                    [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
                 }
             }
+        }
+
+        function countInversions() {
+            let inversions = 0;
+            const tileArray = tiles.filter(tile => tile !== ''); // 空白タイルを除外
+
+            for (let i = 0; i < tileArray.length; i++) {
+                for (let j = i + 1; j < tileArray.length; j++) {
+                    if (tileArray[i] > tileArray[j]) {
+                        inversions++;
+                    }
+                }
+            }
+
+            return inversions;
         }
 
         function renderPuzzle() {
