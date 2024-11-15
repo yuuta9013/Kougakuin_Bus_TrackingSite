@@ -3,133 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>横スクロールアクションゲーム - ゲームパッド対応</title>
+    <title>フルーツキャッチゲーム</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            overflow: hidden;
         }
         .game {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 80vh;
         }
         #gameArea {
-            width: 800px;
-            height: 400px;
-            background-color: skyblue;
-            overflow: hidden;
-            border: 2px solid black;
+            width: 400px;
+            height: 600px;
+            background-color: #f0f0f0;
             position: relative;
+            border: 2px solid black;
+            overflow: hidden;
         }
         .character {
-            width: 40px;
-            height: 40px;
-            background-color: red;
+            width: 50px;
+            height: 50px;
+            background-color: blue;
             position: absolute;
             bottom: 10px;
-            left: 100px; /* 初期位置を少し中央に寄せる */
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
         }
-        .ground {
+        .fruit, .bomb {
+            width: 30px;
+            height: 30px;
             position: absolute;
-            bottom: 0;
-            width: 2000px; /* 長い地面 */
-            height: 20px;
-            background-color: green;
+            top: 0;
+            border-radius: 50%;
+        }
+        .fruit.apple { background-color: red; }
+        .fruit.banana { background-color: yellow; }
+        .fruit.grape { background-color: purple; }
+        .bomb { background-color: black; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ゲーム一覧</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <section class="game">
-        <h1>横スクロールアクションゲーム - ゲームパッド対応</h1>
+        <h1>フルーツキャッチゲーム</h1>
+        <p>キャラクターを左右に動かして、フルーツをキャッチしよう！<br>ただし、爆弾には注意！</p>
         <div id="gameArea">
             <div id="character" class="character"></div>
-            <div class="ground"></div>
         </div>
-        <p id="status">ゲームパッドでプレイ可能：×ボタンでジャンプ、スティックで左右移動</p>
+        <p id="scoreDisplay">スコア: 0</p>
+        <p id="timeDisplay">残り時間: 30秒</p>
+        <button onclick="startGame()">ゲーム開始</button>
     </section>
 
     <script>
-        let gamepadIndex = null;
-        const character = document.getElementById("character");
-        const gameArea = document.getElementById("gameArea");
-        const groundHeight = 20;
-        const characterSpeed = 3;
-        let velocityY = 0;
-        let gravity = 0.8;
-        let isJumping = false;
-        let scrollOffset = 0;
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval, timerInterval;
+        const characterSpeed = 10;
+        let fruitFallSpeed = 5;
 
-        function gameLoop() {
-            if (gamepadIndex !== null) {
-                const gamepad = navigator.getGamepads()[gamepadIndex];
-                if (gamepad) {
-                    // 左スティックで左右移動
-                    const axisX = gamepad.axes[0];
-                    if (Math.abs(axisX) > 0.2) { // スティックの感度を調整
-                        moveCharacter(axisX * characterSpeed);
-                    }
-                    // ×ボタンでジャンプ (ボタン0)
-                    if (gamepad.buttons[0].pressed) {
-                        jump();
-                    }
+        const gameArea = document.getElementById('gameArea');
+        const character = document.getElementById('character');
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            fruitFallSpeed = 5;
+
+            document.getElementById('scoreDisplay').innerText = 'スコア: 0';
+            document.getElementById('timeDisplay').innerText = '残り時間: 30秒';
+
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+
+            gameInterval = setInterval(spawnObject, 1000);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            document.addEventListener('keydown', moveCharacter);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('timeDisplay').innerText = `残り時間: ${timeLeft}秒`;
+
+            if (timeLeft <= 0) {
+                clearInterval(gameInterval);
+                clearInterval(timerInterval);
+                alert(`ゲーム終了！最終スコアは ${score} です！`);
+            }
+
+            // 時間経過で難易度を上げる
+            if (timeLeft % 10 === 0) {
+                fruitFallSpeed += 2;
+            }
+        }
+
+        function spawnObject() {
+            const objectType = Math.random() < 0.8 ? 'fruit' : 'bomb';
+            const object = document.createElement('div');
+            object.classList.add(objectType);
+
+            if (objectType === 'fruit') {
+                const fruitTypes = ['apple', 'banana', 'grape'];
+                object.classList.add(fruitTypes[Math.floor(Math.random() * fruitTypes.length)]);
+            } else {
+                object.classList.add('bomb');
+            }
+
+            object.style.left = Math.random() * (gameArea.clientWidth - 30) + 'px';
+            gameArea.appendChild(object);
+
+            let fallInterval = setInterval(() => {
+                object.style.top = (parseInt(object.style.top) || 0) + fruitFallSpeed + 'px';
+
+                if (checkCollision(object, character)) {
+                    handleCollision(object);
+                    clearInterval(fallInterval);
+                } else if (parseInt(object.style.top) > gameArea.clientHeight) {
+                    gameArea.removeChild(object);
+                    clearInterval(fallInterval);
                 }
-            }
-
-            // 重力処理
-            if (character.offsetTop < gameArea.clientHeight - groundHeight - character.clientHeight) {
-                velocityY += gravity;
-                character.style.top = character.offsetTop + velocityY + "px";
-            } else {
-                velocityY = 0;
-                character.style.top = gameArea.clientHeight - groundHeight - character.clientHeight + "px";
-                isJumping = false;
-            }
-
-            // キャラクターが画面の中央を超えたらスクロール
-            const characterLeft = character.offsetLeft;
-            if (characterLeft > gameArea.clientWidth / 2) {
-                scrollOffset += characterSpeed;
-                gameArea.style.backgroundPositionX = -scrollOffset + "px";
-                character.style.left = gameArea.clientWidth / 2 + "px"; // キャラクター位置を固定
-            } else {
-                character.style.left = characterLeft + "px";
-            }
-
-            requestAnimationFrame(gameLoop);
+            }, 50);
         }
 
-        function moveCharacter(dx) {
-            const newPos = character.offsetLeft + dx;
-            const maxLeft = 0;
-            const maxRight = gameArea.clientWidth - character.clientWidth;
-
-            if (newPos > maxLeft && newPos < maxRight) {
-                character.style.left = newPos + "px";
+        function moveCharacter(event) {
+            const rect = character.getBoundingClientRect();
+            if (event.key === 'ArrowLeft' && rect.left > gameArea.getBoundingClientRect().left) {
+                character.style.left = (parseInt(character.style.left) || 0) - characterSpeed + 'px';
+            } else if (event.key === 'ArrowRight' && rect.right < gameArea.getBoundingClientRect().right) {
+                character.style.left = (parseInt(character.style.left) || 0) + characterSpeed + 'px';
             }
         }
 
-        function jump() {
-            if (!isJumping) {
-                velocityY = -12; // ジャンプの初速度
-                isJumping = true;
-            }
+        function checkCollision(obj1, obj2) {
+            const rect1 = obj1.getBoundingClientRect();
+            const rect2 = obj2.getBoundingClientRect();
+
+            return !(
+                rect1.top > rect2.bottom ||
+                rect1.bottom < rect2.top ||
+                rect1.left > rect2.right ||
+                rect1.right < rect2.left
+            );
         }
 
-        window.addEventListener("gamepadconnected", (event) => {
-            gamepadIndex = event.gamepad.index;
-            document.getElementById("status").textContent = "ゲームパッド接続: プレイ可能";
-        });
-
-        window.addEventListener("gamepaddisconnected", () => {
-            gamepadIndex = null;
-            document.getElementById("status").textContent = "ゲームパッドが切断されました";
-        });
-
-        gameLoop(); // ゲームを開始
+        function handleCollision(object) {
+            if (object.classList.contains('fruit')) {
+                if (object.classList.contains('apple')) score += 10;
+                else if (object.classList.contains('banana')) score += 15;
+                else if (object.classList.contains('grape')) score += 20;
+                document.getElementById('scoreDisplay').innerText = 'スコア: ' + score;
+            } else if (object.classList.contains('bomb')) {
+                score -= 20;
+                document.getElementById('scoreDisplay').innerText = 'スコア: ' + score;
+            }
+            gameArea.removeChild(object);
+        }
     </script>
 </body>
 </html>
