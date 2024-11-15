@@ -3,190 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>フルーツキャッチゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>迷路脱出ゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
         .game {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 80vh;
+            min-height: 100vh;
         }
-        #gameArea {
-            width: 400px;
-            height: 600px;
-            background-color: #f0f0f0;
+        #mazeArea {
+            width: 300px;
+            height: 300px;
+            background-color: #e0e0e0;
             position: relative;
             border: 2px solid black;
-            overflow: hidden;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 2px;
         }
-        .character {
-            width: 50px;
-            height: 50px;
+        .cell {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 2px;
+        }
+        .wall {
+            background-color: black;
+        }
+        .player {
             background-color: blue;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 50%;
         }
-        .fruit, .bomb {
-            width: 30px;
-            height: 30px;
-            position: absolute;
-            top: 0;
-            border-radius: 50%;
+        .goal {
+            background-color: green;
         }
-        .fruit.apple { background-color: red; }
-        .fruit.banana { background-color: yellow; }
-        .fruit.grape { background-color: purple; }
-        .bomb { background-color: black; }
+        #statusDisplay {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin-top: 20px;
+            margin-top: 10px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
-            <ul>
-                <li><a href="index.html">位置情報</a></li><br>
-                <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ゲーム一覧</a></li><br>
-                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
-            </ul>
-        </nav>
-    </header>
-
     <section class="game">
-        <h1>フルーツキャッチゲーム</h1>
-        <p>キャラクターを左右に動かして、フルーツをキャッチしよう！<br>ただし、爆弾には注意！</p>
-        <div id="gameArea">
-            <div id="character" class="character"></div>
-        </div>
-        <p id="scoreDisplay">スコア: 0</p>
-        <p id="timeDisplay">残り時間: 30秒</p>
+        <h1>迷路脱出ゲーム</h1>
+        <p>スワイプでプレイヤーを操作して、ゴールを目指そう！</p>
+        <div id="mazeArea"></div>
+        <p id="statusDisplay">プレイヤーをゴールに導こう！</p>
         <button onclick="startGame()">ゲーム開始</button>
     </section>
 
     <script>
-        let score = 0;
-        let timeLeft = 30;
-        let gameInterval, timerInterval;
-        const characterSpeed = 10;
-        let fruitFallSpeed = 5;
-
-        const gameArea = document.getElementById('gameArea');
-        const character = document.getElementById('character');
-
-        function toggleMenu() {
-            const menu = document.getElementById("menu");
-            menu.style.display = menu.style.display === "none" ? "block" : "none";
-        }
+        const mazeArea = document.getElementById('mazeArea');
+        const mazeSize = 10; // 10x10の迷路
+        let playerPosition = { x: 0, y: 0 }; // プレイヤーの初期位置
+        let goalPosition = { x: 9, y: 9 }; // ゴールの位置
+        let maze = []; // 迷路データ
 
         function startGame() {
-            score = 0;
-            timeLeft = 30;
-            fruitFallSpeed = 5;
-
-            document.getElementById('scoreDisplay').innerText = 'スコア: 0';
-            document.getElementById('timeDisplay').innerText = '残り時間: 30秒';
-
-            clearInterval(gameInterval);
-            clearInterval(timerInterval);
-
-            gameInterval = setInterval(spawnObject, 1000);
-            timerInterval = setInterval(updateTimer, 1000);
-
-            document.addEventListener('keydown', moveCharacter);
+            playerPosition = { x: 0, y: 0 };
+            generateMaze();
+            renderMaze();
+            document.getElementById('statusDisplay').innerText = 'プレイヤーをゴールに導こう！';
         }
 
-        function updateTimer() {
-            timeLeft--;
-            document.getElementById('timeDisplay').innerText = `残り時間: ${timeLeft}秒`;
-
-            if (timeLeft <= 0) {
-                clearInterval(gameInterval);
-                clearInterval(timerInterval);
-                alert(`ゲーム終了！最終スコアは ${score} です！`);
-            }
-
-            // 時間経過で難易度を上げる
-            if (timeLeft % 10 === 0) {
-                fruitFallSpeed += 2;
-            }
-        }
-
-        function spawnObject() {
-            const objectType = Math.random() < 0.8 ? 'fruit' : 'bomb';
-            const object = document.createElement('div');
-            object.classList.add(objectType);
-
-            if (objectType === 'fruit') {
-                const fruitTypes = ['apple', 'banana', 'grape'];
-                object.classList.add(fruitTypes[Math.floor(Math.random() * fruitTypes.length)]);
-            } else {
-                object.classList.add('bomb');
-            }
-
-            object.style.left = Math.random() * (gameArea.clientWidth - 30) + 'px';
-            gameArea.appendChild(object);
-
-            let fallInterval = setInterval(() => {
-                object.style.top = (parseInt(object.style.top) || 0) + fruitFallSpeed + 'px';
-
-                if (checkCollision(object, character)) {
-                    handleCollision(object);
-                    clearInterval(fallInterval);
-                } else if (parseInt(object.style.top) > gameArea.clientHeight) {
-                    gameArea.removeChild(object);
-                    clearInterval(fallInterval);
-                }
-            }, 50);
-        }
-
-        function moveCharacter(event) {
-            const rect = character.getBoundingClientRect();
-            if (event.key === 'ArrowLeft' && rect.left > gameArea.getBoundingClientRect().left) {
-                character.style.left = (parseInt(character.style.left) || 0) - characterSpeed + 'px';
-            } else if (event.key === 'ArrowRight' && rect.right < gameArea.getBoundingClientRect().right) {
-                character.style.left = (parseInt(character.style.left) || 0) + characterSpeed + 'px';
-            }
-        }
-
-        function checkCollision(obj1, obj2) {
-            const rect1 = obj1.getBoundingClientRect();
-            const rect2 = obj2.getBoundingClientRect();
-
-            return !(
-                rect1.top > rect2.bottom ||
-                rect1.bottom < rect2.top ||
-                rect1.left > rect2.right ||
-                rect1.right < rect2.left
+        function generateMaze() {
+            maze = Array.from({ length: mazeSize }, () =>
+                Array.from({ length: mazeSize }, () => (Math.random() > 0.7 ? 'wall' : 'cell'))
             );
+            maze[0][0] = 'player'; // プレイヤーの位置
+            maze[goalPosition.y][goalPosition.x] = 'goal'; // ゴールの位置
         }
 
-        function handleCollision(object) {
-            if (object.classList.contains('fruit')) {
-                if (object.classList.contains('apple')) score += 10;
-                else if (object.classList.contains('banana')) score += 15;
-                else if (object.classList.contains('grape')) score += 20;
-                document.getElementById('scoreDisplay').innerText = 'スコア: ' + score;
-            } else if (object.classList.contains('bomb')) {
-                score -= 20;
-                document.getElementById('scoreDisplay').innerText = 'スコア: ' + score;
-            }
-            gameArea.removeChild(object);
+        function renderMaze() {
+            mazeArea.innerHTML = '';
+            maze.forEach((row, y) => {
+                row.forEach((cell, x) => {
+                    const div = document.createElement('div');
+                    div.className = `cell ${cell}`;
+                    if (playerPosition.x === x && playerPosition.y === y) {
+                        div.classList.add('player');
+                    }
+                    mazeArea.appendChild(div);
+                });
+            });
         }
+
+        function movePlayer(dx, dy) {
+            const newX = playerPosition.x + dx;
+            const newY = playerPosition.y + dy;
+
+            if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
+                if (maze[newY][newX] !== 'wall') {
+                    playerPosition = { x: newX, y: newY };
+                    if (newX === goalPosition.x && newY === goalPosition.y) {
+                        document.getElementById('statusDisplay').innerText = 'ゴールしました！おめでとう！';
+                        return;
+                    }
+                    renderMaze();
+                }
+            }
+        }
+
+        // スワイプ操作
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        mazeArea.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        });
+
+        mazeArea.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) movePlayer(1, 0); // 右
+                else movePlayer(-1, 0); // 左
+            } else {
+                if (deltaY > 0) movePlayer(0, 1); // 下
+                else movePlayer(0, -1); // 上
+            }
+        });
     </script>
 </body>
 </html>
