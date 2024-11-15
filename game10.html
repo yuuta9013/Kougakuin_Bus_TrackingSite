@@ -1,256 +1,191 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <!-- ページの言語設定が日本語であることを示す -->
     <meta charset="UTF-8">
-    <!-- レスポンシブデザインのためのメタタグ、画面の幅に合わせて表示を調整 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ページタイトルを「迷路脱出ゲーム」に設定 -->
-    <title>迷路脱出ゲーム</title>
+    <title>果物キャッチゲーム</title>
     <style>
-        /* ボディのスタイル設定 */
         body {
-            font-family: Arial, sans-serif; /* 使用するフォント */
-            text-align: center; /* テキストの中央揃え */
-            background-color: #2c3e50; /* 背景色を青系に設定 */
-            color: white; /* テキスト色を白に設定 */
-            margin: 0; /* 余白なし */
-            padding: 0; /* パディングなし */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5dc;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        /* ヘッダーのスタイル設定 */
         header {
-            background-color: #333; /* 背景色を濃い灰色に設定 */
-            color: white; /* テキスト色を白に設定 */
-            padding: 10px 20px; /* パディングを上下10px、左右20pxに設定 */
-            text-align: left; /* 左揃え */
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: left;
         }
-        /* メニューボタンのスタイル */
         .menu-btn {
-            font-size: 1.5em; /* フォントサイズを大きく設定 */
-            background: none; /* 背景色なし */
-            border: none; /* ボーダーなし */
-            color: white; /* テキスト色を白に設定 */
-            cursor: pointer; /* クリック可能なカーソルを表示 */
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
         }
-        /* ナビゲーションメニューのリスト設定 */
         nav ul {
-            list-style: none; /* リストマーカーを非表示 */
-            padding: 0; /* パディングなし */
+            list-style: none;
+            padding: 0;
         }
-        /* ナビゲーションメニューの各項目設定 */
         nav ul li {
-            margin: 5px 0; /* 上下に5pxの余白 */
+            margin: 5px 0;
         }
-        /* メニュー内のリンクのスタイル設定 */
         nav ul li a {
-            color: white; /* テキスト色を白に設定 */
-            text-decoration: none; /* 下線を非表示 */
+            color: white;
+            text-decoration: none;
         }
-        /* メニュー表示切り替えのスタイル設定 */
         #menu {
-            display: none; /* 初期状態では非表示 */
-            background-color: #444; /* 背景色を濃い灰色に設定 */
-            padding: 10px; /* パディングを設定 */
+            display: none;
+            background-color: #444;
+            padding: 10px;
         }
-        /* ゲームエリアのスタイル */
         .game {
-            display: flex; /* フレックスボックスを使用 */
-            flex-direction: column; /* 縦方向に並べる */
-            align-items: center; /* 中央揃え */
-            justify-content: center; /* 縦方向に中央揃え */
-            min-height: 100vh; /* 画面の高さを確保 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
         }
-        /* 迷路エリアの設定 */
-        #mazeArea {
-            width: 300px; /* 幅を300pxに設定 */
-            height: 300px; /* 高さを300pxに設定 */
-            background-color: #ecf0f1; /* 背景色を明るいグレーに設定 */
-            position: relative; /* 相対位置を指定 */
-            border: 2px solid black; /* 外枠を黒で設定 */
-            display: grid; /* グリッドレイアウトを使用 */
-            grid-template-columns: repeat(10, 1fr); /* 10列を均等に分割 */
-            grid-template-rows: repeat(10, 1fr); /* 10行を均等に分割 */
-            gap: 2px; /* グリッド間の隙間を2pxに設定 */
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 600px;
+            margin: 20px auto;
+            border: 2px solid #333;
+            overflow: hidden;
+            background-color: #a3c9a8;
         }
-        /* 迷路の各セルのスタイル設定 */
-        .cell {
-            width: 100%; /* 幅を最大に */
-            height: 100%; /* 高さを最大に */
-            background-color: white; /* 背景色を白に設定 */
-            border-radius: 2px; /* 角を少し丸くする */
+        .basket {
+            position: absolute;
+            bottom: 10px;
+            width: 80px;
+            height: 40px;
+            background-color: #8b4513;
+            border-radius: 10px;
         }
-        /* 壁のセルのスタイル設定 */
-        .wall {
-            background-color: black; /* 壁の色を黒に設定 */
+        .fruit {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: red;
         }
-        /* プレイヤーのセルのスタイル設定 */
-        .player {
-            background-color: blue; /* プレイヤーの色を青に設定 */
+        #scoreDisplay {
+            margin: 10px 0;
+            font-size: 1.2em;
         }
-        /* ゴールのセルのスタイル設定 */
-        .goal {
-            background-color: green; /* ゴールの色を緑に設定 */
-        }
-        /* ステータス表示のスタイル */
-        #statusDisplay {
-            font-size: 1.2em; /* フォントサイズを設定 */
-            margin: 10px 0; /* 上下に10pxの余白 */
-        }
-        /* ボタンのスタイル */
         button {
-            padding: 10px 20px; /* ボタンのパディングを設定 */
-            font-size: 16px; /* フォントサイズを設定 */
-            margin-top: 10px; /* 上に10pxの余白 */
-            cursor: pointer; /* クリック可能なカーソルを表示 */
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- ヘッダーとナビゲーションメニュー -->
     <header>
-        <!-- メニューボタン -->
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <!-- ナビゲーションメニュー -->
         <nav id="menu">
             <ul>
-                <!-- 各リンクの設定 -->
-                <li><a href="index.html">位置情報</a></li>
-                <li><a href="notification.html">お知らせ</a></li>
-                <li><a href="home.html">ミニゲーム</a></li>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
                 <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- ゲームセクション -->
     <section class="game">
-        <h1>迷路脱出ゲーム</h1> <!-- ゲームタイトル -->
-        <p>スワイプでプレイヤーを操作して、ゴールを目指そう！</p> <!-- 説明文 -->
-        <div id="mazeArea"></div> <!-- 迷路エリアのコンテナ -->
-        <p id="statusDisplay">プレイヤーをゴールに導こう！</p> <!-- ステータス表示 -->
-        <button onclick="startGame()">ゲーム開始</button> <!-- ゲーム開始ボタン -->
+        <h1>果物キャッチゲーム</h1>
+        <p>スワイプでバスケットを動かして、落ちてくる果物をキャッチしよう！</p>
+        <div id="scoreDisplay">スコア: 0</div>
+        <div class="game-container" id="gameContainer">
+            <div class="basket" id="basket"></div>
+        </div>
+        <button id="startButton" onclick="startGame()">ゲーム開始</button>
     </section>
 
     <script>
-        const mazeArea = document.getElementById('mazeArea'); // 迷路エリアを取得
-        const mazeSize = 10; // 迷路のサイズ（10x10）
-        let playerPosition = { x: 0, y: 0 }; // プレイヤーの初期位置
-        let goalPosition = { x: 8, y: 8 }; // ゴールの位置
-        let maze = []; // 迷路の配列
+        const gameContainer = document.getElementById('gameContainer');
+        const basket = document.getElementById('basket');
+        let score = 0;
+        let gameInterval;
+        let fruits = [];
+        let basketPosition = gameContainer.clientWidth / 2 - 40;
+        basket.style.left = `${basketPosition}px`;
 
-        // メニューの表示/非表示を切り替える関数
         function toggleMenu() {
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
-        // ゲーム開始の処理
         function startGame() {
-            playerPosition = { x: 0, y: 0 }; // プレイヤーの位置を初期化
-            generateSolvableMaze(); // 解決可能な迷路を生成
-            renderMaze(); // 迷路を表示
-            document.getElementById('statusDisplay').innerText = 'プレイヤーをゴールに導こう！';
+            clearInterval(gameInterval);
+            score = 0;
+            updateScore();
+            fruits = [];
+            gameInterval = setInterval(() => {
+                spawnFruit();
+                moveFruits();
+            }, 1000);
         }
 
-        // 解決可能な迷路を生成する関数
-        function generateSolvableMaze() {
-            maze = Array.from({ length: mazeSize }, () =>
-                Array.from({ length: mazeSize }, () => 'wall') // 初期はすべて壁
-            );
-
-            let stack = [{ x: 0, y: 0 }]; // スタート位置をスタックに追加
-            maze[0][0] = 'cell'; // スタート位置を通路にする
-
-            while (stack.length > 0) {
-                const current = stack.pop(); // 現在の位置を取得
-                const neighbors = getValidNeighbors(current.x, current.y).filter(n => maze[n.y][n.x] === 'wall');
-
-                if (neighbors.length > 0) {
-                    stack.push(current); // 戻れるように現在位置をスタックに追加
-                    const next = neighbors[Math.floor(Math.random() * neighbors.length)]; // ランダムに次の位置を選択
-                    maze[next.y][next.x] = 'cell'; // 次の位置を通路にする
-                    removeWallBetween(current, next); // 壁を削除して移動可能にする
-                    stack.push(next); // 次の位置をスタックに追加
-                }
-            }
-
-            maze[goalPosition.y][goalPosition.x] = 'goal'; // ゴールを設定
+        function spawnFruit() {
+            const fruit = document.createElement('div');
+            fruit.className = 'fruit';
+            fruit.style.left = `${Math.random() * (gameContainer.clientWidth - 30)}px`;
+            fruit.style.top = '0px';
+            gameContainer.appendChild(fruit);
+            fruits.push(fruit);
         }
 
-        // 有効な隣接セルを取得する関数
-        function getValidNeighbors(x, y) {
-            const deltas = [
-                { dx: -2, dy: 0 },
-                { dx: 2, dy: 0 },
-                { dx: 0, dy: -2 },
-                { dx: 0, dy: 2 }
-            ];
-            return deltas
-                .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
-                .filter(({ x, y }) => x >= 0 && y >= 0 && x < mazeSize && y < mazeSize);
-        }
+        function moveFruits() {
+            fruits.forEach((fruit, index) => {
+                const currentTop = parseFloat(fruit.style.top);
+                fruit.style.top = `${currentTop + 5}px`;
 
-        // 2つのセル間の壁を削除する
-        function removeWallBetween(a, b) {
-            maze[(a.y + b.y) / 2][(a.x + b.x) / 2] = 'cell';
-        }
-
-        // 迷路を表示する関数
-        function renderMaze() {
-            mazeArea.innerHTML = ''; // 迷路エリアをクリア
-            maze.forEach((row, y) => {
-                row.forEach((cell, x) => {
-                    const div = document.createElement('div');
-                    div.className = `cell ${cell}`;
-                    if (playerPosition.x === x && playerPosition.y === y) {
-                        div.classList.add('player'); // プレイヤーの位置を追加
+                if (currentTop > gameContainer.clientHeight - 50) {
+                    const fruitLeft = parseFloat(fruit.style.left);
+                    const basketLeft = parseFloat(basket.style.left);
+                    if (fruitLeft > basketLeft && fruitLeft < basketLeft + 80) {
+                        // 果物をキャッチ
+                        score++;
+                        updateScore();
+                        gameContainer.removeChild(fruit);
+                        fruits.splice(index, 1);
+                    } else if (currentTop > gameContainer.clientHeight - 30) {
+                        // 画面外に出た果物を削除
+                        gameContainer.removeChild(fruit);
+                        fruits.splice(index, 1);
                     }
-                    mazeArea.appendChild(div); // 迷路エリアに追加
-                });
+                }
             });
         }
 
-        // プレイヤーを移動する関数
-        function movePlayer(dx, dy) {
-            const newX = playerPosition.x + dx;
-            const newY = playerPosition.y + dy;
-
-            if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
-                if (maze[newY][newX] !== 'wall') { // 壁でない場合に移動
-                    playerPosition = { x: newX, y: newY };
-                    if (newX === goalPosition.x && newY === goalPosition.y) {
-                        document.getElementById('statusDisplay').innerText = 'ゴールしました！おめでとう！';
-                        return;
-                    }
-                    renderMaze(); // 迷路を再表示
-                }
-            }
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `スコア: ${score}`;
         }
 
-        // タッチ操作の開始位置を記録
         let touchStartX = 0;
-        let touchStartY = 0;
 
-        // タッチ開始時の処理
-        mazeArea.addEventListener('touchstart', (e) => {
+        gameContainer.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
             touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
         });
 
-        // タッチ終了時の処理
-        mazeArea.addEventListener('touchend', (e) => {
-            const touch = e.changedTouches[0];
+        gameContainer.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
             const deltaX = touch.clientX - touchStartX;
-            const deltaY = touch.clientY - touchStartY;
-
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 0) movePlayer(1, 0); // 右に移動
-                else movePlayer(-1, 0); // 左に移動
-            } else {
-                if (deltaY > 0) movePlayer(0, 1); // 下に移動
-                else movePlayer(0, -1); // 上に移動
-            }
+            basketPosition = Math.min(
+                Math.max(basketPosition + deltaX, 0),
+                gameContainer.clientWidth - 80
+            );
+            basket.style.left = `${basketPosition}px`;
+            touchStartX = touch.clientX;
         });
     </script>
 </body>
