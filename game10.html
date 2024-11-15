@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>迷路脱出ゲーム</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,9 +56,49 @@
             margin-top: 10px;
             cursor: pointer;
         }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+        }
+        .menu-btn {
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            margin: 5px 0;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        #menu {
+            display: none;
+            background-color: #444;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <section class="game">
         <h1>迷路脱出ゲーム</h1>
         <p>スワイプでプレイヤーを操作して、ゴールを目指そう！</p>
@@ -69,23 +110,63 @@
     <script>
         const mazeArea = document.getElementById('mazeArea');
         const mazeSize = 10; // 10x10の迷路
-        let playerPosition = { x: 0, y: 0 }; // プレイヤーの初期位置
-        let goalPosition = { x: 9, y: 9 }; // ゴールの位置
-        let maze = []; // 迷路データ
+        let playerPosition = { x: 0, y: 0 };
+        let goalPosition = { x: 9, y: 9 };
+        let maze = [];
+
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
 
         function startGame() {
             playerPosition = { x: 0, y: 0 };
-            generateMaze();
+            generateSolvableMaze();
             renderMaze();
             document.getElementById('statusDisplay').innerText = 'プレイヤーをゴールに導こう！';
         }
 
-        function generateMaze() {
+        function generateSolvableMaze() {
             maze = Array.from({ length: mazeSize }, () =>
-                Array.from({ length: mazeSize }, () => (Math.random() > 0.7 ? 'wall' : 'cell'))
+                Array.from({ length: mazeSize }, () => 'wall')
             );
-            maze[0][0] = 'player'; // プレイヤーの位置
-            maze[goalPosition.y][goalPosition.x] = 'goal'; // ゴールの位置
+
+            // 迷路の生成（単純な深さ優先探索アルゴリズム）
+            let stack = [{ x: 0, y: 0 }];
+            maze[0][0] = 'cell';
+
+            while (stack.length > 0) {
+                const current = stack.pop();
+                const neighbors = getNeighbors(current.x, current.y).filter(n => maze[n.y][n.x] === 'wall');
+
+                if (neighbors.length > 0) {
+                    stack.push(current);
+                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    maze[next.y][next.x] = 'cell';
+                    removeWallBetween(current, next);
+                    stack.push(next);
+                }
+            }
+
+            maze[goalPosition.y][goalPosition.x] = 'goal'; // ゴール位置設定
+        }
+
+        function getNeighbors(x, y) {
+            const deltas = [
+                { dx: -1, dy: 0 },
+                { dx: 1, dy: 0 },
+                { dx: 0, dy: -1 },
+                { dx: 0, dy: 1 }
+            ];
+            return deltas
+                .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
+                .filter(({ x, y }) => x >= 0 && y >= 0 && x < mazeSize && y < mazeSize);
+        }
+
+        function removeWallBetween(a, b) {
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            maze[midY][midX] = 'cell';
         }
 
         function renderMaze() {
@@ -118,7 +199,6 @@
             }
         }
 
-        // スワイプ操作
         let touchStartX = 0;
         let touchStartY = 0;
 
