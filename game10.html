@@ -47,14 +47,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 80vh;
+            min-height: 70vh; /* 縦の長さを短く調整 */
             text-align: center;
         }
         .game-container {
             position: relative;
             width: 100%;
             max-width: 400px;
-            height: 600px;
+            height: 400px; /* 高さを短く調整 */
             margin: 20px auto;
             border: 2px solid #333;
             overflow: hidden;
@@ -73,7 +73,15 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
+        }
+        .apple {
             background-color: red;
+        }
+        .banana {
+            background-color: yellow;
+        }
+        .grape {
+            background-color: purple;
         }
         #scoreDisplay {
             margin: 10px 0;
@@ -101,7 +109,7 @@
 
     <section class="game">
         <h1>果物キャッチゲーム</h1>
-        <p>スワイプでバスケットを動かして、落ちてくる果物をキャッチしよう！</p>
+        <p>スワイプでバスケットを動かして、異なる果物をキャッチしよう！</p>
         <div id="scoreDisplay">スコア: 0</div>
         <div class="game-container" id="gameContainer">
             <div class="basket" id="basket"></div>
@@ -131,12 +139,19 @@
             gameInterval = setInterval(() => {
                 spawnFruit();
                 moveFruits();
-            }, 1000);
+            }, 700); // 降ってくる速度を調整
         }
 
         function spawnFruit() {
             const fruit = document.createElement('div');
-            fruit.className = 'fruit';
+            const fruitTypes = [
+                { className: 'apple', points: 10 },
+                { className: 'banana', points: 20 },
+                { className: 'grape', points: 30 }
+            ];
+            const selectedFruit = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
+            fruit.className = `fruit ${selectedFruit.className}`;
+            fruit.dataset.points = selectedFruit.points; // 取得ポイントを設定
             fruit.style.left = `${Math.random() * (gameContainer.clientWidth - 30)}px`;
             fruit.style.top = '0px';
             gameContainer.appendChild(fruit);
@@ -146,14 +161,14 @@
         function moveFruits() {
             fruits.forEach((fruit, index) => {
                 const currentTop = parseFloat(fruit.style.top);
-                fruit.style.top = `${currentTop + 5}px`;
+                fruit.style.top = `${currentTop + 8}px`; // 降るスピードを調整
 
                 if (currentTop > gameContainer.clientHeight - 50) {
                     const fruitLeft = parseFloat(fruit.style.left);
                     const basketLeft = parseFloat(basket.style.left);
                     if (fruitLeft > basketLeft && fruitLeft < basketLeft + 80) {
                         // 果物をキャッチ
-                        score++;
+                        score += parseInt(fruit.dataset.points);
                         updateScore();
                         gameContainer.removeChild(fruit);
                         fruits.splice(index, 1);
