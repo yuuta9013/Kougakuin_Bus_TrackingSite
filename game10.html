@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>迷路脱出ゲーム</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #2c3e50; /* ダークテーマに合わせた背景色 */
-            color: white; /* テキストを見やすくするため白色 */
+            background-color: #2c3e50;
+            color: white;
             margin: 0;
             padding: 0;
         }
@@ -92,9 +91,9 @@
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <nav id="menu">
             <ul>
-                <li><a href="index.html">位置情報</a></li><br>
-                <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="index.html">位置情報</a></li>
+                <li><a href="notification.html">お知らせ</a></li>
+                <li><a href="home.html">ミニゲーム</a></li>
                 <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
             </ul>
         </nav>
@@ -110,7 +109,7 @@
 
     <script>
         const mazeArea = document.getElementById('mazeArea');
-        const mazeSize = 10; // 10x10の迷路
+        const mazeSize = 10;
         let playerPosition = { x: 0, y: 0 };
         let goalPosition = { x: 9, y: 9 };
         let maze = [];
@@ -132,13 +131,12 @@
                 Array.from({ length: mazeSize }, () => 'wall')
             );
 
-            // 迷路の生成（単純な深さ優先探索アルゴリズム）
             let stack = [{ x: 0, y: 0 }];
             maze[0][0] = 'cell';
 
             while (stack.length > 0) {
                 const current = stack.pop();
-                const neighbors = getNeighbors(current.x, current.y).filter(n => maze[n.y][n.x] === 'wall');
+                const neighbors = getValidNeighbors(current.x, current.y).filter(n => maze[n.y][n.x] === 'wall');
 
                 if (neighbors.length > 0) {
                     stack.push(current);
@@ -149,10 +147,10 @@
                 }
             }
 
-            maze[goalPosition.y][goalPosition.x] = 'goal'; // ゴール位置設定
+            maze[goalPosition.y][goalPosition.x] = 'goal';
         }
 
-        function getNeighbors(x, y) {
+        function getValidNeighbors(x, y) {
             const deltas = [
                 { dx: -1, dy: 0 },
                 { dx: 1, dy: 0 },
@@ -165,9 +163,7 @@
         }
 
         function removeWallBetween(a, b) {
-            const midX = (a.x + b.x) / 2;
-            const midY = (a.y + b.y) / 2;
-            maze[midY][midX] = 'cell';
+            maze[(a.y + b.y) / 2][(a.x + b.x) / 2] = 'cell';
         }
 
         function renderMaze() {
