@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ランダムスロット</title>
   <style>
     body {
@@ -78,7 +79,6 @@
       transition: top 0.5s ease-out;
     }
 
-    /* 回転アニメーション */
     @keyframes spin {
       0% { transform: translateY(0); }
       100% { transform: translateY(-510px); }
@@ -118,13 +118,65 @@
       font-size: 1.5rem;
       text-shadow: 1px 1px 4px #000;
     }
+
+    header {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 5px;
+      width: 200px;
+      text-align: left;
+    }
+
+    nav ul li {
+      margin: 10px 0;
+    }
+
+    nav ul li a {
+      color: #00c3ff;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+    }
+
+    nav ul li a:hover {
+      background-color: #008fb3;
+      color: #fff;
+    }
+
+    #menu {
+      display: none;
+    }
   </style>
 </head>
 <body>
-    <ul>
-        <li><a href="index.html">地図表示に戻る</a></li>
-        <li><a href="home.html">ゲーム一覧に戻る</a></li>
-    </ul>
+  <header>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <nav id="menu">
+      <ul>
+        <li><a href="index.html">位置情報</a></li>
+        <li><a href="notification.html">お知らせ</a></li>
+        <li><a href="home.html">ミニゲーム</a></li>
+        <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+      </ul>
+    </nav>
+  </header>
+
   <h1>ランダムスロット</h1>
   <div class="slot-machine">
     <div class="reel-container">
@@ -150,6 +202,11 @@
   <p id="result"></p>
 
   <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
     const symbols = ["🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈"];
     const initialSymbols = "🍒🍋🍉⭐🍇🍎🍊🍈🍒";
 
