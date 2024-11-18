@@ -6,20 +6,34 @@ body {
 }
 
 header {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    text-align: left;
-    position: relative;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
 }
 
 .menu-btn {
-    background-color: #333;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
+  background-color: #333;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
 }
+
+nav {
+  display: none; /* 初期状態で非表示 */
+  background-color: #444;
+  position: absolute;
+  top: 50px; /* メニューボタンの直下 */
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
 
 nav ul {
     list-style-type: none;
