@@ -5,7 +5,7 @@ let isSpinning = [false, false, false];
 
 function startSpin() {
   for (let i = 1; i <= 3; i++) {
-    const reel = document.getElementById(`reel${i}`);　
+    const reel = document.getElementById(`reel${i}`);
     reel.classList.add("spinning");
     document.getElementById(`stop${i}`).disabled = false;
     isSpinning[i - 1] = true;
