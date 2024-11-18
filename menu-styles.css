@@ -1,0 +1,43 @@
+header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  width: 200px;
+  text-align: left;
+}
+
+nav ul li {
+  margin: 10px 0;
+}
+
+nav ul li a {
+  color: #00c3ff;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+}
+
+nav ul li a:hover {
+  background-color: #008fb3;
+  color: #fff;
+}
+
+#menu {
+  display: none;
+}
