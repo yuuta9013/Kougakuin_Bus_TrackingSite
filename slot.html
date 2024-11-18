@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ランダムスロット</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      color: #fff;
+      padding: 20px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    ul {
+      text-align: left;
+      list-style: none;
+      padding: 0;
+      margin: 20px;
+    }
+
+    ul li {
+      display: inline;
+      margin-right: 15px;
+    }
+
+    a {
+      color: #00c3ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    .slot-machine {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .reel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .reel {
+      width: 80px;
+      height: 80px;
+      font-size: 3rem;
+      border: 4px solid #00c3ff;
+      border-radius: 10px;
+      background: #0d1b2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .reel-content {
+      position: absolute;
+      top: 0;
+      transition: top 0.5s ease-out;
+    }
+
+    /* 回転アニメーション */
+    @keyframes spin {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-510px); }
+    }
+
+    .spinning .reel-content {
+      animation: spin 1s linear infinite;
+    }
+
+    button {
+      background-color: #00c3ff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #008fb3;
+    }
+
+    button:active {
+      transform: translateY(2px);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 4px #000;
+    }
+  </style>
+</head>
+<body>
+    <ul>
+        <li><a href="index.html">地図表示に戻る</a></li>
+        <li><a href="home.html">ゲーム一覧に戻る</a></li>
+    </ul>
+  <h1>ランダムスロット</h1>
+  <div class="slot-machine">
+    <div class="reel-container">
+      <div class="reel" id="reel1">
+        <div class="reel-content">🍒🍋🍉⭐🍇🍎🍊🍈🍒</div>
+      </div>
+      <button onclick="stopReel(1)" id="stop1" disabled>STOP 1</button>
+    </div>
+    <div class="reel-container">
+      <div class="reel" id="reel2">
+        <div class="reel-content">🍒🍋🍉⭐🍇🍎🍊🍈🍒</div>
+      </div>
+      <button onclick="stopReel(2)" id="stop2" disabled>STOP 2</button>
+    </div>
+    <div class="reel-container">
+      <div class="reel" id="reel3">
+        <div class="reel-content">🍒🍋🍉⭐🍇🍎🍊🍈🍒</div>
+      </div>
+      <button onclick="stopReel(3)" id="stop3" disabled>STOP 3</button>
+    </div>
+  </div>
+  <button onclick="startSpin()">START SPIN</button>
+  <p id="result"></p>
+
+  <script>
+    const symbols = ["🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈"];
+    const initialSymbols = "🍒🍋🍉⭐🍇🍎🍊🍈🍒";
+
+    let isSpinning = [false, false, false];
+
+    function startSpin() {
+      for (let i = 1; i <= 3; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        reel.classList.add("spinning");
+        document.getElementById(`stop${i}`).disabled = false;
+        isSpinning[i - 1] = true;
+        reel.querySelector(".reel-content").textContent = initialSymbols;
+      }
+      document.getElementById("result").textContent = "";
+    }
+
+    function stopReel(reelNumber) {
+      const reel = document.getElementById(`reel${reelNumber}`);
+      reel.classList.remove("spinning");
+      const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+      reel.querySelector(".reel-content").textContent = randomSymbol;
+
+      document.getElementById(`stop${reelNumber}`).disabled = true;
+      isSpinning[reelNumber - 1] = false;
+
+      if (isSpinning.every(spin => spin === false)) {
+        checkResult();
+      }
+    }
+
+    function checkResult() {
+      const reel1Symbol = document.getElementById("reel1").querySelector(".reel-content").textContent;
+      const reel2Symbol = document.getElementById("reel2").querySelector(".reel-content").textContent;
+      const reel3Symbol = document.getElementById("reel3").querySelector(".reel-content").textContent;
+      const result = document.getElementById("result");
+
+      if (reel1Symbol === reel2Symbol && reel2Symbol === reel3Symbol) {
+        result.textContent = "おめでとう！ ジャックポット！";
+      } else {
+        result.textContent = "残念！";
+      }
+    }
+  </script>
+</body>
+</html>
