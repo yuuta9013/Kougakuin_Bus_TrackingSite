@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ボタンクリックゲーム</title>
+    <title>AIチャットページ</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .game {
+        .chat-container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -14,10 +14,33 @@
             min-height: 80vh;
             text-align: center;
         }
+        .chat-box {
+            width: 90%;
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .user-message {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .ai-message {
+            background-color: #f8d7da;
+            align-self: flex-start;
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -34,54 +57,71 @@
         </nav>
     </header>
 
-    <section class="game">
-        <h1>ボタンクリックゲーム</h1>
-        <p>30秒以内にできるだけ多くボタンをクリックしよう！</p>
-        <button id="gameButton" onclick="clickButton()" disabled>クリック！</button>
-        <p id="scoreDisplay">スコア: 0</p>
-        <p id="timeDisplay">残り時間: 30秒</p>
-        <button id="startButton" onclick="startGame()">ゲーム開始</button>
+    <section class="chat-container">
+        <h1>AIとチャット</h1>
+        <div id="chatBox" class="chat-box">
+            <div class="message ai-message">こんにちは！ 何をお手伝いしましょうか？</div>
+        </div>
+        <textarea id="userInput" placeholder="メッセージを入力..." rows="4" style="width: 90%; max-width: 600px;"></textarea>
+        <button onclick="sendMessage()">送信</button>
     </section>
 
     <script>
-        let score = 0;
-        let timeLeft = 30;
-        let timer;
+        const chatBox = document.getElementById("chatBox");
+        const userInput = document.getElementById("userInput");
 
         function toggleMenu() {
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
 
-        function startGame() {
-            // Reset game state
-            score = 0;
-            timeLeft = 30;
-            document.getElementById("scoreDisplay").textContent = "スコア: " + score;
-            document.getElementById("timeDisplay").textContent = "残り時間: " + timeLeft + "秒";
-            document.getElementById("gameButton").disabled = false;
-            document.getElementById("startButton").disabled = true;
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage === "") return;
 
-            // Start the timer
-            timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById("timeDisplay").textContent = "残り時間: " + timeLeft + "秒";
-                if (timeLeft <= 0) {
-                    endGame();
-                }
-            }, 1000);
+            // ユーザーのメッセージを表示
+            const userMessageElem = document.createElement("div");
+            userMessageElem.className = "message user-message";
+            userMessageElem.textContent = userMessage;
+            chatBox.appendChild(userMessageElem);
+            userInput.value = "";
+
+            // AI応答をシミュレーション
+            fetchAIResponse(userMessage);
         }
 
-        function clickButton() {
-            score++;
-            document.getElementById("scoreDisplay").textContent = "スコア: " + score;
-        }
+        function fetchAIResponse(message) {
+            const apiKey = "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";
+            const endpoint = "https://api.openai.com/v1/chat/completions";
 
-        function endGame() {
-            clearInterval(timer);
-            document.getElementById("gameButton").disabled = true;
-            document.getElementById("startButton").disabled = false;
-            alert("ゲーム終了！ あなたのスコアは " + score + " です。");
+            fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    messages: [{ role: "user", content: message }],
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const aiResponse = data.choices[0].message.content;
+
+                // AIのメッセージを表示
+                const aiMessageElem = document.createElement("div");
+                aiMessageElem.className = "message ai-message";
+                aiMessageElem.textContent = aiResponse;
+                chatBox.appendChild(aiMessageElem);
+                chatBox.scrollTop = chatBox.scrollHeight; // 最新メッセージへスクロール
+            })
+            .catch(error => {
+                const errorMessageElem = document.createElement("div");
+                errorMessageElem.className = "message ai-message";
+                errorMessageElem.textContent = "エラーが発生しました。もう一度お試しください。";
+                chatBox.appendChild(errorMessageElem);
+            });
         }
     </script>
 </body>
