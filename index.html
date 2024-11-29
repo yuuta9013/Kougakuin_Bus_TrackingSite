@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja"> <!-- 文書のタイプをHTMLで指定し、言語を日本語に設定 -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バス追跡システム</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <meta charset="UTF-8"> <!-- ページの文字エンコーディングをUTF-8に設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- モバイル対応のレスポンシブデザインを設定 -->
+    <title>バス追跡システム</title> <!-- ページのタイトルを設定 -->
+    <link rel="stylesheet" href="styles.css"> <!-- 外部のCSSファイルをリンク -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> <!-- Leafletライブラリを読み込む（地図表示用） -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- Leaflet用のCSSを読み込む -->
 </head>
 <body>
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu" style="display: none;">
+    <header> <!-- ヘッダーセクションの開始 -->
+        <button class="menu-btn" onclick="toggleMenu()">☰</button> <!-- メニューボタン（クリックでメニューの表示切替） -->
+        <nav id="menu" style="display: none;"> <!-- ナビゲーションメニュー。初期は非表示 -->
             <ul>
-                <li><a href="index.html">位置情報</a></li><br>
-                <li><a href="notification.html">お知らせ</a></li><br>
-                <li><a href="home.html">ミニゲーム</a></li><br> <!-- 新しいミニゲームリンク -->
-                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+                <li><a href="index.html">位置情報</a></li><br> <!-- 位置情報ページへのリンク -->
+                <li><a href="notification.html">お知らせ</a></li><br> <!-- お知らせページへのリンク -->
+                <li><a href="home.html">ミニゲーム</a></li><br> <!-- 新規追加されたミニゲームページへのリンク -->
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li> <!-- 学校の公式ホームページへのリンク（別タブで開く） -->
             </ul>
         </nav>
     </header>
 
-    <div id="busStopContainer">
-        <select id="busStopSelect">
-            <option value="">バス停を選択</option>
-            <option value="0">八王子駅行き</option>
-            <option value="1">みなみ野駅行き</option>
-            <option value="2">学校行き(みなみ野)</option>
-            <option value="3">学校行き(八王子)</option>
+    <div id="busStopContainer"> <!-- バス停選択セクション -->
+        <select id="busStopSelect"> <!-- バス停を選択するためのプルダウンメニュー -->
+            <option value="">バス停を選択</option> <!-- 初期表示の空選択肢 -->
+            <option value="0">八王子駅行き</option> <!-- 八王子駅行きのバス -->
+            <option value="1">みなみ野駅行き</option> <!-- みなみ野駅行きのバス -->
+            <option value="2">学校行き(みなみ野)</option> <!-- 学校行き（みなみ野経由） -->
+            <option value="3">学校行き(八王子)</option> <!-- 学校行き（八王子経由） -->
         </select>
-        <div id="delayInfo" class="delay-box">遅延：○○分</div>
+        <div id="delayInfo" class="delay-box">遅延：○○分</div> <!-- バスの遅延情報を表示するエリア -->
     </div>
 
-    <div id="map" style="width: 100%; height: 500px;"></div>
+    <div id="map" style="width: 100%; height: 500px;"></div> <!-- 地図表示用のエリア -->
 
-    <div id="hint" class="hint-box" style="display: none;"></div>
+    <div id="hint" class="hint-box" style="display: none;"></div> <!-- ヒント情報を表示するエリア（初期は非表示） -->
 
-    <script src="script.js"></script>
+    <script src="script.js"></script> <!-- 外部JavaScriptファイルを読み込む -->
 </body>
 </html>
