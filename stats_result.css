@@ -1,0 +1,143 @@
+/* 基本スタイル */
+body {
+    font-family: 'Verdana', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4ee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    text-align: left;
+    width: 100%;
+}
+h2 {
+    margin: 20px 0;
+    text-align: center;
+    color: #444;
+}
+.menu-btn {
+    background-color: #333;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.summary-container {
+    width: 80%;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    flex-grow: 1;
+}
+.summary-section {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.summary-section label, #summary p {
+    font-weight: bold;
+}
+.summary-section select, .summary-section input {
+    font-size: 16px;
+    padding: 5px;
+    margin-top: 5px;
+    width: 100%;
+}
+#summary p {
+    font-size: 16px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.yellow {
+    background-color: yellow;
+}
+.red {
+    background-color: red;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+table, th, td {
+    border: 1px solid #ddd;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: #f0f0f0;
+}
+.container {
+    width: 80%;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+label, select {
+    display: block;
+    margin: 10px 0;
+}
+.Graph-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.Graph-button:hover {
+    background-color: #0056b3;
+}
+canvas {
+    margin-top: 20px;
+    width: 100%;
+    height: auto;
+}
+.stats_index-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    width: 30%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.stats_index-button:hover {
+    background-color: #0056b3;
+}
