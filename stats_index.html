@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>検索・集計（仮）</title>
+    <link rel="stylesheet" href="stats_index.css">
+    <script src="stats_index.js" defer></script>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br> 
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li><br>
+                <li>
+                    <a href="#" onclick="toggleSubMenu(event)">時刻表検索</a>
+                    <ul id="submenu" style="display: none;">
+                        <li><a href="stats_index.html">・検索・集計（仮）</a></li><br>
+                        <li><a href="stats_result.html">・結果一覧（仮）</a></li><br>
+                        <li><a href="stats_admin.html">・管理（仮）</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="form-container">
+        <div class="form-box">
+            <label for="selectedDate">日付を選択:</label>
+            <input type="date" id="selectedDate">
+            <div id="busStopSection">
+                <label for="busStop">バス停を選択:</label>
+                <select id="busStop" onchange="updateTimetable()">
+                    <option value="">-- バス停を選択 --</option>
+                    <option value="学校行き（みなみ野）">学校行き（みなみ野）</option>
+                    <option value="学校行き（八王子）">学校行き（八王子）</option>
+                    <option value="学校行き（学生館）">学校行き（学生館）</option>
+                    <option value="みなみ野駅行き">みなみ野駅行き</option>
+                    <option value="八王子駅行き">八王子駅行き</option>
+                    <option value="学生館行き">学生館行き</option>
+                </select>
+                <label for="busTime">時刻を選択:</label>
+                <select id="busTime">
+                    <option value="">-- 時刻を選択 --</option>
+                </select>
+            </div>
+            <button onclick="countSelectedRoutes()">集計</button>
+        </div>
+    </div>
+    <ul id="underlist">
+        <p><br></p>
+        <li>
+            <a href="#" class="stats_result-button" onclick="showStats_resultPage()">結果一覧（仮）</a>
+            <a href="#" class="stats_admin-button" onclick="showStats_adminPage()">管理（仮）</a>
+        </li>
+    </ul>
+</body>
+</html>
