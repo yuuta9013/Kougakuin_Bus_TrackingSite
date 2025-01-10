@@ -138,33 +138,57 @@ delayInfoHachioji.textContent = '八王子方面遅延：0分';
 document.getElementById('busStopContainer').appendChild(delayInfoMinamino);
 document.getElementById('busStopContainer').appendChild(delayInfoHachioji);
 
-// 遅延情報の初期化
-var delayMinamino = 0; // みなみ野方面の遅延
-var delayHachioji = 0; // 八王子駅方面の遅延
-
 // 遅延を更新する関数
-function updateDelayInfo(delay, element, routeName) {
-    element.textContent = `${routeName}遅延：${delay}分`;
+function updateDelayOrEarlyInfo(delay, early, element, routeName) {
+    if (delay > 0) {
+        element.textContent = `${routeName}遅延：${delay}分`;
+    } else if (early > 0) {
+        element.textContent = `${routeName}早着：${early}分`;
+    } else {
+        element.textContent = `${routeName}遅延なし`;
+    }
 }
 
-// 遅延を計算する関数
-function calculateDelay(route, marker, interval, maxTimePerSegment, delayElement, routeName) {
+// 遅延・早着を計算する関数
+function calculateDelayOrEarly(route, marker, interval, maxTimePerSegment, delayElement, routeName) {
     let segmentIndex = 0;
     let segmentStartTime = performance.now();
+    let delay = 0; // 遅延時間
+    let early = 0; // 早着時間
 
     setInterval(function() {
         const now = performance.now();
         const elapsedTime = (now - segmentStartTime) / 60000; // 経過時間を分に変換
 
         if (elapsedTime > maxTimePerSegment) {
-            const delay = Math.round(elapsedTime - maxTimePerSegment);
-            if (routeName === 'みなみ野方面') {
-                delayMinamino += delay;
-            } else if (routeName === '八王子方面') {
-                delayHachioji += delay;
+            // 遅延の計算
+            delay += Math.round(elapsedTime - maxTimePerSegment);
+            if (early > 0) {
+                // 遅延と早着の相殺
+                if (early >= delay) {
+                    early -= delay;
+                    delay = 0;
+                } else {
+                    delay -= early;
+                    early = 0;
+                }
             }
-            updateDelayInfo(delayMinamino, delayElement, routeName);
+        } else if (elapsedTime < maxTimePerSegment - 1 / 60) { // 1秒の余裕を持つ
+            // 早着の計算
+            early += Math.round((maxTimePerSegment - elapsedTime) * 100) / 100; // 小数点以下2桁
+            if (delay > 0) {
+                // 遅延と早着の相殺
+                if (delay >= early) {
+                    delay -= early;
+                    early = 0;
+                } else {
+                    early -= delay;
+                    delay = 0;
+                }
+            }
         }
+
+        updateDelayOrEarlyInfo(delay, early, delayElement, routeName);
 
         marker.setLatLng(route[segmentIndex]); // バスの位置を更新
         checkProximity(marker); // バス停の近接をチェック
@@ -197,8 +221,8 @@ function displayHint(message) {
 }
 
 // バスを動かす
-calculateDelay(busRoute1, busMarker1, 52000, 0.85, delayInfoMinamino, 'みなみ野方面');
-calculateDelay(busRoute2, busMarker2, 57000, 0.9, delayInfoHachioji, '八王子方面');
+calculateDelayOrEarly(busRoute1, busMarker1, 52000, 0.85, delayInfoMinamino, 'みなみ野方面');
+calculateDelayOrEarly(busRoute2, busMarker2, 57000, 0.9, delayInfoHachioji, '八王子方面');
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
