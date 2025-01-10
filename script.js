@@ -64,7 +64,6 @@ var busMarker1 = L.marker([35.63149875364993, 139.32910313903676], { icon: busIc
 var busMarker2 = L.marker([35.654351868130796, 139.33909241912187], { icon: busIconGreen }).addTo(map);
 
 // バスの経路
-// バスの経路
 var busRoute1 = [
     [35.63149875364993, 139.32910313903676],
     [35.63048626415159, 139.3281997561492],
@@ -85,8 +84,9 @@ var busRoute1 = [
     [35.63303966859972, 139.33172769916854],
     [35.633614100951455, 139.32985035266762],
     [35.63153176403544, 139.32879020405537],
-    [35.63149875364993, 139.32910313903676]  // 学校行き(みなみ野)に戻る
+    [35.63149875364993, 139.32910313903676] // 学校行き(みなみ野)に戻る
 ];
+
 var busRoute2 = [
     [35.654351868130796, 139.33909241912187], // 学校行き(八王子)
     [35.653933576469534, 139.33815587125943],
@@ -120,18 +120,57 @@ var busRoute2 = [
     [35.64943540986958, 139.33781433756303],
     [35.6520834615058, 139.338027796126],
     [35.653933576469534, 139.33815587125943],
-    [35.654351868130796, 139.33909241912187]  // 学校行き(八王子)に戻る
+    [35.654351868130796, 139.33909241912187] // 学校行き(八王子)に戻る
 ];
 
+// 遅延情報の表示要素
+var delayInfoMinamino = document.createElement('div');
+var delayInfoHachioji = document.createElement('div');
 
-// バスを動かす関数
-function moveBus(marker, route, delay) {
-    var index = 0;
+delayInfoMinamino.id = 'delayInfoMinamino';
+delayInfoMinamino.className = 'delay-box';
+delayInfoMinamino.textContent = 'みなみ野方面遅延：0分';
+
+delayInfoHachioji.id = 'delayInfoHachioji';
+delayInfoHachioji.className = 'delay-box';
+delayInfoHachioji.textContent = '八王子方面遅延：0分';
+
+document.getElementById('busStopContainer').appendChild(delayInfoMinamino);
+document.getElementById('busStopContainer').appendChild(delayInfoHachioji);
+
+// 遅延情報の初期化
+var delayMinamino = 0; // みなみ野方面の遅延
+var delayHachioji = 0; // 八王子駅方面の遅延
+
+// 遅延を更新する関数
+function updateDelayInfo(delay, element, routeName) {
+    element.textContent = `${routeName}遅延：${delay}分`;
+}
+
+// 遅延を計算する関数
+function calculateDelay(route, marker, interval, maxTimePerSegment, delayElement, routeName) {
+    let segmentIndex = 0;
+    let segmentStartTime = performance.now();
+
     setInterval(function() {
-        marker.setLatLng(route[index]);
-        checkProximity(marker);
-        index = (index + 1) % route.length;
-    }, delay);
+        const now = performance.now();
+        const elapsedTime = (now - segmentStartTime) / 60000; // 経過時間を分に変換
+
+        if (elapsedTime > maxTimePerSegment) {
+            const delay = Math.round(elapsedTime - maxTimePerSegment);
+            if (routeName === 'みなみ野方面') {
+                delayMinamino += delay;
+            } else if (routeName === '八王子方面') {
+                delayHachioji += delay;
+            }
+            updateDelayInfo(delayMinamino, delayElement, routeName);
+        }
+
+        marker.setLatLng(route[segmentIndex]); // バスの位置を更新
+        checkProximity(marker); // バス停の近接をチェック
+        segmentIndex = (segmentIndex + 1) % route.length;
+        segmentStartTime = performance.now(); // セグメント開始時間をリセット
+    }, interval);
 }
 
 // バス停に近づいているかチェック
@@ -158,23 +197,21 @@ function displayHint(message) {
 }
 
 // バスを動かす
-moveBus(busMarker1, busRoute1, 3000);
-moveBus(busMarker2, busRoute2, 3000);
+calculateDelay(busRoute1, busMarker1, 3000, 0.85, delayInfoMinamino, 'みなみ野方面');
+calculateDelay(busRoute2, busMarker2, 3000, 0.9, delayInfoHachioji, '八王子方面');
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
-    var selectedIndex = parseInt(e.target.value, 10);  // 値を整数に変換
-    if (!isNaN(selectedIndex)) {  // 値が選択されている場合に実行
-        var selectedStop = busStops[selectedIndex];  // 選択されたバス停の座標を取得
-        map.setView(selectedStop.coords, 16, {       // ズームレベル16で中央に移動
+    var selectedIndex = parseInt(e.target.value, 10); // 値を整数に変換
+    if (!isNaN(selectedIndex)) { // 値が選択されている場合に実行
+        var selectedStop = busStops[selectedIndex]; // 選択されたバス停の座標を取得
+        map.setView(selectedStop.coords, 16, { // ズームレベル16で中央に移動
             animate: true,
             pan: { duration: 1 }
         });
         L.popup()
-            .setLatLng(selectedStop.coords)        // ポップアップをバス停の位置に表示
-            .setContent(selectedStop.name)         // バス停名をポップアップに表示
+            .setLatLng(selectedStop.coords) // ポップアップをバス停の位置に表示
+            .setContent(selectedStop.name) // バス停名をポップアップに表示
             .openOn(map);
     }
 });
-
-
