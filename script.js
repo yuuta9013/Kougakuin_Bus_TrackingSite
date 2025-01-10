@@ -197,8 +197,8 @@ function displayHint(message) {
 }
 
 // バスを動かす
-calculateDelay(busRoute1, busMarker1, 3000, 0.85, delayInfoMinamino, 'みなみ野方面');
-calculateDelay(busRoute2, busMarker2, 3000, 0.9, delayInfoHachioji, '八王子方面');
+calculateDelay(busRoute1, busMarker1, 86000, 0.85, delayInfoMinamino, 'みなみ野方面');
+calculateDelay(busRoute2, busMarker2, 91000, 0.9, delayInfoHachioji, '八王子方面');
 
 // バス停選択時の地図移動機能
 document.getElementById('busStopSelect').addEventListener('change', function(e) {
