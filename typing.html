@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイピングゲーム</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f3e1;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            position: relative;
+        }
+        .menu-btn {
+            background-color: #333;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #game-container {
+            margin: 50px auto;
+            padding: 20px;
+            max-width: 600px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        #word-display {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        #input-field {
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            ime-mode: disabled; /* 日本語入力を半角モードに固定 */
+            transition: background-color 0.2s;
+        }
+        #input-field.error {
+            background-color: #f8d7da;
+        }
+        #timer {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+        #score {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #difficulty {
+            margin: 20px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        div{
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br> <!-- 位置情報ページへのリンク -->
+                <li><a href="notification.html">お知らせ</a></li><br> <!-- お知らせページへのリンク -->
+                <li><a href="home.html">ミニゲーム</a></li><br> <!-- 新規追加されたミニゲームページへのリンク -->
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li><br> <!-- 学校の公式ホームページへのリンク（別タブで開く） -->
+                <li><a href="stats_index.html">時刻表検索</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div id="game-container">
+        <h1>タイピングゲーム</h1>
+        <div id="difficulty">
+            難易度:
+            <button onclick="setDifficulty('easy')">かんたん</button>
+            <button onclick="setDifficulty('normal')">ふつう</button>
+            <button onclick="setDifficulty('hard')">むずかしい</button>
+        </div>
+        <div id="word-display">難易度を選んでスタートしてください</div>
+        <input type="text" id="input-field" placeholder="ここに入力" disabled />
+        <div id="timer">タイマー: 30秒</div>
+        <div id="score">スコア: 0</div>
+        <button id="start-button">スタート</button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+        const wordLists = {
+            easy: ["こんにちは", "ありがとう", "かわいい", "すごい", "たのしい", "はやい", "おそい", "きれい", "ゆっくり", "たべる"],
+            normal: ["一石二鳥(いっせきにちょう)", "臥薪嘗胆(がしんしょうたん)", "自業自得(じごうじとく)", "花鳥風月(かちょうふうげつ)", "十人十色(じゅうにんといろ)", "温故知新(おんこちしん)", "千載一遇(せんざいいちぐう)", "有言実行(ゆうげんじっこう)", "馬耳東風(ばじとうふう)", "言行一致(げんこういっち)"],
+            hard: ["馬の耳に念仏(うまのみみにねんぶつ)", "猿も木から落ちる(さるもきからおちる)", "水に流す(みずにながす)", "千里の道も一歩から(せんりのみちもいっぽから)", "焼け石に水(やけいしにみず)", "泣きっ面に蜂(なきっつらにはち)", "二階から目薬(にかいからめぐすり)", "花より団子(はなよりだんご)", "出る杭は打たれる(でるくいはうたれる)", "覆水盆に返らず(ふくすいぼんにかえらず)"]
+        };
+
+        const romajiLists = {
+            easy: [
+                ["konnichiha", "konnnitiha"],
+                ["arigatou"],
+                ["kawaii"],
+                ["sugoi"],
+                ["tanoshii", "tanosii"],
+                ["hayai"],
+                ["osoi"],
+                ["kirei"],
+                ["yukkuri"],
+                ["taberu"]
+            ],
+            normal: [
+                ["issekinichou"],
+                ["gashinshoutan","gasinshoutan","gashinnshoutan","gasinnshoutan"],
+                ["jigoujitoku","zigoujitoku","jigouzitoku","zigouzitoku"],
+                ["kachoufuugetsu","kachouhuugetsu","kachoufuugetu","kachouhuugetu"],
+                ["junintoiro","juninntoiro"],
+                ["onkochishin","onkochisin","onkotishin","onkotisin","onnkochishin","onnkotishin","onnkochisin","onnkotisin"],
+                ["senzaiichiguu","senzaiitiguu"],
+                ["yuugenzikkou","yuugenjikkou"],
+                ["bajitoufuu","bazitoufuu","bajitouhuu","bazitouhuu"],
+                ["genkouicchi","genkouitti"]
+            ],
+            hard: [
+                ["umanomimininenbutsu","umanomimininenbutu","umanomimininennbutsu","umanomimininennbutu"],
+                ["sarumokikaraochiru","sarumokikaraotiru"],
+                ["mizuninagasu"],
+                ["senrinomichimoippokara","sennrinomichimoippokara","senrinomitimoippokara","sennrinomitimoippokara"],
+                ["yakeishinimizu","yakeisinimizu"],
+                ["nakittsuranihachi","nakitturanihati"],
+                ["nikaikaramegusuri"],
+                ["hanayoridango","hanayoridanngo"],
+                ["derukuihautareru"],
+                ["fukusuibonnikaerazu","fukusuibonnnikaerazu","hukusuibonnikaerazu","hukusuibonnnikaerazu"]
+            ]
+        };
+
+        let currentWords = [];
+        let currentRomaji = [];
+        let currentWordIndex = 0;
+        let score = 0;
+        let timeLeft = 30;
+        let timerInterval;
+        let selectedDifficulty = "easy";
+
+        const wordDisplay = document.getElementById("word-display");
+        const inputField = document.getElementById("input-field");
+        const timerDisplay = document.getElementById("timer");
+        const scoreDisplay = document.getElementById("score");
+        const startButton = document.getElementById("start-button");
+
+        function setDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            currentWords = wordLists[difficulty];
+            currentRomaji = romajiLists[difficulty];
+            wordDisplay.textContent = `${difficulty}モードを選択しました。スタートを押してください。`;
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            inputField.value = "";
+            inputField.disabled = false;
+            inputField.focus();
+            startButton.disabled = true;
+            scoreDisplay.textContent = `スコア: ${score}`;
+            timerDisplay.textContent = `タイマー: ${timeLeft}秒`;
+            nextWord();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            timerDisplay.textContent = `タイマー: ${timeLeft}秒`;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function nextWord() {
+            currentWordIndex = Math.floor(Math.random() * currentWords.length);
+            wordDisplay.textContent = currentWords[currentWordIndex];
+            inputField.value = "";
+            inputField.classList.remove("error");
+        }
+
+        function checkInput() {
+            const input = inputField.value.toLowerCase();
+            if (currentRomaji[currentWordIndex].some(correct => correct.startsWith(input))) {
+                inputField.classList.remove("error");
+                if (currentRomaji[currentWordIndex].includes(input)) {
+                    score++;
+                    scoreDisplay.textContent = `スコア: ${score}`;
+                    nextWord();
+                }
+            } else {
+                inputField.classList.add("error");
+                setTimeout(() => inputField.classList.remove("error"), 200);
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            inputField.disabled = true;
+            startButton.disabled = false;
+            wordDisplay.textContent = `ゲーム終了！スコア: ${score}`;
+        }
+
+        startButton.addEventListener("click", startGame);
+        inputField.addEventListener("input", checkInput);
+
+        // 初期化
+        setDifficulty("easy");
+    </script>
+</body>
+</html>
