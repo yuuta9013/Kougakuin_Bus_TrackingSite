@@ -164,6 +164,10 @@
     </div>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
         let currentQuestion = 0;
         let correctAnswers = 0;
         let totalQuestions = 0;
