@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shooting Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f3e1;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: black;
+    }
+    .menu-btn {
+        background-color: #333;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav ul li {
+        display: inline;
+        margin-right: 20px;
+    }
+
+    nav ul li a {
+        color: black;
+        text-decoration: none;
+        font-weight: bold;
+}
+  </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+      </header>
+  <canvas id="gameCanvas"></canvas>
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas to fullscreen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Game variables
+    const ship = {
+      x: canvas.width / 2 - 20,
+      y: canvas.height - 60,
+      width: 40,
+      height: 40,
+      dx: 0
+    };
+
+    let bullets = [];
+    let enemies = [];
+    let score = 0;
+    let lives = 3;
+    let isTouching = false;
+    let touchStartX = 0;
+
+    // Functions
+    function createEnemy() {
+      const enemy = {
+        x: Math.random() * (canvas.width - 40),
+        y: -40,
+        width: 40,
+        height: 40,
+        speed: 2 + Math.random() * 2
+      };
+      enemies.push(enemy);
+    }
+
+    function shootBullet() {
+      bullets.push({
+        x: ship.x + ship.width / 2 - 5,
+        y: ship.y,
+        width: 10,
+        height: 20,
+        speed: 5
+      });
+    }
+
+    function updateGameArea() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update ship position
+      ship.x += ship.dx;
+      if (ship.x < 0) ship.x = 0;
+      if (ship.x + ship.width > canvas.width) ship.x = canvas.width - ship.width;
+
+      // Update bullets
+      for (let i = 0; i < bullets.length; i++) {
+        bullets[i].y -= bullets[i].speed;
+        if (bullets[i].y < 0) {
+          bullets.splice(i, 1);
+          i--;
+        }
+      }
+
+      // Update enemies
+      for (let i = 0; i < enemies.length; i++) {
+        if (enemies[i]) {
+          enemies[i].y += enemies[i].speed;
+
+          // Remove enemies that go out of bounds
+          if (enemies[i].y > canvas.height) {
+            lives--;
+            enemies.splice(i, 1);
+            i--;
+          } else {
+            // Collision check: Ship vs Enemy
+            /*if (
+              ship.x < enemies[i].x + enemies[i].width &&
+              ship.x + ship.width > enemies[i].x &&
+              ship.y < enemies[i].y + enemies[i].height &&
+              ship.y + ship.height > enemies[i].y
+            ) {
+              lives--;
+              enemies.splice(i, 1);
+              i--;
+            }*/
+
+            // Collision check: Bullet vs Enemy
+            for (let j = 0; j < bullets.length; j++) {
+              if (
+                bullets[j].x < enemies[i].x + enemies[i].width &&
+                bullets[j].x + bullets[j].width > enemies[i].x &&
+                bullets[j].y < enemies[i].y + enemies[i].height &&
+                bullets[j].y + bullets[j].height > enemies[i].y
+              ) {
+                enemies.splice(i, 1);
+                bullets.splice(j, 1);
+                score++;
+                i--;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      // Draw the ship
+      ctx.fillStyle = '#00f';
+      ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
+
+      // Draw bullets
+      ctx.fillStyle = '#f00';
+      for (let i = 0; i < bullets.length; i++) {
+        ctx.fillRect(bullets[i].x, bullets[i].y, bullets[i].width, bullets[i].height);
+      }
+
+      // Draw enemies
+      ctx.fillStyle = '#0f0';
+      for (let i = 0; i < enemies.length; i++) {
+        if (enemies[i]) {
+          ctx.fillRect(enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height);
+        }
+      }
+
+      // Draw score and lives
+      ctx.fillStyle = '#fff';
+      ctx.font = '20px Arial';
+      ctx.fillText('Score: ' + score, 20, 30);
+      ctx.fillText('Lives: ' + lives, canvas.width - 100, 30);
+
+      // Game over
+      if (lives <= 0) {
+        ctx.fillText('GAME OVER', canvas.width / 2 - 70, canvas.height / 2);
+        return;
+      }
+
+      // Generate new enemies
+      if (Math.random() < 0.01) {
+        createEnemy();
+      }
+
+      requestAnimationFrame(updateGameArea);
+    }
+
+    // Touch controls
+    canvas.addEventListener('touchstart', (e) => {
+      isTouching = true;
+      touchStartX = e.touches[0].clientX;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (isTouching) {
+        const touchX = e.touches[0].clientX;
+        const dx = touchX - touchStartX;
+        ship.x += dx;
+
+        // Prevent ship from going out of bounds
+        if (ship.x < 0) ship.x = 0;
+        if (ship.x + ship.width > canvas.width) ship.x = canvas.width - ship.width;
+
+        touchStartX = touchX;
+      }
+    });
+
+    canvas.addEventListener('touchend', () => {
+      isTouching = false;
+      shootBullet();
+    });
+
+    // Start the game
+    updateGameArea();
+  </script>
+</body>
+</html>
