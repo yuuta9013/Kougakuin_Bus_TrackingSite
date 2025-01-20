@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神経衰弱ゲーム</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color:#f8f3e1;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            position: relative;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .game-container {
+            display: grid;
+            grid-gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            align-content: center;
+            text-align: center;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #87ceeb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        .card.flipped {
+            background-color: white;
+            color: black;
+            cursor: default;
+        }
+        .card.matched {
+            background-color: #32cd32;
+            color: white;
+            cursor: default;
+        }
+        .timer {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .menu-btn {
+            background-color: #333;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+      </header>
+    <div class="controls">
+        <label for="difficulty">難易度: </label>
+        <select id="difficulty">
+            <option value="easy">簡単 (4x4)</option>
+            <option value="normal">普通 (6x6)</option>
+            <option value="hard">むずかしい (8x8)</option>
+        </select>
+        <button id="start-button">スタート</button>
+    </div>
+    <div class="timer" id="timer">経過時間: 0秒</div>
+    <div class="game-container" id="game-container"></div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+
+        const gameContainer = document.getElementById('game-container');
+        const timerElement = document.getElementById('timer');
+        const startButton = document.getElementById('start-button');
+        const difficultySelect = document.getElementById('difficulty');
+
+        let symbols = [];
+        let cards = [];
+        let firstCard = null;
+        let secondCard = null;
+        let preventClick = false;
+        let matchedPairs = 0;
+        let totalPairs = 0;
+        let startTime = null;
+        let timerInterval = null;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            timerElement.textContent = `ゲームクリア! 経過時間: ${totalTime}秒`;
+        }
+
+        function createCard(symbol) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.symbol = symbol;
+            card.textContent = '?';
+
+            card.addEventListener('click', () => {
+                if (preventClick || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                    return;
+                }
+
+                card.classList.add('flipped');
+                card.textContent = symbol;
+
+                if (!firstCard) {
+                    firstCard = card;
+                } else if (!secondCard) {
+                    secondCard = card;
+                    preventClick = true;
+
+                    if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+                        firstCard.classList.add('matched');
+                        secondCard.classList.add('matched');
+                        firstCard = null;
+                        secondCard = null;
+                        preventClick = false;
+                        matchedPairs++;
+
+                        if (matchedPairs === totalPairs) {
+                            stopTimer();
+                        }
+                    } else {
+                        setTimeout(() => {
+                            firstCard.classList.remove('flipped');
+                            secondCard.classList.remove('flipped');
+                            firstCard.textContent = '?';
+                            secondCard.textContent = '?';
+                            firstCard = null;
+                            secondCard = null;
+                            preventClick = false;
+                        }, 1000);
+                    }
+                }
+            });
+
+            return card;
+        }
+
+        function setupGame() {
+            gameContainer.innerHTML = '';
+            timerElement.textContent = '経過時間: 0秒';
+            clearInterval(timerInterval);
+
+            const difficulty = difficultySelect.value;
+            if (difficulty === 'easy') {
+                gameContainer.style.gridTemplateColumns = 'repeat(4, 100px)';
+                symbols = ['🍎', '🍊', '🍋', '🍉', '🍇', '🍓', '🍒', '🥝'];
+                totalPairs = 8;
+            } else if (difficulty === 'normal') {
+                gameContainer.style.gridTemplateColumns = 'repeat(6, 100px)';
+                symbols = ['🍎', '🍊', '🍋', '🍉', '🍇', '🍓', '🍒', '🥝', '🥥', '🍍', '🥭', '🍐', '🍏', '🥑', '🥦', '🌶️', '🥕', '🥔'];
+                totalPairs = 18;
+            } else if (difficulty === 'hard')  {
+                gameContainer.style.gridTemplateColumns = 'repeat(8, 100px)';
+                symbols = ['🍎', '🍊', '🍋', '🍉', '🍇', '🍓', '🍒', '🥝', '🥥', '🍍', '🥭', '🍐','🍏', '🥑', '🥦', '🌶️', '🥕', '🥔', '🍄', '🍪', '🍫', '🍩', '🍔', '🍟', '🌭', '🍕', '🌮', '🌯', '🥗', '🥘', '🥙', '🧁', '🍰', '🍦'];
+                totalPairs = 32;
+            }
+
+            cards = [...symbols.slice(0, totalPairs), ...symbols.slice(0, totalPairs)];
+            shuffle(cards);
+
+            cards.forEach(symbol => {
+                const card = createCard(symbol);
+                gameContainer.appendChild(card);
+            });
+
+            matchedPairs = 0;
+            firstCard = null;
+            secondCard = null;
+        }
+
+        startButton.addEventListener('click', () => {
+            setupGame();
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                timerElement.textContent = `経過時間: ${elapsedTime}秒`;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
