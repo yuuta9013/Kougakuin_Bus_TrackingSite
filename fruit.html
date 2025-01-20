@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フルーツキャッチゲーム</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color:#f8f3e1;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            border: 2px solid black;
+            background-color: #f4f4f4;
+            margin-top: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            position: relative;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .timer {
+            font-size: 20px;
+            color: red;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .button {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            width: 100px;
+            user-select: none;
+        }
+        .menu-btn {
+            background-color: #333;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu" style="display: none;">
+            <ul>
+                <li><a href="index.html">位置情報</a></li><br>
+                <li><a href="notification.html">お知らせ</a></li><br>
+                <li><a href="home.html">ミニゲーム</a></li><br>
+                <li><a href="https://www.neec.ac.jp/hachioji/" target="_blank">学校ホームページ</a></li>
+            </ul>
+        </nav>
+      </header>
+    <h1>フルーツキャッチゲーム</h1>
+    <p class="timer">残り時間: <span id="timeLeft">30</span>秒</p>
+    <canvas id="gameCanvas"></canvas>
+    <div class="button-container">
+        <button id="leftBtn" class="button">左</button>
+        <button id="rightBtn" class="button">右</button>
+    </div>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+        // ゲーム設定
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let basketWidth = 100;
+        let basketHeight = 20;
+        let basketX;
+        let basketSpeed = 7;
+        let basketDx = 0;
+
+        let fruits = [];
+        let score = 0;
+        let gameOver = false;
+        let timeLeft = 30;  // タイマーの初期値
+        let timerInterval;
+
+        // 画面サイズに応じて正方形のキャンバスサイズを設定
+        function setCanvasSize() {
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;  // 画面幅と高さの最小値を基準に正方形を作成
+            canvas.width = size;
+            canvas.height = size;
+
+            // バスケットの初期位置
+            basketX = canvas.width / 2 - basketWidth / 2;
+        }
+
+        // 初期設定
+        setCanvasSize();
+
+        // ウィンドウのリサイズに対応
+        window.addEventListener("resize", setCanvasSize);
+
+        document.addEventListener("keydown", moveBasket);
+
+        // バスケットの移動
+        function moveBasket(e) {
+            if (e.key === "ArrowLeft") {
+                basketDx = -basketSpeed;
+            } else if (e.key === "ArrowRight") {
+                basketDx = basketSpeed;
+            }
+        }
+
+        document.addEventListener("keyup", () => {
+            basketDx = 0;
+        });
+
+        // タッチイベント用の移動
+        document.getElementById("leftBtn").addEventListener("touchstart", () => {
+            basketDx = -basketSpeed;
+        });
+        document.getElementById("rightBtn").addEventListener("touchstart", () => {
+            basketDx = basketSpeed;
+        });
+
+        // タッチが終了した時の処理
+        document.getElementById("leftBtn").addEventListener("touchend", () => {
+            basketDx = 0;
+        });
+        document.getElementById("rightBtn").addEventListener("touchend", () => {
+            basketDx = 0;
+        });
+
+        // アイテムをランダムに生成
+        function spawnItem() {
+            const type = Math.random() < 0.8 ? 'fruit' : 'bomb';
+            const x = Math.random() * (canvas.width - 30);
+            const y = 0;
+            const speed = Math.random() * 3 + 2; // 落ちる速度
+            fruits.push({ x, y, type, speed });
+        }
+
+        // アイテムを描画
+        function drawFruits() {
+            fruits.forEach((fruit) => {
+                ctx.beginPath();
+                if (fruit.type === 'fruit') {
+                    ctx.arc(fruit.x, fruit.y, 15, 0, Math.PI * 2);
+                    ctx.fillStyle = 'orange';
+                } else if (fruit.type === 'bomb') {
+                    ctx.arc(fruit.x, fruit.y, 15, 0, Math.PI * 2);
+                    ctx.fillStyle = 'darkred'; // 爆弾を目立たせるために色を変更
+                }
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        // バスケットを描画
+        function drawBasket() {
+            ctx.beginPath();
+            ctx.rect(basketX, canvas.height - basketHeight, basketWidth, basketHeight);
+            ctx.fillStyle = "#008000";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // 衝突判定
+        function detectCollision(fruit) {
+            if (fruit.y + 15 > canvas.height - basketHeight && 
+                fruit.x > basketX && 
+                fruit.x < basketX + basketWidth) {
+                return true;
+            }
+            return false;
+        }
+
+        // タイマーの更新
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById("timeLeft").innerText = timeLeft;
+            } else {
+                gameOver = true;
+            }
+        }
+
+        // ゲームのロジック
+        function gameLoop() {
+            if (gameOver) {
+                clearInterval(timerInterval);  // タイマーを停止
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "red";
+                ctx.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2);
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // バスケットの位置更新
+            basketX += basketDx;
+            if (basketX < 0) basketX = 0;
+            if (basketX + basketWidth > canvas.width) basketX = canvas.width - basketWidth;
+
+            // アイテムの位置更新と衝突判定
+            fruits.forEach((fruit, index) => {
+                fruit.y += fruit.speed;
+
+                if (detectCollision(fruit)) {
+                    if (fruit.type === 'fruit') {
+                        score++;
+                    } else {
+                        gameOver = true;  // 爆弾を取ったらゲームオーバー
+                    }
+                    fruits.splice(index, 1); // キャッチしたアイテムを削除
+                }
+
+                if (fruit.y > canvas.height) {
+                    fruits.splice(index, 1); // 画面外に出たアイテムを削除
+                }
+            });
+
+            // アイテムの描画
+            drawFruits();
+
+            // バスケットの描画
+            drawBasket();
+
+            // スコア表示
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "#000";
+            ctx.fillText("Score: " + score, 20, 30);
+
+            // 新しいアイテムをランダムに生成
+            if (Math.random() < 0.02) {
+                spawnItem();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ゲーム開始
+        timerInterval = setInterval(updateTimer, 1000);  // 1秒ごとにタイマーを更新
+        gameLoop();
+    </script>
+</body>
+</html>
