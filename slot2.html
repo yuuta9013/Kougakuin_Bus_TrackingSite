@@ -69,9 +69,7 @@
 
     .reel-content {
       position: absolute;
-      top: 0;
-      /*transition: top 0.3s ease-out ;*/
-      animation: spin 0.1s linear;
+      top: -45px;
     }
 
     button {
@@ -133,7 +131,6 @@
     </nav>
   </header>
   <h1>激ムズスロット</h1>
-  <p>止める前にSTART SPINを押すとバグります</p>
   <div class="slot-machine">
     <div class="reel-container">
       <div class="reel" id="reel1">
@@ -158,12 +155,12 @@
   <p id="result"></p>
 
   <script>
-    const symbols = ["🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈"];
-    //const symbols = ["🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈"];
+    /*const symbols = ["🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈"];*/
+    const symbols = ["🍈","🍒", "🍋", "🍉", "⭐", "🍇", "🍎", "🍊", "🍈","🍒"];
     let intervals = [null, null, null];
     let isSpinning = [false, false, false];
-    const reelHeights = 2;
-    const totalSymbols = symbols.length;
+    const reelHeights = 2;//1回でどれくらい動くか(px)(初期値:2)
+    const totalSymbols = 10;
     const reelContents = [document.getElementById('reel1-content'), document.getElementById('reel2-content'), document.getElementById('reel3-content')];
 
     function toggleMenu() {
@@ -174,7 +171,7 @@
     function initializeReels() {
       reelContents.forEach(reel => {
         reel.innerHTML = '';
-        for (let i = 0; i < totalSymbols * 3; i++) {
+        for (let i = 0; i < totalSymbols * 1; i++) {
           const symbolDiv = document.createElement('div');
           symbolDiv.textContent = symbols[i % totalSymbols];
           reel.appendChild(symbolDiv);
@@ -185,36 +182,54 @@
 
     function startSpin() {
       for (let i = 1; i <= 3; i++) {
+        clearInterval(intervals[i - 1]);
+        isSpinning[i - 1] = false;
+        document.getElementById(`stop${i}`).disabled = true;
+        const reelContent = document.getElementById(`reel${i}-content`);
+        reelContent.style.transition = "";
+        reelContent.style.top = "-45px";
+      }
+      for (let i = 1; i <= 3; i++) {
         spinReel(i);
         document.getElementById(`stop${i}`).disabled = false;
         isSpinning[i - 1] = true;
       }
-      document.getElementById("result").textContent = "";
-    }
+    document.getElementById("result").textContent = "";
+  }
+
 
     function spinReel(reelNumber) {
       const reelContent = document.getElementById(`reel${reelNumber}-content`);
-      let position = 0;
+      let position = -45;
       intervals[reelNumber - 1] = setInterval(() => {
         position -= reelHeights;
-        if (position <= -reelHeights * totalSymbols) position = 0;
+        if (position <= -reelHeights * 212) position = 0;//どれくらい動くかを変更したときは個々の値も変更する(477/Height)
         reelContent.style.top = `${position}px`;
-      }, 6); //速度調節(初期値:6)
+      }, 6); //何msに1回リールを動かすか(初期値:1)
     }
 
     function stopReel(reelNumber) {
       clearInterval(intervals[reelNumber - 1]);
       const reelContent = document.getElementById(`reel${reelNumber}-content`);
       const currentTop = parseInt(reelContent.style.top) || 0;
-      const stoppedIndex = Math.abs(currentTop) / reelHeights % totalSymbols;
-      reelContent.style.top = `${-Math.floor(stoppedIndex) * reelHeights}px`;
-      isSpinning[reelNumber - 1] = false;
-      document.getElementById(`stop${reelNumber}`).disabled = true;
+      const symbolHeight = 53;
+      const nearestIndex = Math.round(currentTop / symbolHeight) % totalSymbols;
+      const correctedTop = nearestIndex * symbolHeight + 12;
+      console.log(correctedTop);
+      reelContent.style.transition = "top 0.3s ease-out"
+      reelContent.style.top = `${correctedTop}px`;
+      setTimeout(() => {
+        reelContent.style.transition = "";
+        isSpinning[reelNumber - 1] = false;
+        document.getElementById(`stop${reelNumber}`).disabled = true;
 
-      if (isSpinning.every(spin => spin === false)) {
-        checkResult();
-      }
+        if (isSpinning.every(spin => spin === false)) {
+          checkResult();
+        }
+      }, 300);
     }
+
+
 
     function checkResult() {
       const tolerance = 30; //許容範囲(初期値:30)
