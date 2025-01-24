@@ -94,7 +94,6 @@
             const menu = document.getElementById("menu");
             menu.style.display = menu.style.display === "none" ? "block" : "none";
         }
-        // ゲーム設定
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -159,26 +158,20 @@
 
         // アイテムをランダムに生成
         function spawnItem() {
+            const fruitEmojis = ['🍎', '🍌', '🍓', '🍇']; // 4種類のフルーツ絵文字
             const type = Math.random() < 0.8 ? 'fruit' : 'bomb';
+            const emoji = type === 'fruit' ? fruitEmojis[Math.floor(Math.random() * fruitEmojis.length)] : '💣'; // ランダムでフルーツか爆弾
             const x = Math.random() * (canvas.width - 30);
             const y = 0;
             const speed = Math.random() * 3 + 2; // 落ちる速度
-            fruits.push({ x, y, type, speed });
+            fruits.push({ x, y, type, speed, emoji });
         }
 
         // アイテムを描画
         function drawFruits() {
+            ctx.font = "30px Arial"; // 絵文字サイズを設定
             fruits.forEach((fruit) => {
-                ctx.beginPath();
-                if (fruit.type === 'fruit') {
-                    ctx.arc(fruit.x, fruit.y, 15, 0, Math.PI * 2);
-                    ctx.fillStyle = 'orange';
-                } else if (fruit.type === 'bomb') {
-                    ctx.arc(fruit.x, fruit.y, 15, 0, Math.PI * 2);
-                    ctx.fillStyle = 'darkred'; // 爆弾を目立たせるために色を変更
-                }
-                ctx.fill();
-                ctx.closePath();
+                ctx.fillText(fruit.emoji, fruit.x, fruit.y);
             });
         }
 
@@ -193,7 +186,7 @@
 
         // 衝突判定
         function detectCollision(fruit) {
-            if (fruit.y + 15 > canvas.height - basketHeight && 
+            if (fruit.y + 20 > canvas.height - basketHeight && 
                 fruit.x > basketX && 
                 fruit.x < basketX + basketWidth) {
                 return true;
