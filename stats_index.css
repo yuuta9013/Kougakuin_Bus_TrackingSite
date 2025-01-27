@@ -1,0 +1,126 @@
+/* 基本スタイル */
+body {
+    font-family: 'Verdana', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4ee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    text-align: left;
+    width: 100%;
+}
+.menu-btn {
+    background-color: #333;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+.form-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.form-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+.form-box select, .form-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.form-box button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.form-box button:hover {
+    background-color: #45a049;
+}
+#underlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #333;
+    color: white;
+    width: 100%;
+    min-height: 100px;
+}
+#underlist li {
+    text-align: center;
+}
+#underlist li a {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    text-decoration: none;
+}
+.stats_result-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    width: 30%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px; 
+}
+.stats_result-button:hover {
+    background-color: #0056b3;
+}
+.stats_admin-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    width: 30%;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px; 
+}
+.stats_admin-button:hover {
+    background-color: #0056b3;
+}
